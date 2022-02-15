@@ -134,8 +134,8 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
               <Box mb={4} display="flex" flexWrap="wrap">
                 {skill.keywords.map((keyword) => (
                   <Text
-                    fontSize="sm"
-                    py={1}
+                    fontSize="xs"
+                    py={0.5}
                     px={1}
                     as="span"
                     mr={2}
