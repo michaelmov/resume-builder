@@ -5,6 +5,7 @@ import { Preview } from './components/preview/preview';
 import { ResumeProvider } from './context/resume.context';
 import { Editor } from './components/editor/editor';
 import { Route, Routes } from 'react-router-dom';
+import { ExportPreview } from './components/preview/export-preview';
 
 const App: FC = () => {
   return (
@@ -34,6 +35,7 @@ const App: FC = () => {
               </Grid>
             }
           ></Route>
+          <Route path="export" element={<ExportPreview />}></Route>
         </Routes>
       </ChakraProvider>
     </ResumeProvider>

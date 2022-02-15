@@ -1,21 +1,20 @@
-import { Basics, Resume } from '../models/resume.model';
+import { Resume } from '../models/resume.model';
 
 export enum ACTIONS {
-  updateBasics = 'UPDATE_BASICS',
+  updateResume = 'UPDATE_RESUME',
 }
 
 export type ACTIONTYPE = {
   type: ACTIONS;
-  payload: Basics;
+  payload: Resume;
 };
 
 export const resumeReducer = (state: Resume, action: ACTIONTYPE): Resume => {
   const { type, payload } = action;
 
   switch (type) {
-    case ACTIONS.updateBasics:
-      return { ...state, basics: payload };
-
+    case ACTIONS.updateResume:
+      return payload;
     default:
       throw new Error('No action provided');
   }

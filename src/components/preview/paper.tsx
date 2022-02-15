@@ -12,6 +12,19 @@ interface PaperProps extends BoxProps {
 
 const StyledRenderer = styled(Box)<PaperProps>`
   // PagedJS styles
+
+  @media print {
+    .pagedjs_page {
+      margin-bottom: 0;
+      padding: 0;
+      flex: none;
+      box-shadow: none;
+    }
+
+    #controls {
+      display: none;
+    }
+  }
   @media screen {
     body {
       background-color: whitesmoke;
@@ -59,9 +72,13 @@ export const Paper: FC<PaperProps> = ({ children, pagemargin = 1 }) => {
     );
   };
 
+  const renderPages = async () => {
+    await paged.preview(contentRef.current?.innerHTML, [], renderRef.current);
+  };
+
   useEffect(() => {
     updatePageMargin();
-    paged.preview(contentRef.current?.innerHTML, [], renderRef.current);
+    renderPages();
   }, [resume, pagemargin]);
 
   return (
@@ -71,7 +88,7 @@ export const Paper: FC<PaperProps> = ({ children, pagemargin = 1 }) => {
         id="content"
         height="100%"
         overflow="hidden"
-        visibility="hidden"
+        display="none"
       >
         {children}
       </Box>
@@ -80,7 +97,6 @@ export const Paper: FC<PaperProps> = ({ children, pagemargin = 1 }) => {
         id="render"
         position="absolute"
         width="100%"
-        pt={24}
       />
     </>
   );

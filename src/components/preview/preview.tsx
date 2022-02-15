@@ -77,6 +77,7 @@ export const Preview: FC = () => {
         width="100%"
         overflow="auto"
         position="relative"
+        pt={24}
       >
         <Paper pagemargin={marg}>
           <BasicTemplate resume={resume} />

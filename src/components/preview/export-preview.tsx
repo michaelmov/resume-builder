@@ -1,5 +1,13 @@
-import React from 'react';
+import { FC } from 'react';
+import { useResume } from '../../hooks/resume.hook';
+import { BasicTemplate } from '../../resume-templates/basic.template';
+import { Paper } from './paper';
 
-export const ExportPreview = () => {
-  return <div>ExportPreview</div>;
+export const ExportPreview: FC = () => {
+  const { resume } = useResume();
+  return (
+    <Paper pagemargin={0.5}>
+      <BasicTemplate resume={resume} />
+    </Paper>
+  );
 };
