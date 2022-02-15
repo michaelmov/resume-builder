@@ -6,7 +6,7 @@ import * as puppeteer from 'puppeteer';
 
 const url =
   process.env?.NODE_ENV === 'production' ?
-    'https://resume-builder-dev-e1417.web.app/export' :
+    `https://${process.env?.GCLOUD_PROJECT}.web.app/export` :
     'http://localhost:3000/export';
 
 export const exportPDF = runWith({
