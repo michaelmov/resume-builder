@@ -1,6 +1,5 @@
 import { Box, Button, Heading } from '@chakra-ui/react';
-import { FC, useContext, useState } from 'react';
-import { resumeStoreContext } from '../../context/resume.context';
+import { FC, useState } from 'react';
 import { JsonEditor } from 'jsoneditor-react';
 import { useResume } from '../../hooks/resume.hook';
 import styled from '@emotion/styled';
@@ -9,13 +8,18 @@ import 'jsoneditor-react/es/editor.min.css';
 
 const JsonEditorWrapper = styled(Box)`
   width: 100%;
-  max-height: 80vh;
+  max-height: calc(100vh - 70px);
   overflow: auto;
   .jsoneditor {
     border: none;
     .jsoneditor-menu {
       background-color: var(--chakra-colors-purple-500);
       border: none;
+
+      .jsoneditor-sort,
+      .jsoneditor-transform {
+        display: none;
+      }
     }
     .jsoneditor-contextmenu {
       .jsoneditor-menu {
@@ -60,6 +64,7 @@ export const Editor: FC = () => {
         bottom={0}
         width="100%"
         boxShadow="md"
+        bgColor="gray.200"
       >
         <Button colorScheme="purple" onClick={saveChanges}>
           Save

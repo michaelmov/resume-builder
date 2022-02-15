@@ -4,12 +4,16 @@ import {
   forwardRef,
   Heading,
   HeadingProps,
+  List,
+  ListIcon,
+  ListItem,
   Text,
   TypographyProps,
 } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import { FC, useMemo } from 'react';
 import { Resume } from '../models/resume.model';
+import { HiArrowSmRight } from 'react-icons/hi';
 
 const Fonts = () => (
   <Global
@@ -23,6 +27,17 @@ const Fonts = () => (
 const styleConfig = {
   headingFont: 'Abril Fatface',
   bodyFont: 'Poppins',
+};
+
+const formatDate = (date: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: undefined,
+  };
+  let formattedDate = new Date(date);
+
+  return formattedDate.toLocaleDateString('en-US', options);
 };
 
 interface BasicHeadingProps extends HeadingProps {
@@ -82,13 +97,13 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
       <BasicHeading as="h1" mb={1}>
         {resume.basics.name}
       </BasicHeading>
-      <Text textTransform="uppercase" color="gray.500" mb={4}>
+      <Text textTransform="uppercase" color="blackAlpha.600" mb={3}>
         {resume.basics.label}
       </Text>
       <Flex
         justifyContent="space-between"
         fontSize="sm"
-        color="gray.500"
+        color="blackAlpha.600"
         mb={6}
       >
         <Text textAlign="left">{resume.basics.location?.city}</Text>
@@ -97,9 +112,94 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
         <Text>{resume.basics.url}</Text>
       </Flex>
       <Text>{resume.basics.summary}</Text>
-      <BasicHeading as="h2" mt={8}>
-        Work History
+      <BasicHeading as="h2" mt={8} mb={3}>
+        Skills
       </BasicHeading>
+      {resume.skills.map((skill) => {
+        return (
+          <Box>
+            <Text as="h3" fontWeight="bold" mb={2}>
+              {skill.name}
+            </Text>
+            <Box mb={4}>
+              {skill.keywords.map((keyword) => (
+                <Text
+                  fontSize="sm"
+                  py={1}
+                  px={1}
+                  as="span"
+                  mr={2}
+                  borderWidth={1}
+                  borderColor="blue.200"
+                  borderRadius={4}
+                  color="blackAlpha.700"
+                >
+                  {keyword}
+                </Text>
+              ))}
+            </Box>
+          </Box>
+        );
+      })}
+      <BasicHeading as="h2" mt={8} mb={3}>
+        Work Experience
+      </BasicHeading>
+      {resume.work.map((job) => {
+        return (
+          <Box mb={6}>
+            <Flex justifyContent="space-between" color="blackAlpha.600" mb={1}>
+              <Text
+                textAlign="left"
+                fontWeight="bold"
+                color="blackAlpha.800"
+                width="100%"
+              >
+                {job.name}
+              </Text>
+              <Text textAlign="center" fontSize="sm" width="100%">
+                {job.position}
+              </Text>
+              <Text textAlign="right" fontSize="sm" width="100%">
+                {formatDate(job.startDate)} - {formatDate(job.endDate)}
+              </Text>
+            </Flex>
+            <Text as="p" mb={2}>
+              {job.summary}
+            </Text>
+            <List>
+              {job.highlights.map((highlight) => (
+                <ListItem display="flex" alignItems="center" mb={1}>
+                  <ListIcon as={HiArrowSmRight} color="blue.200" />
+                  {highlight}
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        );
+      })}
+      <BasicHeading as="h2" mt={8} mb={3}>
+        Education
+      </BasicHeading>
+      {resume.education.map((study) => {
+        return (
+          <Flex justifyContent="space-between" color="blackAlpha.600" mb={1}>
+            <Text
+              textAlign="left"
+              fontWeight="bold"
+              color="blackAlpha.800"
+              width="100%"
+            >
+              {study.institution}
+            </Text>
+            <Text textAlign="center" fontSize="sm" width="100%">
+              {study.area}
+            </Text>
+            <Text textAlign="right" fontSize="sm" width="100%">
+              {formatDate(study.endDate)}
+            </Text>
+          </Flex>
+        );
+      })}
     </Box>
   );
 };
