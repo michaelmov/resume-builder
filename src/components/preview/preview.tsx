@@ -18,10 +18,37 @@ import { Paper } from './paper';
 
 export const Preview: FC = () => {
   const { resume } = useResume();
+
   const [marg, setMarg] = useState(0.5);
 
   const getPDF = async () => {
-    alert('TODO: Implement getPDF');
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(resume),
+    };
+
+    const url = '/api/exportPDF';
+
+    try {
+      const response = await fetch(url, requestOptions);
+
+      if (response.status === 200) {
+        const blob = await response.blob();
+
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = 'resume.pdf';
+        a.click();
+      } else {
+        throw new Error('Error!');
+      }
+    } catch {
+      (e: Error) => {
+        console.error(e?.message);
+      };
+    }
   };
 
   return (

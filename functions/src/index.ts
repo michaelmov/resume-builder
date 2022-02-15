@@ -1,3 +1,3 @@
-import { helloWorld } from './helloWorld';
+import { exportPDF } from './exportPDF';
 
-export { helloWorld };
+export { exportPDF };

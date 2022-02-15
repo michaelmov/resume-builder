@@ -71,6 +71,7 @@ const BasicHeading = forwardRef<BasicHeadingProps, 'h1'>((props, ref) => {
       <Text
         as="span"
         position="relative"
+        fontFamily={styleConfig.headingFont}
         zIndex={1}
         display={props.as === 'h2' ? 'inline' : 'block'}
         _after={{
@@ -119,9 +120,9 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
         Skills
       </BasicHeading>
       <Grid templateColumns={`repeat(3, 1fr)`} gap={8} width="100%">
-        {resume.skills.map((skill) => {
+        {resume.skills.map((skill, idx) => {
           return (
-            <GridItem colSpan={1}>
+            <GridItem colSpan={1} key={idx}>
               <Text
                 as="h3"
                 fontWeight="bold"
@@ -132,8 +133,9 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
                 {skill.name}
               </Text>
               <Box mb={4} display="flex" flexWrap="wrap">
-                {skill.keywords.map((keyword) => (
+                {skill.keywords.map((keyword, idx) => (
                   <Text
+                    key={`${idx}${keyword}`}
                     fontSize="xs"
                     py={0.5}
                     px={1}
@@ -156,9 +158,9 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
       <BasicHeading as="h2" mt={8} mb={3}>
         Work Experience
       </BasicHeading>
-      {resume.work.map((job) => {
+      {resume.work.map((job, idx) => {
         return (
-          <Box mb={6}>
+          <Box mb={6} key={`${idx}${job}`}>
             <Flex
               justifyContent="space-between"
               color="blackAlpha.600"
@@ -185,8 +187,13 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
               {job.summary}
             </Text>
             <List>
-              {job.highlights.map((highlight) => (
-                <ListItem display="flex" alignItems="center" mb={1}>
+              {job.highlights.map((highlight, idx) => (
+                <ListItem
+                  key={`${idx}${highlight}`}
+                  display="flex"
+                  alignItems="center"
+                  mb={1}
+                >
                   <ListIcon as={HiArrowSmRight} color="blue.200" />
                   {highlight}
                 </ListItem>
@@ -198,9 +205,10 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
       <BasicHeading as="h2" mt={8} mb={3}>
         Education
       </BasicHeading>
-      {resume.education.map((study) => {
+      {resume.education.map((study, idx) => {
         return (
           <Flex
+            key={`${idx}${study}`}
             justifyContent="space-between"
             color="blackAlpha.600"
             mb={1}
