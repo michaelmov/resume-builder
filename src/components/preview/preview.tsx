@@ -18,6 +18,7 @@ import { Paper } from './paper';
 
 export const Preview: FC = () => {
   const { resume } = useResume();
+  const [isExporting, setIsExporting] = useState(false);
 
   const [marg, setMarg] = useState(0.5);
 
@@ -31,6 +32,7 @@ export const Preview: FC = () => {
     const url = '/api/exportPDF';
 
     try {
+      setIsExporting(true);
       const response = await fetch(url, requestOptions);
 
       if (response.status === 200) {
@@ -48,6 +50,8 @@ export const Preview: FC = () => {
       (e: Error) => {
         console.error(e?.message);
       };
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -85,6 +89,8 @@ export const Preview: FC = () => {
           </GridItem>
           <GridItem display="flex" justifyContent="end">
             <Button
+              isLoading={isExporting}
+              loadingText="Exporting..."
               size="sm"
               colorScheme="gray"
               leftIcon={<Icon as={HiDownload} boxSize={5} />}
