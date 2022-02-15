@@ -13,8 +13,15 @@ const JsonEditorWrapper = styled(Box)`
   .jsoneditor {
     border: none;
     .jsoneditor-menu {
-      background-color: var(--chakra-colors-purple-500);
+      background-color: var(--chakra-colors-gray-600);
+      height: 60px;
       border: none;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 20px;
+      border-right: 1px solid var(--chakra-colors-gray-400);
+      box-shadow: var(--chakra-shadows-md);
 
       .jsoneditor-sort,
       .jsoneditor-transform {
@@ -23,7 +30,12 @@ const JsonEditorWrapper = styled(Box)`
     }
     .jsoneditor-contextmenu {
       .jsoneditor-menu {
+        position: relative;
+        height: auto;
         background-color: var(--chakra-colors-white);
+        display: block;
+        padding-right: 0;
+        border-right: 0;
       }
     }
   }
@@ -39,13 +51,7 @@ export const Editor: FC = () => {
   };
 
   return (
-    <Box
-      bgColor="gray.50"
-      minHeight="100%"
-      width="100%"
-      position="relative"
-      display="flex"
-    >
+    <Box minHeight="100%" width="100%" position="relative" display="flex">
       <JsonEditorWrapper>
         <JsonEditor
           value={editedResume}
