@@ -32,15 +32,19 @@ const styleConfig = {
   bodyFont: 'Poppins',
 };
 
-const formatDate = (date: Date) => {
+const formatDate = (date: Date | string) => {
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
     day: undefined,
   };
-  let formattedDate = new Date(date);
+  let formattedDate = new Date(date).toLocaleDateString('en-US', options);
 
-  return formattedDate.toLocaleDateString('en-US', options);
+  if (formattedDate === 'Invalid Date') {
+    return date;
+  }
+
+  return formattedDate;
 };
 
 interface BasicHeadingProps extends HeadingProps {
@@ -116,17 +120,17 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
         <Link href={`//${resume.basics.url}`}>{resume.basics.url}</Link>
       </Flex>
       <Text>{resume.basics.summary}</Text>
-      <BasicHeading as="h2" mt={8} mb={3}>
+      <BasicHeading as="h2" mt={9} mb={3}>
         Skills
       </BasicHeading>
-      <Grid templateColumns={`repeat(3, 1fr)`} gap={8} width="100%">
+      <Box>
         {resume.skills.map((skill, idx) => {
           return (
-            <GridItem colSpan={1} key={idx}>
+            <Box key={idx} style={{ breakInside: 'avoid' }}>
               <Text
                 as="h3"
                 fontWeight="bold"
-                mb={2}
+                mb={1}
                 fontFamily={styleConfig.headingFont}
                 color="blackAlpha.700"
               >
@@ -151,16 +155,16 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
                   </Text>
                 ))}
               </Box>
-            </GridItem>
+            </Box>
           );
         })}
-      </Grid>
+      </Box>
       <BasicHeading as="h2" mt={8} mb={3}>
         Work Experience
       </BasicHeading>
       {resume.work.map((job, idx) => {
         return (
-          <Box mb={6} key={`${idx}${job}`}>
+          <Box mb={6} key={`${idx}${job}`} style={{ breakInside: 'avoid' }}>
             <Flex
               justifyContent="space-between"
               color="blackAlpha.600"
@@ -213,6 +217,7 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
             color="blackAlpha.600"
             mb={1}
             fontFamily={styleConfig.headingFont}
+            style={{ breakInside: 'avoid' }}
           >
             <Text
               as="h3"

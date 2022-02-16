@@ -41,7 +41,7 @@ export const Preview: FC = () => {
         let url = window.URL.createObjectURL(blob);
         let a = document.createElement('a');
         a.href = url;
-        a.download = 'resume.pdf';
+        a.download = `${resume?.basics?.name} - ${resume?.basics?.label}.pdf`;
         a.click();
       } else {
         throw new Error('Error!');
