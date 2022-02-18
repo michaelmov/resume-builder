@@ -10,8 +10,8 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
-import { HiDownload, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
+import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { HiDownload } from 'react-icons/hi';
 import { BasicTemplate } from '../../resume-templates/basic.template';
 import { useResume } from '../../hooks/resume.hook';
 import { Paper } from './paper';
@@ -19,8 +19,32 @@ import { Paper } from './paper';
 export const Preview: FC = () => {
   const { resume } = useResume();
   const [isExporting, setIsExporting] = useState(false);
+  const paperWrapperRef = useRef<HTMLDivElement>(null);
+  const [scrollPos, setScrollPos] = useState(0);
 
   const [marg, setMarg] = useState(0.5);
+
+  const handleScroll = () => {
+    if (paperWrapperRef.current) {
+      setScrollPos(paperWrapperRef.current?.scrollTop);
+    }
+  };
+
+  useLayoutEffect(() => {
+    paperWrapperRef?.current?.addEventListener('scroll', handleScroll);
+    return () =>
+      paperWrapperRef?.current?.removeEventListener('scroll', handleScroll);
+  });
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (paperWrapperRef.current) {
+        console.log(scrollPos);
+
+        paperWrapperRef.current.scrollTo(0, scrollPos);
+      }
+    }, 100);
+  }, [resume]);
 
   const getPDF = async () => {
     const requestOptions = {
@@ -102,6 +126,7 @@ export const Preview: FC = () => {
         </Grid>
       </Box>
       <Box
+        ref={paperWrapperRef}
         bgColor="gray.400"
         display="flex"
         flexDirection="column"

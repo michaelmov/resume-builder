@@ -2,8 +2,6 @@ import {
   Box,
   Flex,
   forwardRef,
-  Grid,
-  GridItem,
   Heading,
   HeadingProps,
   Link,
