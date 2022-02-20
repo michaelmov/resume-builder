@@ -6,11 +6,12 @@ import { ResumeProvider } from './context/resume.context';
 import { Editor } from './components/editor/editor';
 import { Route, Routes } from 'react-router-dom';
 import { ExportPreview } from './components/preview/export-preview';
+import { theme } from './theme';
 
 const App: FC = () => {
   return (
     <ResumeProvider>
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <Routes>
           <Route
             path="/"
@@ -22,6 +23,7 @@ const App: FC = () => {
                 <GridItem
                   width={{ base: '300px', xl: '450px', '2xl': '600px' }}
                   maxWidth="600px"
+                  bgColor="gray.100"
                 >
                   <Editor />
                 </GridItem>

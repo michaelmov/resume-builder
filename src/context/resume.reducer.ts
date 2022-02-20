@@ -1,12 +1,13 @@
-import { Resume } from '../models/resume.model';
+import { Basics, Resume } from '../models/resume.model';
 
 export enum ACTIONS {
   updateResume = 'UPDATE_RESUME',
+  udpateBasics = 'UPDATE_BASICS',
 }
 
 export type ACTIONTYPE = {
   type: ACTIONS;
-  payload: Resume;
+  payload: Resume | Basics;
 };
 
 export const resumeReducer = (state: Resume, action: ACTIONTYPE): Resume => {
@@ -14,7 +15,13 @@ export const resumeReducer = (state: Resume, action: ACTIONTYPE): Resume => {
 
   switch (type) {
     case ACTIONS.updateResume:
-      return payload;
+      return payload as Resume;
+    case ACTIONS.udpateBasics:
+      const udpatedPayload = payload as Basics;
+      return {
+        ...state,
+        basics: udpatedPayload,
+      };
     default:
       throw new Error('No action provided');
   }

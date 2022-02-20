@@ -39,8 +39,6 @@ export const Preview: FC = () => {
   useEffect(() => {
     setTimeout(() => {
       if (paperWrapperRef.current) {
-        console.log(scrollPos);
-
         paperWrapperRef.current.scrollTo(0, scrollPos);
       }
     }, 100);

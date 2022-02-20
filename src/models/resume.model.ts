@@ -1,6 +1,6 @@
-export interface MarkdownResume {
-  content: string;
-  htmlMarkup: string;
+export enum SectionTypes {
+  Basics = 'basics',
+  Skill = 'skill',
 }
 
 export interface Resume {
@@ -38,11 +38,11 @@ export interface Basics {
 }
 
 export interface Location {
-  address: string;
-  postalCode: string;
-  city: string;
-  countryCode: string;
-  region: string;
+  address?: string;
+  postalCode?: string;
+  city?: string;
+  countryCode?: string;
+  region?: string;
 }
 
 export interface Profile {
