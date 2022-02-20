@@ -20,9 +20,9 @@ const ResumeProvider: FC = ({ children }) => {
     localStorageData ? localStorageData : resumeMock
   );
 
-  // useEffect(() => {
-  //   saveResume(state);
-  // }, [state]);
+  useEffect(() => {
+    saveResume(state);
+  }, [state]);
 
   return <Provider value={{ state, dispatch }}>{children}</Provider>;
 };

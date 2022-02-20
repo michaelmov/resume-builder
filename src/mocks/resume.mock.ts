@@ -88,7 +88,7 @@ export const resumeMock: Resume = {
     {
       name: 'Web Development',
       level: 'Master',
-      keywords: ['HTML', 'CSS', 'JavaScript'],
+      keywords: [{ value: 'HTML' }, { value: 'CSS' }, { value: 'JavaScript' }],
     },
   ],
   languages: [

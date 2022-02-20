@@ -18,7 +18,6 @@ export const EditorSection: FC<EditorSectionProps> = ({
         as="h3"
         fontSize="xl"
         mb={2}
-        pl={4}
         color="blackAlpha.600"
         fontWeight="normal"
       >
@@ -26,7 +25,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
       </Heading>
       <Box as="section" bgColor="white" borderRadius={8} p={4} boxShadow="sm">
         {children}
-        <Flex justifyContent="end">
+        <Flex justifyContent="end" mt={6}>
           <Button
             colorScheme="purple"
             mt={4}

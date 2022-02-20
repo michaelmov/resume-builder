@@ -1,6 +1,6 @@
 export enum SectionTypes {
   Basics = 'basics',
-  Skill = 'skill',
+  Skills = 'skills',
 }
 
 export interface Resume {
@@ -108,7 +108,7 @@ export interface Reference {
 export interface Skill {
   name: string;
   level: string;
-  keywords: string[];
+  keywords: { value: string }[];
 }
 
 export interface Work {

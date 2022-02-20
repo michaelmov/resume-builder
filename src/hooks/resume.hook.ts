@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { resumeStoreContext } from '../context/resume.context';
 import { ACTIONS } from '../context/resume.reducer';
-import { Basics, Resume } from '../models/resume.model';
+import { Basics, Resume, Skill } from '../models/resume.model';
 
 export const useResume = () => {
   const { dispatch, state } = useContext(resumeStoreContext);
@@ -12,5 +12,9 @@ export const useResume = () => {
   const updateBasics = (section: Basics) => {
     dispatch({ type: ACTIONS.udpateBasics, payload: section });
   };
-  return { resume: state, updateResume, updateBasics };
+  const updateSkills = (section: Skill[]) => {
+    dispatch({ type: ACTIONS.updateSkills, payload: section });
+  };
+
+  return { resume: state, updateResume, updateBasics, updateSkills };
 };

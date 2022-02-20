@@ -24,6 +24,8 @@ const App: FC = () => {
                   width={{ base: '300px', xl: '450px', '2xl': '600px' }}
                   maxWidth="600px"
                   bgColor="gray.100"
+                  maxHeight="100vh"
+                  overflow="auto"
                 >
                   <Editor />
                 </GridItem>

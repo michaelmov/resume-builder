@@ -137,7 +137,7 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
               <Box mb={4} display="flex" flexWrap="wrap">
                 {skill.keywords.map((keyword, idx) => (
                   <Text
-                    key={`${idx}${keyword}`}
+                    key={`${idx}${keyword.value}`}
                     fontSize="xs"
                     py={0.5}
                     px={1}
@@ -149,7 +149,7 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
                     borderRadius={4}
                     color="blackAlpha.700"
                   >
-                    {keyword}
+                    {keyword.value}
                   </Text>
                 ))}
               </Box>
