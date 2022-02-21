@@ -1,9 +1,11 @@
-export const formatDate = (date: Date | string) => {
-  const options: Intl.DateTimeFormatOptions = {
+export const formatDate = (
+  date: Date | string,
+  options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
     day: undefined,
-  };
+  }
+) => {
   let formattedDate = new Date(date).toLocaleDateString('en-US', options);
 
   if (formattedDate === 'Invalid Date') {
