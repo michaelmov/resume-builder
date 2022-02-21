@@ -1,6 +1,7 @@
 export enum SectionTypes {
   Basics = 'basics',
   Skills = 'skills',
+  Work = 'work',
 }
 
 export interface Resume {
@@ -118,6 +119,6 @@ export interface Work {
   startDate: Date;
   endDate: Date;
   summary: string;
-  highlights: string[];
+  highlights: { value: string }[];
   name?: string;
 }

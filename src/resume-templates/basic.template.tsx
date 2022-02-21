@@ -15,6 +15,7 @@ import { Global } from '@emotion/react';
 import { FC, useMemo } from 'react';
 import { Resume } from '../models/resume.model';
 import { HiArrowSmRight } from 'react-icons/hi';
+import { formatDate } from '../utils/date-utilities';
 
 const Fonts = () => (
   <Global
@@ -28,21 +29,6 @@ const Fonts = () => (
 const styleConfig = {
   headingFont: 'Roboto Mono',
   bodyFont: 'Poppins',
-};
-
-const formatDate = (date: Date | string) => {
-  const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'short',
-    day: undefined,
-  };
-  let formattedDate = new Date(date).toLocaleDateString('en-US', options);
-
-  if (formattedDate === 'Invalid Date') {
-    return date;
-  }
-
-  return formattedDate;
 };
 
 interface BasicHeadingProps extends HeadingProps {
@@ -162,7 +148,11 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
       </BasicHeading>
       {resume.work.map((job, idx) => {
         return (
-          <Box mb={6} key={`${idx}${job}`} style={{ breakInside: 'avoid' }}>
+          <Box
+            mb={6}
+            key={`${idx}${job.name}`}
+            style={{ breakInside: 'avoid' }}
+          >
             <Flex
               justifyContent="space-between"
               color="blackAlpha.600"
@@ -191,13 +181,13 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
             <List>
               {job.highlights.map((highlight, idx) => (
                 <ListItem
-                  key={`${idx}${highlight}`}
+                  key={`${idx}${highlight.value}`}
                   display="flex"
                   alignItems="center"
                   mb={1}
                 >
                   <ListIcon as={HiArrowSmRight} color="blue.200" />
-                  {highlight}
+                  {highlight.value}
                 </ListItem>
               ))}
             </List>

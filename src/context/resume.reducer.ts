@@ -1,33 +1,41 @@
-import { Basics, Resume, Skill } from '../models/resume.model';
+import { Basics, Resume, Skill, Work } from '../models/resume.model';
 
 export enum ACTIONS {
   updateResume = 'UPDATE_RESUME',
-  udpateBasics = 'UPDATE_BASICS',
+  updateBasics = 'UPDATE_BASICS',
   updateSkills = 'UPDATE_SKILLS',
+  updateWork = 'UPDATE_WORK',
 }
 
 export type ACTIONTYPE = {
   type: ACTIONS;
-  payload: Resume | Basics | Skill[];
+  payload: Resume | Basics | Skill[] | Work[];
 };
 
 export const resumeReducer = (state: Resume, action: ACTIONTYPE): Resume => {
   const { type, payload } = action;
+  let updatedPayload;
 
   switch (type) {
     case ACTIONS.updateResume:
       return payload as Resume;
-    case ACTIONS.udpateBasics:
-      const udpatedPayload = payload as Basics;
+    case ACTIONS.updateBasics:
+      updatedPayload = payload as Basics;
       return {
         ...state,
-        basics: udpatedPayload,
+        basics: updatedPayload,
       };
     case ACTIONS.updateSkills:
-      const updatedPayload = payload as Skill[];
+      updatedPayload = payload as Skill[];
       return {
         ...state,
         skills: updatedPayload,
+      };
+    case ACTIONS.updateWork:
+      updatedPayload = payload as Work[];
+      return {
+        ...state,
+        work: updatedPayload,
       };
     default:
       throw new Error('No action provided');

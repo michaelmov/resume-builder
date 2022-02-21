@@ -10,13 +10,14 @@ import {
 } from '../../models/resume.model';
 import { BasicsSection } from './basics-section';
 import { SkillsSection } from './skills-section';
+import { WorkSection } from './work-section';
 
 export const Editor: FC = () => {
-  const { resume, updateBasics, updateSkills } = useResume();
+  const { resume, updateBasics, updateSkills, updateWork } = useResume();
 
   const onSectionUpdate = (
     sectionType: SectionTypes,
-    section: Basics | Skill[] | Education | Work
+    section: Basics | Skill[] | Education[] | Work[]
   ) => {
     switch (sectionType) {
       case SectionTypes.Basics:
@@ -24,6 +25,9 @@ export const Editor: FC = () => {
         break;
       case SectionTypes.Skills:
         updateSkills(section as Skill[]);
+        break;
+      case SectionTypes.Work:
+        updateWork(section as Work[]);
       default:
         break;
     }
@@ -32,10 +36,8 @@ export const Editor: FC = () => {
   return (
     <Stack width="100%" position="relative" p={6} gap={8}>
       <BasicsSection value={resume.basics} onUpdate={onSectionUpdate} />
-      <SkillsSection
-        value={resume.skills}
-        onUpdate={onSectionUpdate}
-      ></SkillsSection>
+      <SkillsSection value={resume.skills} onUpdate={onSectionUpdate} />
+      <WorkSection value={resume.work} onUpdate={onSectionUpdate} />
     </Stack>
   );
 };

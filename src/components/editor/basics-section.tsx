@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { FC, useEffect, useState } from 'react';
 import { Basics, SectionTypes } from '../../models/resume.model';
-import { EditorSection } from './editor-section';
+import { EditorSection } from './editor-sections';
 import { useForm } from 'react-hook-form';
 
 interface BasicsSectionProps {

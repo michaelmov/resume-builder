@@ -33,7 +33,7 @@ export const resumeMock: Resume = {
       startDate: new Date('2013-01-01'),
       endDate: new Date('2014-01-01'),
       summary: 'Description…',
-      highlights: ['Started the company'],
+      highlights: [{ value: 'Started the company' }],
     },
   ],
   volunteer: [
@@ -44,7 +44,7 @@ export const resumeMock: Resume = {
       startDate: new Date('2013-01-01'),
       endDate: new Date('2014-01-01'),
       summary: 'Description…',
-      highlights: ["Awarded 'Volunteer of the Month'"],
+      highlights: [{ value: "Awarded 'Volunteer of the Month'" }],
     },
   ],
   education: [

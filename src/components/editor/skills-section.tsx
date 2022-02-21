@@ -17,8 +17,8 @@ import {
 import { FC, KeyboardEvent } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { SectionTypes, Skill } from '../../models/resume.model';
-import { EditorSection } from './editor-section';
-import { HiOutlineTrash, HiPlus } from 'react-icons/hi';
+import { EditorSection, EditorSubsection } from './editor-sections';
+import { HiPlus } from 'react-icons/hi';
 
 interface SkillsSectionProps {
   value: Skill[];
@@ -69,54 +69,37 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
       saveIsDisabled={!isDirty}
     >
       <FormControl>
-        <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
-          {fields.map((field: any, index: number) => {
-            return (
-              <GridItem
-                colSpan={2}
-                borderWidth={1}
-                borderColor="gray.200"
-                p={4}
-                borderRadius={6}
-                key={field.id}
-                position="relative"
-              >
-                <Box position="absolute" top={-0.5} right={0} my={0}>
-                  <IconButton
-                    onClick={() => remove(index)}
-                    aria-label="Delete skill"
-                    icon={<Icon as={HiOutlineTrash} />}
-                    size="xs"
-                    borderBottomRightRadius={0}
-                    borderTopLeftRadius={0}
-                    borderRadius={5}
-                  />
-                </Box>
-                <Box mb={4}>
-                  <FormLabel htmlFor={field.id} display="inline-block">
-                    Skill name
-                  </FormLabel>
-                  <Input
-                    id={field.id}
-                    type="text"
-                    {...register(`skills.${index}.name`)}
-                  />
-                </Box>
-                <KeywordInput skillIndex={index} control={control} />
-              </GridItem>
-            );
-          })}
-          <GridItem colSpan={2} display="flex" justifyContent="center">
-            <Button
-              leftIcon={<Icon as={HiPlus} />}
-              onClick={addSkill}
-              width="100%"
-              size="sm"
+        {fields.map((field: any, index: number) => {
+          return (
+            <EditorSubsection
+              onDeleteClick={() => remove(index)}
+              mb={6}
+              key={field.id}
             >
-              Add Skill
-            </Button>
-          </GridItem>
-        </Grid>
+              <Box mb={4}>
+                <FormLabel htmlFor={field.id} display="inline-block">
+                  Skill name
+                </FormLabel>
+                <Input
+                  id={field.id}
+                  type="text"
+                  {...register(`skills.${index}.name`)}
+                />
+              </Box>
+              <KeywordInput skillIndex={index} control={control} />
+            </EditorSubsection>
+          );
+        })}
+        <Box display="flex" justifyContent="center">
+          <Button
+            leftIcon={<Icon as={HiPlus} />}
+            onClick={addSkill}
+            width="100%"
+            size="sm"
+          >
+            Add Skill
+          </Button>
+        </Box>
       </FormControl>
     </EditorSection>
   );
