@@ -1,18 +1,20 @@
 import {
   Box,
   Button,
+  Flex,
   FormControl,
   FormLabel,
   Grid,
   GridItem,
   Icon,
+  IconButton,
   Input,
   Stack,
   Textarea,
 } from '@chakra-ui/react';
 import { FC } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { HiPlus } from 'react-icons/hi';
+import { HiOutlineTrash, HiPlus } from 'react-icons/hi';
 import { SectionTypes, Work } from '../../models/resume.model';
 import { formatDate } from '../../utils/date-utilities';
 import { EditorSection, EditorSubsection } from './editor-sections';
@@ -117,6 +119,13 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                     {...register(`work.${index}.summary`)}
                   />
                 </GridItem>
+                <GridItem colSpan={2}>
+                  <HighlightInput
+                    workIndex={index}
+                    control={control}
+                    register={register}
+                  />
+                </GridItem>
               </Grid>
             </EditorSubsection>
           );
@@ -133,5 +142,56 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
         </Box>
       </FormControl>
     </EditorSection>
+  );
+};
+
+interface HighlightInputProps {
+  workIndex: number;
+  control: any;
+  register: any;
+}
+
+const HighlightInput: FC<HighlightInputProps> = ({
+  control,
+  register,
+  workIndex,
+}) => {
+  const { fields, remove, append } = useFieldArray({
+    control,
+    name: `work.[${workIndex}].highlights`,
+  });
+  return (
+    <Box>
+      <FormLabel>Highlights</FormLabel>
+      {fields.map((highlight, index) => {
+        return (
+          <Flex alignItems="center">
+            <Textarea
+              id={highlight.id}
+              my={1}
+              mr={2}
+              rows={2}
+              {...register(`work.${workIndex}.highlights.${index}.value`)}
+            />
+            <IconButton
+              onClick={() => remove(index)}
+              aria-label="Delete highlight"
+              size="xs"
+              icon={<Icon as={HiOutlineTrash} />}
+            />
+          </Flex>
+        );
+      })}
+
+      <Button
+        mt={4}
+        leftIcon={<Icon as={HiPlus} />}
+        onClick={() => append('')}
+        width="100%"
+        size="xs"
+      >
+        Add Highlight
+      </Button>
+    </Box>
   );
 };
