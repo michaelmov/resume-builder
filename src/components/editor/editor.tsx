@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Stack } from '@chakra-ui/react';
+import { Box, Button, Heading, Link, Stack } from '@chakra-ui/react';
 import { FC } from 'react';
 import { useResume } from '../../hooks/resume.hook';
 import {
@@ -35,6 +35,16 @@ export const Editor: FC = () => {
 
   return (
     <Stack width="100%" position="relative" p={6} gap={8}>
+      <Heading as="h3" fontSize="medium" textAlign="center" fontWeight="normal">
+        Made with 💜 by{' '}
+        <Link
+          href="https://michaelmovsesov.com/"
+          isExternal
+          textDecoration="underline"
+        >
+          Michael Movsesov
+        </Link>
+      </Heading>
       <BasicsSection value={resume.basics} onUpdate={onSectionUpdate} />
       <SkillsSection value={resume.skills} onUpdate={onSectionUpdate} />
       <WorkSection value={resume.work} onUpdate={onSectionUpdate} />
