@@ -3,13 +3,8 @@ import {
   Button,
   FormControl,
   FormLabel,
-  Grid,
-  GridItem,
   Icon,
-  IconButton,
   Input,
-  InputGroup,
-  InputRightElement,
   Tag,
   TagLabel,
   TagCloseButton,
@@ -19,6 +14,11 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { SectionTypes, Skill } from '../../models/resume.model';
 import { EditorSection, EditorSubsection } from './editor-sections';
 import { HiPlus } from 'react-icons/hi';
+import {
+  SortableContainer,
+  SortableElement,
+  SortableElementProps,
+} from 'react-sortable-hoc';
 
 interface SkillsSectionProps {
   value: Skill[];
@@ -105,12 +105,59 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
   );
 };
 
+interface KeywordItem {
+  id: string;
+  value: string;
+}
+
+interface SortableKeywordTagProps extends KeywordItem {
+  idx: number;
+  onRemove: (index: number) => void;
+}
+
+const SortableKeywordTag = SortableElement(
+  ({ value, id, onRemove, idx }: SortableKeywordTagProps) => {
+    return (
+      <Tag mr={2} mb={2} key={id} cursor="move">
+        <TagLabel>{value}</TagLabel>
+        <TagCloseButton borderRadius={4} onClick={() => onRemove(idx)} />
+      </Tag>
+    );
+  }
+);
+
+const SortableKeywordTagContainer = SortableContainer(
+  ({
+    keywords,
+    onRemove,
+  }: {
+    keywords: KeywordItem[];
+    onRemove: (index: number) => void;
+  }) => {
+    return (
+      <Box>
+        {keywords.map((keyword, index) => {
+          return (
+            <SortableKeywordTag
+              key={keyword.id}
+              value={keyword.value}
+              id={keyword.id}
+              onRemove={onRemove}
+              idx={index}
+              index={index}
+            />
+          );
+        })}
+      </Box>
+    );
+  }
+);
 interface KeywordInputProps {
   skillIndex: number;
   control: any;
 }
 const KeywordInput: FC<KeywordInputProps> = ({ skillIndex, control }) => {
-  const { fields, remove, append } = useFieldArray({
+  const { fields, remove, append, move } = useFieldArray({
     control,
     name: `skills[${skillIndex}].keywords`,
   });
@@ -123,18 +170,27 @@ const KeywordInput: FC<KeywordInputProps> = ({ skillIndex, control }) => {
     }
   };
 
+  const onSortEnd = ({
+    oldIndex,
+    newIndex,
+  }: {
+    oldIndex: number;
+    newIndex: number;
+  }) => {
+    move(oldIndex, newIndex);
+  };
+
   return (
     <Box>
       <FormLabel>Keywords</FormLabel>
-      {fields.map((keyword, index) => {
-        return (
-          <Tag mr={2} mb={2} key={keyword.id}>
-            {/* @ts-ignore */}
-            <TagLabel>{keyword.value}</TagLabel>
-            <TagCloseButton borderRadius={4} onClick={() => remove(index)} />
-          </Tag>
-        );
-      })}
+
+      <SortableKeywordTagContainer
+        keywords={fields as KeywordItem[]}
+        axis="xy"
+        onRemove={remove}
+        distance={1}
+        onSortEnd={onSortEnd}
+      />
       <Input
         type="text"
         placeholder="Type keyword and press enter to add"

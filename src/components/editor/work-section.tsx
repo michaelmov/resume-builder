@@ -165,7 +165,7 @@ const HighlightInput: FC<HighlightInputProps> = ({
       <FormLabel>Highlights</FormLabel>
       {fields.map((highlight, index) => {
         return (
-          <Flex alignItems="center">
+          <Flex alignItems="center" key={highlight.id}>
             <Textarea
               id={highlight.id}
               my={1}
