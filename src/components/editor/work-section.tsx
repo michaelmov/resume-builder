@@ -77,7 +77,11 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
             <EditorSubsection
               key={field.id}
               onDeleteClick={() => remove(index)}
-              mb={6}
+              onMoveUpClick={() => move(index, index - 1)}
+              onMoveDownClick={() => move(index, index + 1)}
+              moveUpDisabled={index === 0}
+              moveDownDisabled={index >= fields.length - 1}
+              mb={10}
             >
               <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
                 <GridItem colSpan={1}>
