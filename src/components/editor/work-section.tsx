@@ -11,10 +11,16 @@ import {
   Input,
   Stack,
   Textarea,
+  TextareaProps,
 } from '@chakra-ui/react';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { HiOutlineTrash, HiPlus } from 'react-icons/hi';
+import {
+  HiChevronDown,
+  HiChevronUp,
+  HiOutlineTrash,
+  HiPlus,
+} from 'react-icons/hi';
 import { SectionTypes, Work } from '../../models/resume.model';
 import { formatDate } from '../../utils/date-utilities';
 import { EditorSection, EditorSubsection } from './editor-sections';
@@ -124,7 +130,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                   />
                 </GridItem>
                 <GridItem colSpan={2}>
-                  <HighlightInput
+                  <HighlightsList
                     workIndex={index}
                     control={control}
                     register={register}
@@ -149,18 +155,18 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
   );
 };
 
-interface HighlightInputProps {
+interface HighlightsListProps {
   workIndex: number;
   control: any;
   register: any;
 }
 
-const HighlightInput: FC<HighlightInputProps> = ({
+const HighlightsList: FC<HighlightsListProps> = ({
   control,
   register,
   workIndex,
 }) => {
-  const { fields, remove, append } = useFieldArray({
+  const { fields, remove, append, move } = useFieldArray({
     control,
     name: `work.[${workIndex}].highlights`,
   });
@@ -169,21 +175,18 @@ const HighlightInput: FC<HighlightInputProps> = ({
       <FormLabel>Highlights</FormLabel>
       {fields.map((highlight, index) => {
         return (
-          <Flex alignItems="center" key={highlight.id}>
-            <Textarea
-              id={highlight.id}
-              my={1}
-              mr={2}
-              rows={2}
-              {...register(`work.${workIndex}.highlights.${index}.value`)}
-            />
-            <IconButton
-              onClick={() => remove(index)}
-              aria-label="Delete highlight"
-              size="xs"
-              icon={<Icon as={HiOutlineTrash} />}
-            />
-          </Flex>
+          <HighlightInput
+            key={highlight.id}
+            highlight={highlight as HighlightItem}
+            index={index}
+            workIndex={workIndex}
+            register={register}
+            onMoveUp={(idx) => move(idx, idx - 1)}
+            onMoveDown={(idx) => move(idx, idx + 1)}
+            onDelete={(idx) => remove(idx)}
+            moveUpDisabled={index === 0}
+            moveDownDisabled={index >= fields.length - 1}
+          />
         );
       })}
 
@@ -197,5 +200,73 @@ const HighlightInput: FC<HighlightInputProps> = ({
         Add Highlight
       </Button>
     </Box>
+  );
+};
+interface HighlightItem {
+  id: string;
+  value: string;
+}
+interface HighlightInputProps extends TextareaProps {
+  highlight: HighlightItem;
+  index: number;
+  workIndex: number;
+  register: any;
+  onDelete: (index: number) => void;
+  onMoveUp: (index: number) => void;
+  onMoveDown: (index: number) => void;
+  moveUpDisabled?: boolean;
+  moveDownDisabled?: boolean;
+}
+const HighlightInput: FC<HighlightInputProps> = ({
+  highlight,
+  index,
+  workIndex,
+  register,
+  onDelete,
+  onMoveUp,
+  onMoveDown,
+  moveDownDisabled = false,
+  moveUpDisabled = false,
+}) => {
+  const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
+  return (
+    <Flex
+      alignItems="center"
+      onMouseOver={() => setIsActionButtonsVisible(true)}
+      onMouseLeave={() => setIsActionButtonsVisible(false)}
+    >
+      <Textarea
+        id={highlight.id}
+        my={1}
+        mr={2}
+        rows={3}
+        {...register(`work.${workIndex}.highlights.${index}.value`)}
+      />
+      <Stack
+        visibility={isActionButtonsVisible ? 'visible' : 'hidden'}
+        spacing={0.5}
+      >
+        <IconButton
+          onClick={() => onMoveUp(index)}
+          aria-label="Move up"
+          size="xs"
+          icon={<Icon as={HiChevronUp} />}
+          disabled={moveUpDisabled}
+        />
+        <IconButton
+          onClick={() => onDelete(index)}
+          aria-label="Delete highlight"
+          size="xs"
+          icon={<Icon as={HiOutlineTrash} />}
+        />
+        <IconButton
+          onClick={() => onMoveDown(index)}
+          aria-label="Move down"
+          size="xs"
+          icon={<Icon as={HiChevronDown} />}
+          disabled={moveDownDisabled}
+        />
+      </Stack>
+    </Flex>
   );
 };
