@@ -33,7 +33,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
       >
         {title}
       </Heading>
-      <Box as="section" bgColor="white" borderRadius={8} p={8} boxShadow="sm">
+      <Box as="section" bgColor="white" borderRadius={8} p={6} boxShadow="sm">
         {children}
         <Flex justifyContent="end" mt={6}>
           <Button
@@ -51,71 +51,14 @@ export const EditorSection: FC<EditorSectionProps> = ({
   );
 };
 
-interface EditorSubsectionProps extends BoxProps {
-  onDeleteClick: () => void;
-  onMoveUpClick?: () => void;
-  moveUpDisabled?: boolean;
-  onMoveDownClick?: () => void;
-  moveDownDisabled?: boolean;
-}
+interface EditorSubsectionProps extends BoxProps {}
 
 export const EditorSubsection: FC<EditorSubsectionProps> = ({
   children,
-  onDeleteClick,
-  onMoveUpClick,
-  onMoveDownClick,
-  moveUpDisabled = false,
-  moveDownDisabled = false,
   ...rest
 }) => {
-  const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
   return (
-    <Box
-      borderWidth={1}
-      borderColor="gray.200"
-      p={4}
-      pt={8}
-      borderRadius={6}
-      position="relative"
-      onMouseOver={() => setIsActionButtonsVisible(true)}
-      onMouseLeave={() => setIsActionButtonsVisible(false)}
-      {...rest}
-    >
-      {isActionButtonsVisible && (
-        <Box position="absolute" top={-0.5} right={0} my={0}>
-          <IconButton
-            onClick={onMoveUpClick}
-            aria-label="Delete skill"
-            icon={<Icon as={HiChevronUp} boxSize={4} />}
-            size="sm"
-            borderRadius={5}
-            borderTopLeftRadius={0}
-            borderTopRightRadius={0}
-            mr={1}
-            disabled={moveUpDisabled}
-          />
-          <IconButton
-            onClick={onMoveDownClick}
-            aria-label="Delete skill"
-            icon={<Icon as={HiChevronDown} boxSize={4} />}
-            size="sm"
-            borderRadius={5}
-            borderTopLeftRadius={0}
-            borderTopRightRadius={0}
-            mr={1}
-            disabled={moveDownDisabled}
-          />
-          <IconButton
-            onClick={onDeleteClick}
-            aria-label="Delete skill"
-            icon={<Icon as={HiOutlineTrash} />}
-            size="sm"
-            borderBottomRightRadius={0}
-            borderTopLeftRadius={0}
-            borderRadius={5}
-          />
-        </Box>
-      )}
+    <Box p={4} pt={8} position="relative" {...rest}>
       {children}
     </Box>
   );

@@ -1,4 +1,9 @@
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Button,
   Flex,
@@ -6,9 +11,11 @@ import {
   FormLabel,
   Grid,
   GridItem,
+  Heading,
   Icon,
   IconButton,
   Input,
+  Spacer,
   Stack,
   Textarea,
   TextareaProps,
@@ -78,74 +85,137 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
       saveIsDisabled={!isDirty}
     >
       <FormControl>
-        {fields.map((field: any, index: number) => {
-          return (
-            <EditorSubsection
-              key={field.id}
-              onDeleteClick={() => remove(index)}
-              onMoveUpClick={() => move(index, index - 1)}
-              onMoveDownClick={() => move(index, index + 1)}
-              moveUpDisabled={index === 0}
-              moveDownDisabled={index >= fields.length - 1}
-              mb={10}
-            >
-              <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
-                <GridItem colSpan={1}>
-                  <FormLabel htmlFor={field.id}>Company name</FormLabel>
-                  <Input
-                    id={field.id}
-                    type="text"
-                    {...register(`work.${index}.name`)}
-                  />
-                </GridItem>
-                <GridItem colSpan={1}>
-                  <FormLabel htmlFor={field.id}>Title</FormLabel>
-                  <Input
-                    id={field.id}
-                    type="text"
-                    {...register(`work.${index}.position`)}
-                  />
-                </GridItem>
-                <GridItem colSpan={1}>
-                  <FormLabel htmlFor={field.id}>Start date</FormLabel>
-                  <Input
-                    id={field.id}
-                    type="text"
-                    {...register(`work.${index}.startDate`)}
-                  />
-                </GridItem>
-                <GridItem colSpan={1}>
-                  <FormLabel htmlFor={field.id}>End date</FormLabel>
-                  <Input
-                    id={field.id}
-                    type="text"
-                    {...register(`work.${index}.endDate`)}
-                  />
-                </GridItem>
-                <GridItem colSpan={2}>
-                  <FormLabel htmlFor={field.id}>Summary</FormLabel>
-                  <Textarea
-                    id={field.id}
-                    {...register(`work.${index}.summary`)}
-                  />
-                </GridItem>
-                <GridItem colSpan={2}>
-                  <HighlightsList
-                    workIndex={index}
-                    control={control}
-                    register={register}
-                  />
-                </GridItem>
-              </Grid>
-            </EditorSubsection>
-          );
-        })}
+        <Accordion allowToggle allowMultiple>
+          {fields.map((field: any, index: number) => {
+            return (
+              <AccordionItem
+                borderWidth={1}
+                borderColor="gray.100"
+                borderRadius={6}
+                mb={2}
+              >
+                <AccordionButton>
+                  <AccordionIcon />
+                  <Box textAlign="left" ml={4}>
+                    <Heading
+                      as="h4"
+                      fontSize="medium"
+                      fontWeight="normal"
+                      mb={1}
+                    >
+                      {field.name}
+                    </Heading>
+                    <Heading
+                      as="h5"
+                      fontSize="small"
+                      fontWeight="normal"
+                      color="blackAlpha.600"
+                    >
+                      {field.position}
+                    </Heading>
+                  </Box>
+                  <Spacer />
+                  <Box>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        move(index, index - 1);
+                      }}
+                      aria-label="Move up"
+                      icon={<Icon as={HiChevronUp} boxSize={4} />}
+                      size="sm"
+                      mr={1}
+                      disabled={index === 0}
+                    />
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        move(index, index + 1);
+                      }}
+                      aria-label="Move down"
+                      icon={<Icon as={HiChevronDown} boxSize={4} />}
+                      size="sm"
+                      mr={1}
+                      disabled={index >= fields.length - 1}
+                    />
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        remove(index);
+                      }}
+                      aria-label="Delete"
+                      icon={<Icon as={HiOutlineTrash} />}
+                      size="sm"
+                    />
+                  </Box>
+                </AccordionButton>
+                <AccordionPanel p={0}>
+                  <EditorSubsection key={field.id} mb={10}>
+                    <Grid
+                      templateColumns="repeat(2, 1fr)"
+                      rowGap={4}
+                      columnGap={2}
+                    >
+                      <GridItem colSpan={1}>
+                        <FormLabel htmlFor={field.id}>Company name</FormLabel>
+                        <Input
+                          id={field.id}
+                          type="text"
+                          {...register(`work.${index}.name`)}
+                        />
+                      </GridItem>
+                      <GridItem colSpan={1}>
+                        <FormLabel htmlFor={field.id}>Title</FormLabel>
+                        <Input
+                          id={field.id}
+                          type="text"
+                          {...register(`work.${index}.position`)}
+                        />
+                      </GridItem>
+                      <GridItem colSpan={1}>
+                        <FormLabel htmlFor={field.id}>Start date</FormLabel>
+                        <Input
+                          id={field.id}
+                          type="text"
+                          {...register(`work.${index}.startDate`)}
+                        />
+                      </GridItem>
+                      <GridItem colSpan={1}>
+                        <FormLabel htmlFor={field.id}>End date</FormLabel>
+                        <Input
+                          id={field.id}
+                          type="text"
+                          {...register(`work.${index}.endDate`)}
+                        />
+                      </GridItem>
+                      <GridItem colSpan={2}>
+                        <FormLabel htmlFor={field.id}>Summary</FormLabel>
+                        <Textarea
+                          id={field.id}
+                          {...register(`work.${index}.summary`)}
+                        />
+                      </GridItem>
+                      <GridItem colSpan={2}>
+                        <HighlightsList
+                          workIndex={index}
+                          control={control}
+                          register={register}
+                        />
+                      </GridItem>
+                    </Grid>
+                  </EditorSubsection>
+                </AccordionPanel>
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
         <Box>
           <Button
             leftIcon={<Icon as={HiPlus} />}
             onClick={addWork}
             width="100%"
             size="sm"
+            mt={4}
           >
             Add Work
           </Button>
