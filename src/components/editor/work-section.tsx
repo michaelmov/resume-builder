@@ -89,12 +89,18 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
           {fields.map((field: any, index: number) => {
             return (
               <AccordionItem
+                key={field.id}
                 borderWidth={1}
                 borderColor="gray.100"
                 borderRadius={6}
                 mb={2}
               >
-                <AccordionButton>
+                <AccordionButton
+                  as="div"
+                  _expanded={{ bg: 'gray.100' }}
+                  _hover={{ bg: 'gray.100' }}
+                  cursor="pointer"
+                >
                   <AccordionIcon />
                   <Box textAlign="left" ml={4}>
                     <Heading
