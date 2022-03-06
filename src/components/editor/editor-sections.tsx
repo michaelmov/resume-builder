@@ -42,6 +42,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
             onClick={onSaveClick}
             size="sm"
             disabled={saveIsDisabled}
+            px={8}
           >
             Save
           </Button>
