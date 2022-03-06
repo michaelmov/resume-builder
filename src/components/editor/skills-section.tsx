@@ -71,15 +71,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
       <FormControl>
         {fields.map((field: any, index: number) => {
           return (
-            <EditorSubsection
-              onDeleteClick={() => remove(index)}
-              mb={6}
-              key={field.id}
-              onMoveUpClick={() => move(index, index - 1)}
-              onMoveDownClick={() => move(index, index + 1)}
-              moveUpDisabled={index === 0}
-              moveDownDisabled={index >= fields.length - 1}
-            >
+            <EditorSubsection mb={6} key={field.id}>
               <Box mb={4}>
                 <FormLabel htmlFor={field.id} display="inline-block">
                   Skill name
