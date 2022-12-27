@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useResume } from '../../hooks/resume.hook';
+import { useResume } from '../../hooks/useResume';
 import { BasicTemplate } from '../../resume-templates/basic.template';
 import { Paper } from './paper';
 

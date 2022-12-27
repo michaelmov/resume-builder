@@ -1,6 +1,6 @@
 import { Box, Button, Heading, Link, Stack } from '@chakra-ui/react';
 import { FC } from 'react';
-import { useResume } from '../../hooks/resume.hook';
+import { useResume } from '../../hooks/useResume';
 import {
   Basics,
   Education,

@@ -13,7 +13,7 @@ import {
 import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { HiDownload } from 'react-icons/hi';
 import { BasicTemplate } from '../../resume-templates/basic.template';
-import { useResume } from '../../hooks/resume.hook';
+import { useResume } from '../../hooks/useResume';
 import { Paper } from './paper';
 
 export const Preview: FC = () => {

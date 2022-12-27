@@ -2,7 +2,7 @@ import { BoxProps, Box } from '@chakra-ui/react';
 import { FC, useEffect, useLayoutEffect, useRef } from 'react';
 import { Previewer } from 'pagedjs/dist/paged.esm.js';
 import styled from '@emotion/styled';
-import { useResume } from '../../hooks/resume.hook';
+import { useResume } from '../../hooks/useResume';
 
 const paged = new Previewer();
 

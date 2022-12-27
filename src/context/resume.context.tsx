@@ -1,6 +1,6 @@
 import { jsx } from '@emotion/react';
 import { createContext, Dispatch, FC, useEffect, useReducer } from 'react';
-import { useResumeLocalStorage } from '../hooks/resume-local-storatge.hook';
+import { useResumeLocalStorage } from '../hooks/useResumeLocalStorage';
 import { resumeMock } from '../mocks/resume.mock';
 import { Resume } from '../models/resume.model';
 import { ACTIONTYPE, resumeReducer } from './resume.reducer';
