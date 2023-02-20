@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
+    "dev:functions": "cd functions && npm run serve",
     "build": "tsc && vite build --mode production",
     "preview": "vite preview",
     "deploy:hosting": "npm run build && firebase deploy --only hosting"
