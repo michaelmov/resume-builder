@@ -1,4 +1,4 @@
-import { Basics, Resume, Skill, Work } from '../models/resume.model';
+import { Basics, Resume, Skill, Work } from '../types/resume.model';
 
 export enum ACTIONS {
   updateResume = 'UPDATE_RESUME',

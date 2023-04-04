@@ -7,7 +7,7 @@ import {
   SectionTypes,
   Skill,
   Work,
-} from '../../models/resume.model';
+} from '../../types/resume.model';
 import { BasicsSection } from './basics-section';
 import { SkillsSection } from './skills-section';
 import { WorkSection } from './work-section';

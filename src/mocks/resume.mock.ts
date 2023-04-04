@@ -1,4 +1,4 @@
-import { Resume } from '../models/resume.model';
+import { Resume } from '../types/resume.model';
 
 export const resumeMock: Resume = {
   basics: {

@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import { FC, useMemo } from 'react';
-import { Resume } from '../models/resume.model';
+import { Resume } from '../types/resume.model';
 import { HiArrowSmRight } from 'react-icons/hi';
 import { formatDate } from '../utils/date-utilities';
 

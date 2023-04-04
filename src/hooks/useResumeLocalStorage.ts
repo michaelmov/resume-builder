@@ -1,4 +1,4 @@
-import { Resume } from '../models/resume.model';
+import { Resume } from '../types/resume.model';
 
 const RESUME_KEY = 'resume-data';
 

@@ -2,12 +2,17 @@ import { jsx } from '@emotion/react';
 import { createContext, Dispatch, FC, useEffect, useReducer } from 'react';
 import { useResumeLocalStorage } from '../hooks/useResumeLocalStorage';
 import { resumeMock } from '../mocks/resume.mock';
-import { Resume } from '../models/resume.model';
+import { Resume } from '../types/resume.model';
 import { ACTIONTYPE, resumeReducer } from './resume.reducer';
 
-const resumeStoreContext = createContext({
-  state: {} as Resume,
-  dispatch: null as unknown as Dispatch<ACTIONTYPE>,
+interface ResumeContext {
+  state: Resume | {};
+  dispatch: Dispatch<ACTIONTYPE> | null;
+}
+
+const resumeStoreContext = createContext<ResumeContext>({
+  state: {},
+  dispatch: null,
 });
 const { Provider } = resumeStoreContext;
 

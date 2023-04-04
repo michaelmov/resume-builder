@@ -21,7 +21,7 @@ import {
   HiOutlineTrash,
   HiPlus,
 } from 'react-icons/hi';
-import { SectionTypes, Work } from '../../models/resume.model';
+import { SectionTypes, Work } from '../../types/resume.model';
 import { formatDate } from '../../utils/date-utilities';
 import { EditorSection, EditorSubsection } from './editor-sections';
 

@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { FC, KeyboardEvent } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { SectionTypes, Skill } from '../../models/resume.model';
+import { SectionTypes, Skill } from '../../types/resume.model';
 import { EditorSection, EditorSubsection } from './editor-sections';
 import { HiPlus } from 'react-icons/hi';
 import {

@@ -11,7 +11,7 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import { FC, useEffect, useState } from 'react';
-import { Basics, SectionTypes } from '../../models/resume.model';
+import { Basics, SectionTypes } from '../../types/resume.model';
 import { EditorSection } from './editor-sections';
 import { useForm } from 'react-hook-form';
 
