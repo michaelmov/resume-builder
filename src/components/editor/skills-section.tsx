@@ -14,11 +14,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { SectionTypes, Skill } from '../../types/resume.model';
 import { EditorSection, EditorSubsection } from './editor-sections';
 import { HiPlus } from 'react-icons/hi';
-import {
-  SortableContainer,
-  SortableElement,
-  SortableElementProps,
-} from 'react-sortable-hoc';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 interface SkillsSectionProps {
   value: Skill[];

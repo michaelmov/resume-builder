@@ -1,15 +1,5 @@
-import {
-  Box,
-  BoxProps,
-  Button,
-  Flex,
-  Heading,
-  Icon,
-  IconButton,
-} from '@chakra-ui/react';
-import { FC, useState } from 'react';
-import { FieldArrayWithId } from 'react-hook-form';
-import { HiOutlineTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
+import { Box, BoxProps, Button, Flex, Heading } from '@chakra-ui/react';
+import { FC } from 'react';
 
 interface EditorSectionProps {
   title: string;

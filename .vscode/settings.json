@@ -1,5 +1,6 @@
 {
   // Prettier
   "prettier.singleQuote": true,
-  "prettier.jsxSingleQuote": false
+  "prettier.jsxSingleQuote": false,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
