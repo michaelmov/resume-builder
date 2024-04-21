@@ -9,7 +9,7 @@ import {
   TagLabel,
   TagCloseButton,
 } from '@chakra-ui/react';
-import { FC, KeyboardEvent } from 'react';
+import React, { FC, KeyboardEvent, ReactNode } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { SectionTypes, Skill } from '../../types/resume.model';
 import { EditorSection, EditorSubsection } from './editor-sections';
@@ -102,46 +102,15 @@ interface KeywordItem {
   value: string;
 }
 
-interface SortableKeywordTagProps extends KeywordItem {
-  idx: number;
-  onRemove: (index: number) => void;
-}
-
 const SortableKeywordTag = SortableElement(
-  ({ value, id, onRemove, idx }: SortableKeywordTagProps) => {
-    return (
-      <Tag mr={2} mb={2} key={id} cursor="move">
-        <TagLabel>{value}</TagLabel>
-        <TagCloseButton borderRadius={4} onClick={() => onRemove(idx)} />
-      </Tag>
-    );
+  ({ children }: { children: ReactNode }) => {
+    return <>{children}</>;
   }
 );
 
 const SortableKeywordTagContainer = SortableContainer(
-  ({
-    keywords,
-    onRemove,
-  }: {
-    keywords: KeywordItem[];
-    onRemove: (index: number) => void;
-  }) => {
-    return (
-      <Box>
-        {keywords.map((keyword, index) => {
-          return (
-            <SortableKeywordTag
-              key={keyword.id}
-              value={keyword.value}
-              id={keyword.id}
-              onRemove={onRemove}
-              idx={index}
-              index={index}
-            />
-          );
-        })}
-      </Box>
-    );
+  ({ children }: { children: ReactNode }) => {
+    return <>{children}</>;
   }
 );
 interface KeywordInputProps {
@@ -176,13 +145,23 @@ const KeywordInput: FC<KeywordInputProps> = ({ skillIndex, control }) => {
     <Box>
       <FormLabel>Keywords</FormLabel>
 
-      <SortableKeywordTagContainer
-        keywords={fields as KeywordItem[]}
-        axis="xy"
-        onRemove={remove}
-        distance={1}
-        onSortEnd={onSortEnd}
-      />
+      <SortableKeywordTagContainer axis="xy" distance={1} onSortEnd={onSortEnd}>
+        <Box>
+          {(fields as KeywordItem[]).map((keyword, index) => {
+            return (
+              <SortableKeywordTag index={index}>
+                <Tag mr={2} mb={2} key={index} cursor="move">
+                  <TagLabel>{keyword.value}</TagLabel>
+                  <TagCloseButton
+                    borderRadius={4}
+                    onClick={() => remove(index)}
+                  />
+                </Tag>
+              </SortableKeywordTag>
+            );
+          })}
+        </Box>
+      </SortableKeywordTagContainer>
       <Input
         type="text"
         placeholder="Type keyword and press enter to add"
