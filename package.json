@@ -6,7 +6,8 @@
     "dev:functions": "cd functions && npm run serve",
     "build": "tsc && vite build --mode production",
     "preview": "vite preview",
-    "deploy:hosting": "npm run build && firebase deploy --only hosting"
+    "deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "deploy:functions": "cd functions && firebase deploy --only functions"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.3",
