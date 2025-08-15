@@ -1,17 +1,17 @@
 import { FC, useState } from 'react';
-import { ChakraProvider, extendTheme, Grid, GridItem } from '@chakra-ui/react';
+import { ChakraProvider, Grid, GridItem } from '@chakra-ui/react';
 import { Navbar } from './components/navbar';
 import { Preview } from './components/preview/preview';
 import { ResumeProvider } from './context/resume.context';
 import { Editor } from './components/editor/editor';
 import { Route, Routes } from 'react-router-dom';
 import { ExportPreview } from './components/preview/export-preview';
-import { theme } from './theme';
+import { system } from './theme';
 
 const App: FC = () => {
   return (
     <ResumeProvider>
-      <ChakraProvider theme={theme}>
+      <ChakraProvider value={system}>
         <Routes>
           <Route
             path="/"

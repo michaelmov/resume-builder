@@ -4,11 +4,9 @@ import {
   Icon,
   Grid,
   GridItem,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
+  NumberInputRoot,
+  NumberInputValueText,
+  NumberInputControl,
 } from '@chakra-ui/react';
 import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { HiDownload } from 'react-icons/hi';
@@ -95,29 +93,26 @@ export const Preview: FC = () => {
         <Grid templateColumns="1fr 1fr 1fr" width="100%">
           <GridItem></GridItem>
           <GridItem display="flex" justifyContent="center">
-            <NumberInput
-              defaultValue={marg}
+            <NumberInputRoot
+              defaultValue={marg.toString()}
               step={0.1}
               min={0.1}
               max={1}
-              onChange={(val) => setMarg(parseFloat(val))}
+              onValueChange={(details) => setMarg(parseFloat(details.value))}
             >
-              <NumberInputField bgColor="white" />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
+              <NumberInputValueText bgColor="white" />
+              <NumberInputControl />
+            </NumberInputRoot>
           </GridItem>
           <GridItem display="flex" justifyContent="end">
             <Button
-              isLoading={isExporting}
+              loading={isExporting}
               loadingText="Exporting..."
               size="sm"
               colorScheme="gray"
-              leftIcon={<Icon as={HiDownload} boxSize={5} />}
               onClick={getPDF}
             >
+              <Icon as={HiDownload} boxSize={5} />
               Download PDF
             </Button>
           </GridItem>

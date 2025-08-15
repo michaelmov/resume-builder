@@ -1,13 +1,12 @@
 import {
   Box,
   Button,
-  FormControl,
-  FormLabel,
   Icon,
   Input,
   Tag,
   TagLabel,
-  TagCloseButton,
+  CloseButton,
+  Field,
 } from '@chakra-ui/react';
 import { FC, KeyboardEvent } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -15,10 +14,26 @@ import { SectionTypes, Skill } from '../../types/resume.model';
 import { EditorSection, EditorSubsection } from './editor-sections';
 import { HiPlus } from 'react-icons/hi';
 import {
-  SortableContainer,
-  SortableElement,
-  SortableElementProps,
-} from 'react-sortable-hoc';
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import {
+  CSS,
+} from '@dnd-kit/utilities';
 
 interface SkillsSectionProps {
   value: Skill[];
@@ -68,7 +83,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
       onSaveClick={handleSubmit(onSubmit)}
       saveIsDisabled={!isDirty}
     >
-      <FormControl>
+      <Box>
         {fields.map((field: any, index: number) => {
           return (
             <EditorSubsection
@@ -80,16 +95,15 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
               moveUpDisabled={index === 0}
               moveDownDisabled={index >= fields.length - 1}
             >
-              <Box mb={4}>
-                <FormLabel htmlFor={field.id} display="inline-block">
+              <Field.Root id={field.id} mb={4}>
+                <Field.Label display="inline-block">
                   Skill name
-                </FormLabel>
+                </Field.Label>
                 <Input
-                  id={field.id}
                   type="text"
                   {...register(`skills.${index}.name`)}
                 />
-              </Box>
+              </Field.Root>
               <KeywordInput skillIndex={index} control={control} />
             </EditorSubsection>
           );
@@ -104,7 +118,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
             Add Skill
           </Button>
         </Box>
-      </FormControl>
+      </Box>
     </EditorSection>
   );
 };
@@ -119,26 +133,42 @@ interface SortableKeywordTagProps extends KeywordItem {
   onRemove: (index: number) => void;
 }
 
-const SortableKeywordTag = SortableElement(
-  ({ value, id, onRemove, idx }: SortableKeywordTagProps) => {
-    return (
-      <Tag mr={2} mb={2} key={id} cursor="move">
-        <TagLabel>{value}</TagLabel>
-        <TagCloseButton borderRadius={4} onClick={() => onRemove(idx)} />
-      </Tag>
-    );
-  }
-);
+const SortableKeywordTag: FC<SortableKeywordTagProps> = ({ value, id, onRemove, idx }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id });
 
-const SortableKeywordTagContainer = SortableContainer(
-  ({
-    keywords,
-    onRemove,
-  }: {
-    keywords: KeywordItem[];
-    onRemove: (index: number) => void;
-  }) => {
-    return (
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <Tag 
+      ref={setNodeRef} 
+      style={style} 
+      {...attributes} 
+      {...listeners}
+      mr={2} 
+      mb={2} 
+      cursor="move"
+    >
+      <TagLabel>{value}</TagLabel>
+      <CloseButton borderRadius={4} onClick={() => onRemove(idx)} />
+    </Tag>
+  );
+};
+
+const SortableKeywordTagContainer: FC<{
+  keywords: KeywordItem[];
+  onRemove: (index: number) => void;
+}> = ({ keywords, onRemove }) => {
+  return (
+    <SortableContext items={keywords.map(k => k.id)} strategy={verticalListSortingStrategy}>
       <Box>
         {keywords.map((keyword, index) => {
           return (
@@ -148,14 +178,13 @@ const SortableKeywordTagContainer = SortableContainer(
               id={keyword.id}
               onRemove={onRemove}
               idx={index}
-              index={index}
             />
           );
         })}
       </Box>
-    );
-  }
-);
+    </SortableContext>
+  );
+};
 interface KeywordInputProps {
   skillIndex: number;
   control: any;
@@ -166,6 +195,13 @@ const KeywordInput: FC<KeywordInputProps> = ({ skillIndex, control }) => {
     name: `skills[${skillIndex}].keywords`,
   });
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value.trim();
     if (value && e.key === 'Enter') {
@@ -174,27 +210,32 @@ const KeywordInput: FC<KeywordInputProps> = ({ skillIndex, control }) => {
     }
   };
 
-  const onSortEnd = ({
-    oldIndex,
-    newIndex,
-  }: {
-    oldIndex: number;
-    newIndex: number;
-  }) => {
-    move(oldIndex, newIndex);
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = fields.findIndex((field) => field.id === active.id);
+      const newIndex = fields.findIndex((field) => field.id === over?.id);
+      move(oldIndex, newIndex);
+    }
   };
 
   return (
     <Box>
-      <FormLabel>Keywords</FormLabel>
+      <Field.Root>
+        <Field.Label>Keywords</Field.Label>
+      </Field.Root>
 
-      <SortableKeywordTagContainer
-        keywords={fields as KeywordItem[]}
-        axis="xy"
-        onRemove={remove}
-        distance={1}
-        onSortEnd={onSortEnd}
-      />
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        {/* <SortableKeywordTagContainer
+          keywords={fields as KeywordItem[]}
+          onRemove={remove}
+        /> */}
+      </DndContext>
       <Input
         type="text"
         placeholder="Type keyword and press enter to add"

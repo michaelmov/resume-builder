@@ -2,8 +2,6 @@ import {
   Box,
   Button,
   Flex,
-  FormControl,
-  FormLabel,
   Grid,
   GridItem,
   Icon,
@@ -12,6 +10,7 @@ import {
   Stack,
   Textarea,
   TextareaProps,
+  Field,
 } from '@chakra-ui/react';
 import { FC, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -77,7 +76,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
       onSaveClick={handleSubmit(onSubmit)}
       saveIsDisabled={!isDirty}
     >
-      <FormControl>
+      <Box>
         {fields.map((field: any, index: number) => {
           return (
             <EditorSubsection
@@ -91,43 +90,48 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
             >
               <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
                 <GridItem colSpan={1}>
-                  <FormLabel htmlFor={field.id}>Company name</FormLabel>
-                  <Input
-                    id={field.id}
-                    type="text"
-                    {...register(`work.${index}.name`)}
-                  />
+                  <Field.Root id={`company-${field.id}`}>
+                    <Field.Label>Company name</Field.Label>
+                    <Input
+                      type="text"
+                      {...register(`work.${index}.name`)}
+                    />
+                  </Field.Root>
                 </GridItem>
                 <GridItem colSpan={1}>
-                  <FormLabel htmlFor={field.id}>Title</FormLabel>
-                  <Input
-                    id={field.id}
-                    type="text"
-                    {...register(`work.${index}.position`)}
-                  />
+                  <Field.Root id={`title-${field.id}`}>
+                    <Field.Label>Title</Field.Label>
+                    <Input
+                      type="text"
+                      {...register(`work.${index}.position`)}
+                    />
+                  </Field.Root>
                 </GridItem>
                 <GridItem colSpan={1}>
-                  <FormLabel htmlFor={field.id}>Start date</FormLabel>
-                  <Input
-                    id={field.id}
-                    type="text"
-                    {...register(`work.${index}.startDate`)}
-                  />
+                  <Field.Root id={`start-${field.id}`}>
+                    <Field.Label>Start date</Field.Label>
+                    <Input
+                      type="text"
+                      {...register(`work.${index}.startDate`)}
+                    />
+                  </Field.Root>
                 </GridItem>
                 <GridItem colSpan={1}>
-                  <FormLabel htmlFor={field.id}>End date</FormLabel>
-                  <Input
-                    id={field.id}
-                    type="text"
-                    {...register(`work.${index}.endDate`)}
-                  />
+                  <Field.Root id={`end-${field.id}`}>
+                    <Field.Label>End date</Field.Label>
+                    <Input
+                      type="text"
+                      {...register(`work.${index}.endDate`)}
+                    />
+                  </Field.Root>
                 </GridItem>
                 <GridItem colSpan={2}>
-                  <FormLabel htmlFor={field.id}>Summary</FormLabel>
-                  <Textarea
-                    id={field.id}
-                    {...register(`work.${index}.summary`)}
-                  />
+                  <Field.Root id={`summary-${field.id}`}>
+                    <Field.Label>Summary</Field.Label>
+                    <Textarea
+                      {...register(`work.${index}.summary`)}
+                    />
+                  </Field.Root>
                 </GridItem>
                 <GridItem colSpan={2}>
                   <HighlightsList
@@ -150,7 +154,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
             Add Work
           </Button>
         </Box>
-      </FormControl>
+      </Box>
     </EditorSection>
   );
 };
@@ -172,7 +176,9 @@ const HighlightsList: FC<HighlightsListProps> = ({
   });
   return (
     <Box>
-      <FormLabel>Highlights</FormLabel>
+      <Field.Root>
+        <Field.Label>Highlights</Field.Label>
+      </Field.Root>
       {fields.map((highlight, index) => {
         return (
           <HighlightInput

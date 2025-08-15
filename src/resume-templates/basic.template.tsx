@@ -1,16 +1,13 @@
 import {
   Box,
   Flex,
-  forwardRef,
   Heading,
   HeadingProps,
   Link,
   List,
-  ListIcon,
-  ListItem,
   Text,
-  TypographyProps,
 } from '@chakra-ui/react';
+import { forwardRef } from 'react';
 import { Global } from '@emotion/react';
 import { FC, useMemo } from 'react';
 import { Resume } from '../types/resume.model';
@@ -34,8 +31,8 @@ const styleConfig = {
 interface BasicHeadingProps extends HeadingProps {
   decorationColor?: string;
 }
-const BasicHeading = forwardRef<BasicHeadingProps, 'h1'>((props, ref) => {
-  const _fontSize = useMemo<TypographyProps['fontSize']>(() => {
+const BasicHeading = forwardRef<HTMLHeadingElement, BasicHeadingProps>((props, ref) => {
+  const _fontSize = useMemo(() => {
     switch (props.as) {
       case 'h1':
         return '4xl';
@@ -178,19 +175,21 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
             <Text as="p" mb={2}>
               {job.summary}
             </Text>
-            <List>
+            <List.Root>
               {job.highlights.map((highlight, idx) => (
-                <ListItem
+                <List.Item
                   key={`${idx}${highlight.value}`}
                   display="flex"
                   alignItems="center"
                   mb={1}
                 >
-                  <ListIcon as={HiArrowSmRight} color="blue.200" />
+                  <List.Indicator asChild color="blue.200">
+                    <HiArrowSmRight />
+                  </List.Indicator>
                   {highlight.value}
-                </ListItem>
+                </List.Item>
               ))}
-            </List>
+            </List.Root>
           </Box>
         );
       })}
