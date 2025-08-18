@@ -150,19 +150,34 @@ const SortableKeywordTag: FC<SortableKeywordTagProps> = ({ value, id, onRemove, 
     zIndex: isDragging ? 1000 : 1,
   };
 
+  const handleCloseClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onRemove(idx);
+  };
+
   return (
     <Tag.Root 
       ref={setNodeRef} 
       style={style} 
-      {...attributes} 
-      {...listeners}
-      cursor="move"
+      {...attributes}
     >
-      <Tag.Label>{value}</Tag.Label>
+      <Tag.Label 
+        {...listeners}
+        cursor="move"
+        flex="1"
+      >
+        {value}
+      </Tag.Label>
       <Tag.EndElement>
-        <Tag.CloseTrigger onClick={() => {
-          onRemove(idx);
-        }} />
+        <Tag.CloseTrigger 
+          onClick={handleCloseClick}
+          zIndex={2}
+          position="relative"
+          cursor="pointer"
+          _hover={{
+            backgroundColor: 'gray.200',
+          }}
+        />
       </Tag.EndElement>
     </Tag.Root>
   );
