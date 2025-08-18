@@ -9,8 +9,8 @@ import {
   Work,
 } from '../../types/resume.model';
 import { BasicsSection } from './basics-section';
-import { SkillsSection } from './skills-section';
-import { WorkSection } from './work-section';
+import { SkillsSection } from './skills-section/skills-section';
+import { WorkSection } from './skills-section/work-section';
 
 export const Editor: FC = () => {
   const { resume, updateBasics, updateSkills, updateWork } = useResume();
