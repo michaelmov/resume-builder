@@ -148,7 +148,7 @@ const SortableKeywordTag: FC<SortableKeywordTagProps> = ({ value, id, onRemove, 
   };
 
   return (
-    <Tag 
+    <Tag.Root 
       ref={setNodeRef} 
       style={style} 
       {...attributes} 
@@ -157,9 +157,13 @@ const SortableKeywordTag: FC<SortableKeywordTagProps> = ({ value, id, onRemove, 
       mb={2} 
       cursor="move"
     >
-      <TagLabel>{value}</TagLabel>
-      <CloseButton borderRadius={4} onClick={() => onRemove(idx)} />
-    </Tag>
+      <Tag.Label>{value}</Tag.Label>
+      <Tag.EndElement>
+        <Tag.CloseTrigger onClick={() => onRemove(idx)} />
+      </Tag.EndElement>
+    </Tag.Root>
+    
+    
   );
 };
 
@@ -231,10 +235,10 @@ const KeywordInput: FC<KeywordInputProps> = ({ skillIndex, control }) => {
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        {/* <SortableKeywordTagContainer
+        <SortableKeywordTagContainer
           keywords={fields as KeywordItem[]}
           onRemove={remove}
-        /> */}
+        />
       </DndContext>
       <Input
         type="text"

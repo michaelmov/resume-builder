@@ -4,9 +4,7 @@ import {
   Icon,
   Grid,
   GridItem,
-  NumberInputRoot,
-  NumberInputValueText,
-  NumberInputControl,
+  NumberInput,
 } from '@chakra-ui/react';
 import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { HiDownload } from 'react-icons/hi';
@@ -93,16 +91,16 @@ export const Preview: FC = () => {
         <Grid templateColumns="1fr 1fr 1fr" width="100%">
           <GridItem></GridItem>
           <GridItem display="flex" justifyContent="center">
-            <NumberInputRoot
+            <NumberInput.Root
               defaultValue={marg.toString()}
               step={0.1}
               min={0.1}
               max={1}
               onValueChange={(details) => setMarg(parseFloat(details.value))}
             >
-              <NumberInputValueText bgColor="white" />
-              <NumberInputControl />
-            </NumberInputRoot>
+              <NumberInput.Control />
+              <NumberInput.Input bgColor="white" />
+            </NumberInput.Root>
           </GridItem>
           <GridItem display="flex" justifyContent="end">
             <Button
