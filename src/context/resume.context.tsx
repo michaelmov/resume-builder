@@ -15,7 +15,7 @@ const resumeStoreContext = createContext<ResumeContext>({
 });
 const { Provider } = resumeStoreContext;
 
-const ResumeProvider: FC = ({ children }) => {
+const ResumeProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getResume, saveResume } = useResumeLocalStorage();
   let localStorageData = getResume();
 
