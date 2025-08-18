@@ -260,22 +260,28 @@ const HighlightInput: FC<HighlightInputProps> = ({
           onClick={() => onMoveUp(index)}
           aria-label="Move up"
           size="xs"
-          icon={<Icon as={HiChevronUp} />}
           disabled={moveUpDisabled}
-        />
+          variant="subtle"
+        >
+          <HiChevronUp />
+        </IconButton>
         <IconButton
           onClick={() => onDelete(index)}
           aria-label="Delete highlight"
           size="xs"
-          icon={<Icon as={HiOutlineTrash} />}
-        />
+          variant="subtle"
+        >
+          <HiOutlineTrash />
+        </IconButton>
         <IconButton
           onClick={() => onMoveDown(index)}
           aria-label="Move down"
           size="xs"
-          icon={<Icon as={HiChevronDown} />}
           disabled={moveDownDisabled}
-        />
+          variant="subtle"
+        >
+          <HiChevronDown />
+        </IconButton>
       </Stack>
     </Flex>
   );
