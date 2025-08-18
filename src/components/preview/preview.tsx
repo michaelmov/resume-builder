@@ -107,7 +107,8 @@ export const Preview: FC = () => {
               loading={isExporting}
               loadingText="Exporting..."
               size="sm"
-              colorScheme="gray"
+              colorPalette="gray"
+              variant="subtle"
               onClick={getPDF}
             >
               <Icon as={HiDownload} boxSize={5} />

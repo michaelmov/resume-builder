@@ -37,7 +37,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
         {children}
         <Flex justifyContent="end" mt={6}>
           <Button
-            colorScheme="purple"
+            colorPalette="purple"
             mt={4}
             onClick={onSaveClick}
             size="sm"

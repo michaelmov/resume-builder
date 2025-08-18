@@ -110,11 +110,13 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
         })}
         <Box display="flex" justifyContent="center">
           <Button
-            leftIcon={<Icon as={HiPlus} />}
             onClick={addSkill}
             width="100%"
             size="sm"
+            variant="subtle"
+            colorPalette="gray"
           >
+            <HiPlus />
             Add Skill
           </Button>
         </Box>

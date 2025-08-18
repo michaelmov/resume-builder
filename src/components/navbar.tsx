@@ -20,7 +20,7 @@ export const Navbar: FC = () => {
       <Spacer />
       <Link href="https://github.com/michaelmov/resume-builder" isExternal>
         <IconButton
-          colorScheme="purple"
+          colorPalette="purple"
           aria-label="Open Github repo"
           icon={<Icon as={VscGithub} boxSize={5} />}
         ></IconButton>

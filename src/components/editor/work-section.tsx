@@ -146,11 +146,13 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
         })}
         <Box>
           <Button
-            leftIcon={<Icon as={HiPlus} />}
             onClick={addWork}
             width="100%"
             size="sm"
+            variant="subtle"
+            colorPalette="gray"
           >
+            <HiPlus />
             Add Work
           </Button>
         </Box>
@@ -198,11 +200,13 @@ const HighlightsList: FC<HighlightsListProps> = ({
 
       <Button
         mt={4}
-        leftIcon={<Icon as={HiPlus} />}
         onClick={() => append('')}
         width="100%"
         size="xs"
+        variant="subtle"
+        colorPalette="gray"
       >
+        <HiPlus />
         Add Highlight
       </Button>
     </Box>
