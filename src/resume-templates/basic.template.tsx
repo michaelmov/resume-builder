@@ -31,50 +31,52 @@ const styleConfig = {
 interface BasicHeadingProps extends HeadingProps {
   decorationColor?: string;
 }
-const BasicHeading = forwardRef<HTMLHeadingElement, BasicHeadingProps>((props, ref) => {
-  const _fontSize = useMemo(() => {
-    switch (props.as) {
-      case 'h1':
-        return '4xl';
-      case 'h2':
-        return 'xl';
-      default:
-        return 'initial';
-    }
-  }, [props.as]);
+const BasicHeading = forwardRef<HTMLHeadingElement, BasicHeadingProps>(
+  (props, ref) => {
+    const _fontSize = useMemo(() => {
+      switch (props.as) {
+        case 'h1':
+          return '4xl';
+        case 'h2':
+          return 'xl';
+        default:
+          return 'initial';
+      }
+    }, [props.as]);
 
-  return (
-    <Heading
-      {...props}
-      ref={ref}
-      fontSize={_fontSize || props.fontSize}
-      fontFamily={styleConfig.headingFont}
-      width="auto"
-      letterSpacing={props.letterSpacing || 2}
-      zIndex={1}
-    >
-      <Text
-        as="span"
-        position="relative"
+    return (
+      <Heading
+        {...props}
+        ref={ref}
+        fontSize={_fontSize || props.fontSize}
         fontFamily={styleConfig.headingFont}
+        width="auto"
+        letterSpacing={props.letterSpacing || 2}
         zIndex={1}
-        display={props.as === 'h2' ? 'inline' : 'block'}
-        _after={{
-          position: 'absolute',
-          content: '" "',
-          bgColor: props.decorationColor || 'blue.100',
-          height: props.as === 'h2' ? '10px' : '20px',
-          width: '100%',
-          left: 0,
-          bottom: 0,
-          zIndex: -1,
-        }}
       >
-        {props.children}
-      </Text>
-    </Heading>
-  );
-});
+        <Text
+          as="span"
+          position="relative"
+          fontFamily={styleConfig.headingFont}
+          zIndex={1}
+          display={props.as === 'h2' ? 'inline' : 'block'}
+          _after={{
+            position: 'absolute',
+            content: '" "',
+            bgColor: props.decorationColor || 'blue.100',
+            height: props.as === 'h2' ? '10px' : '20px',
+            width: '100%',
+            left: 0,
+            bottom: 0,
+            zIndex: -1,
+          }}
+        >
+          {props.children}
+        </Text>
+      </Heading>
+    );
+  }
+);
 
 interface TemplateProps {
   resume: Resume;
@@ -98,7 +100,9 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
         <Text textAlign="left">{resume.basics.location?.city}</Text>
         <Text>{resume.basics.phone}</Text>
         <Text textAlign="center">{resume.basics.email}</Text>
-        <Link href={`//${resume.basics.url}`}>{resume.basics.url}</Link>
+        <Link href={`//${resume.basics.url}`} target="_blank">
+          {resume.basics.url}
+        </Link>
       </Flex>
       <Text>{resume.basics.summary}</Text>
       <BasicHeading as="h2" mt={9} mb={3}>
