@@ -4,8 +4,6 @@ import {
   Icon,
   Input,
   Tag,
-  TagLabel,
-  CloseButton,
   Field,
 } from '@chakra-ui/react';
 import { FC, KeyboardEvent } from 'react';
@@ -26,7 +24,7 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import {
   useSortable,
@@ -142,11 +140,14 @@ const SortableKeywordTag: FC<SortableKeywordTagProps> = ({ value, id, onRemove, 
     setNodeRef,
     transform,
     transition,
+    isDragging,
   } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
   };
 
   return (
@@ -155,17 +156,15 @@ const SortableKeywordTag: FC<SortableKeywordTagProps> = ({ value, id, onRemove, 
       style={style} 
       {...attributes} 
       {...listeners}
-      mr={2} 
-      mb={2} 
       cursor="move"
     >
       <Tag.Label>{value}</Tag.Label>
       <Tag.EndElement>
-        <Tag.CloseTrigger onClick={() => onRemove(idx)} />
+        <Tag.CloseTrigger onClick={() => {
+          onRemove(idx);
+        }} />
       </Tag.EndElement>
     </Tag.Root>
-    
-    
   );
 };
 
@@ -174,8 +173,13 @@ const SortableKeywordTagContainer: FC<{
   onRemove: (index: number) => void;
 }> = ({ keywords, onRemove }) => {
   return (
-    <SortableContext items={keywords.map(k => k.id)} strategy={verticalListSortingStrategy}>
-      <Box>
+    <SortableContext items={keywords.map(k => k.id)} strategy={rectSortingStrategy}>
+      <Box 
+        display="flex" 
+        flexWrap="wrap" 
+        gap={2}
+        mb={2}
+      >
         {keywords.map((keyword, index) => {
           return (
             <SortableKeywordTag
