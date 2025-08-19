@@ -8,13 +8,13 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { FC, useState } from 'react';
-import { FieldArrayWithId } from 'react-hook-form';
 import { HiOutlineTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
 
 interface EditorSectionProps {
   title: string;
   onSaveClick?: () => void;
   saveIsDisabled?: boolean;
+  children: React.ReactNode;
 }
 export const EditorSection: FC<EditorSectionProps> = ({
   title,
@@ -37,7 +37,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
         {children}
         <Flex justifyContent="end" mt={6}>
           <Button
-            colorScheme="purple"
+            colorPalette="purple"
             mt={4}
             onClick={onSaveClick}
             size="sm"
@@ -86,34 +86,42 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
           <IconButton
             onClick={onMoveUpClick}
             aria-label="Delete skill"
-            icon={<Icon as={HiChevronUp} boxSize={4} />}
+            variant="subtle"
             size="sm"
-            borderRadius={5}
             borderTopLeftRadius={0}
             borderTopRightRadius={0}
+            borderBottomLeftRadius={5}
+            borderBottomRightRadius={5}
             mr={1}
             disabled={moveUpDisabled}
-          />
+          >
+            <HiChevronUp />
+          </IconButton>
           <IconButton
             onClick={onMoveDownClick}
             aria-label="Delete skill"
-            icon={<Icon as={HiChevronDown} boxSize={4} />}
+            variant="subtle"
             size="sm"
-            borderRadius={5}
             borderTopLeftRadius={0}
             borderTopRightRadius={0}
+            borderBottomLeftRadius={5}
+            borderBottomRightRadius={5}
             mr={1}
             disabled={moveDownDisabled}
-          />
+          >
+            <HiChevronDown />
+          </IconButton>
           <IconButton
             onClick={onDeleteClick}
             aria-label="Delete skill"
-            icon={<Icon as={HiOutlineTrash} />}
+            variant="subtle"
             size="sm"
+            borderBottomLeftRadius={0}
             borderBottomRightRadius={0}
             borderTopLeftRadius={0}
-            borderRadius={5}
-          />
+          >
+            <HiOutlineTrash />
+          </IconButton>
         </Box>
       )}
       {children}

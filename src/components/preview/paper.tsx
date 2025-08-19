@@ -1,11 +1,10 @@
 import { BoxProps, Box } from '@chakra-ui/react';
-import { FC, useEffect, useLayoutEffect, useRef } from 'react';
-import { Previewer } from 'pagedjs/dist/paged.esm.js';
+import { FC, useEffect, useRef } from 'react';
+import { Previewer } from 'pagedjs';
 import styled from '@emotion/styled';
 import { useResume } from '../../hooks/useResume';
 
 const paged = new Previewer();
-
 interface PaperProps extends BoxProps {
   pagemargin?: number;
 }

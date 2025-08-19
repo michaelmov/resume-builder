@@ -9,8 +9,8 @@ import {
   Work,
 } from '../../types/resume.model';
 import { BasicsSection } from './basics-section';
-import { SkillsSection } from './skills-section';
-import { WorkSection } from './work-section';
+import { SkillsSection } from './skills-section/skills-section';
+import { WorkSection } from './skills-section/work-section';
 
 export const Editor: FC = () => {
   const { resume, updateBasics, updateSkills, updateWork } = useResume();
@@ -39,7 +39,7 @@ export const Editor: FC = () => {
         Made with 💜 by{' '}
         <Link
           href="https://michaelmovsesov.com/"
-          isExternal
+          target="_blank"
           textDecoration="underline"
         >
           Michael Movsesov

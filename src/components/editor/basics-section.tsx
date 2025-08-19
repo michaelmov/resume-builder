@@ -2,13 +2,12 @@ import {
   Box,
   Button,
   Flex,
-  FormControl,
-  FormLabel,
   Grid,
   GridItem,
   Heading,
   Input,
   Textarea,
+  Field,
 } from '@chakra-ui/react';
 import { FC, useEffect, useState } from 'react';
 import { Basics, SectionTypes } from '../../types/resume.model';
@@ -37,38 +36,52 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
       onSaveClick={handleSubmit(onSubmit)}
       saveIsDisabled={!isDirty}
     >
-      <FormControl>
+      <Box>
         <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
           <GridItem colSpan={1}>
-            <FormLabel htmlFor="name">Name</FormLabel>
-            <Input id="name" type="text" {...register('name')} />
+            <Field.Root id="name">
+              <Field.Label>Name</Field.Label>
+              <Input type="text" {...register('name')} />
+            </Field.Root>
           </GridItem>
           <GridItem colSpan={1}>
-            <FormLabel htmlFor="label">Title</FormLabel>
-            <Input id="label" type="text" {...register('label')} />
+            <Field.Root id="label">
+              <Field.Label>Title</Field.Label>
+              <Input type="text" {...register('label')} />
+            </Field.Root>
           </GridItem>
           <GridItem colSpan={1}>
-            <FormLabel htmlFor="city">Location</FormLabel>
-            <Input id="city" type="text" {...register('location.city')} />
+            <Field.Root id="city">
+              <Field.Label>Location</Field.Label>
+              <Input type="text" {...register('location.city')} />
+            </Field.Root>
           </GridItem>
           <GridItem colSpan={1}>
-            <FormLabel htmlFor="phone">Phone</FormLabel>
-            <Input id="phone" type="text" {...register('phone')} />
+            <Field.Root id="phone">
+              <Field.Label>Phone</Field.Label>
+              <Input type="text" {...register('phone')} />
+            </Field.Root>
           </GridItem>
           <GridItem colSpan={1}>
-            <FormLabel htmlFor="email">Email</FormLabel>
-            <Input id="email" type="text" {...register('email')} />
+            <Field.Root id="email">
+              <Field.Label>Email</Field.Label>
+              <Input type="text" {...register('email')} />
+            </Field.Root>
           </GridItem>
           <GridItem colSpan={1}>
-            <FormLabel htmlFor="url">URL</FormLabel>
-            <Input id="url" type="text" {...register('url')} />
+            <Field.Root id="url">
+              <Field.Label>URL</Field.Label>
+              <Input type="text" {...register('url')} />
+            </Field.Root>
           </GridItem>
           <GridItem colSpan={2}>
-            <FormLabel htmlFor="summary">Summary</FormLabel>
-            <Textarea id="summary" {...register('summary')} />
+            <Field.Root id="summary">
+              <Field.Label>Summary</Field.Label>
+              <Textarea {...register('summary')} />
+            </Field.Root>
           </GridItem>
         </Grid>
-      </FormControl>
+      </Box>
     </EditorSection>
   );
 };

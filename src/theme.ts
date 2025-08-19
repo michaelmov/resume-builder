@@ -1,27 +1,20 @@
-import { extendTheme } from '@chakra-ui/react';
+import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
 
-export const theme = extendTheme({
-  components: {
-    Input: {
-      defaultProps: {
-        size: 'sm',
+const config = defineConfig({
+  theme: {
+    tokens: {
+      sizes: {
+        sm: { value: 'sm' },
       },
     },
-    Textarea: {
-      defaultProps: {
-        size: 'sm',
-      },
-    },
-    Select: {
-      defaultProps: {
-        size: 'sm',
-      },
-    },
-    FormLabel: {
-      baseStyle: {
-        fontSize: 'sm',
-        mb: 1,
+    semanticTokens: {
+      sizes: {
+        inputDefault: { value: 'sm' },
+        textareaDefault: { value: 'sm' },
+        selectDefault: { value: 'sm' },
       },
     },
   },
 });
+
+export const system = createSystem(defaultConfig, config);

@@ -1,4 +1,4 @@
-import { Box, Icon, IconButton, Link, Spacer } from '@chakra-ui/react';
+import { Box, Icon, IconButton, LinkBox, LinkOverlay, Spacer } from '@chakra-ui/react';
 import { FC } from 'react';
 import { HiOutlineBriefcase } from 'react-icons/hi';
 import { VscGithub } from 'react-icons/vsc';
@@ -18,13 +18,20 @@ export const Navbar: FC = () => {
     >
       <Icon as={HiOutlineBriefcase} boxSize={8} />
       <Spacer />
-      <Link href="https://github.com/michaelmov/resume-builder" isExternal>
+      <LinkBox>
         <IconButton
-          colorScheme="purple"
+          variant="ghost"
           aria-label="Open Github repo"
-          icon={<Icon as={VscGithub} boxSize={5} />}
-        ></IconButton>
-      </Link>
+          colorPalette="bg"
+          _hover={{
+            backgroundColor: 'purple.600',
+          }}
+        >
+          <LinkOverlay href="https://github.com/michaelmov/resume-builder" target="_blank">
+          <VscGithub color='white' />
+          </LinkOverlay>
+        </IconButton>
+      </LinkBox>
     </Box>
   );
 };

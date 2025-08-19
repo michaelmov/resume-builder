@@ -1,16 +1,13 @@
 import {
   Box,
   Flex,
-  forwardRef,
   Heading,
   HeadingProps,
   Link,
   List,
-  ListIcon,
-  ListItem,
   Text,
-  TypographyProps,
 } from '@chakra-ui/react';
+import { forwardRef } from 'react';
 import { Global } from '@emotion/react';
 import { FC, useMemo } from 'react';
 import { Resume } from '../types/resume.model';
@@ -34,50 +31,52 @@ const styleConfig = {
 interface BasicHeadingProps extends HeadingProps {
   decorationColor?: string;
 }
-const BasicHeading = forwardRef<BasicHeadingProps, 'h1'>((props, ref) => {
-  const _fontSize = useMemo<TypographyProps['fontSize']>(() => {
-    switch (props.as) {
-      case 'h1':
-        return '4xl';
-      case 'h2':
-        return 'xl';
-      default:
-        return 'initial';
-    }
-  }, [props.as]);
+const BasicHeading = forwardRef<HTMLHeadingElement, BasicHeadingProps>(
+  (props, ref) => {
+    const _fontSize = useMemo(() => {
+      switch (props.as) {
+        case 'h1':
+          return '4xl';
+        case 'h2':
+          return 'xl';
+        default:
+          return 'initial';
+      }
+    }, [props.as]);
 
-  return (
-    <Heading
-      {...props}
-      ref={ref}
-      fontSize={_fontSize || props.fontSize}
-      fontFamily={styleConfig.headingFont}
-      width="auto"
-      letterSpacing={props.letterSpacing || 2}
-      zIndex={1}
-    >
-      <Text
-        as="span"
-        position="relative"
+    return (
+      <Heading
+        {...props}
+        ref={ref}
+        fontSize={_fontSize || props.fontSize}
         fontFamily={styleConfig.headingFont}
+        width="auto"
+        letterSpacing={props.letterSpacing || 2}
         zIndex={1}
-        display={props.as === 'h2' ? 'inline' : 'block'}
-        _after={{
-          position: 'absolute',
-          content: '" "',
-          bgColor: props.decorationColor || 'blue.100',
-          height: props.as === 'h2' ? '10px' : '20px',
-          width: '100%',
-          left: 0,
-          bottom: 0,
-          zIndex: -1,
-        }}
       >
-        {props.children}
-      </Text>
-    </Heading>
-  );
-});
+        <Text
+          as="span"
+          position="relative"
+          fontFamily={styleConfig.headingFont}
+          zIndex={1}
+          display={props.as === 'h2' ? 'inline' : 'block'}
+          _after={{
+            position: 'absolute',
+            content: '" "',
+            bgColor: props.decorationColor || 'blue.100',
+            height: props.as === 'h2' ? '10px' : '20px',
+            width: '100%',
+            left: 0,
+            bottom: 0,
+            zIndex: -1,
+          }}
+        >
+          {props.children}
+        </Text>
+      </Heading>
+    );
+  }
+);
 
 interface TemplateProps {
   resume: Resume;
@@ -101,7 +100,9 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
         <Text textAlign="left">{resume.basics.location?.city}</Text>
         <Text>{resume.basics.phone}</Text>
         <Text textAlign="center">{resume.basics.email}</Text>
-        <Link href={`//${resume.basics.url}`}>{resume.basics.url}</Link>
+        <Link href={`//${resume.basics.url}`} target="_blank">
+          {resume.basics.url}
+        </Link>
       </Flex>
       <Text>{resume.basics.summary}</Text>
       <BasicHeading as="h2" mt={9} mb={3}>
@@ -178,19 +179,21 @@ export const BasicTemplate: FC<TemplateProps> = ({ resume }) => {
             <Text as="p" mb={2}>
               {job.summary}
             </Text>
-            <List>
+            <List.Root>
               {job.highlights.map((highlight, idx) => (
-                <ListItem
+                <List.Item
                   key={`${idx}${highlight.value}`}
                   display="flex"
                   alignItems="center"
                   mb={1}
                 >
-                  <ListIcon as={HiArrowSmRight} color="blue.200" />
+                  <List.Indicator asChild color="blue.200">
+                    <HiArrowSmRight />
+                  </List.Indicator>
                   {highlight.value}
-                </ListItem>
+                </List.Item>
               ))}
-            </List>
+            </List.Root>
           </Box>
         );
       })}

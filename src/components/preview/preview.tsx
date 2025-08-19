@@ -5,10 +5,6 @@ import {
   Grid,
   GridItem,
   NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
 } from '@chakra-ui/react';
 import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { HiDownload } from 'react-icons/hi';
@@ -60,18 +56,27 @@ export const Preview: FC = () => {
       if (response.status === 200) {
         const blob = await response.blob();
 
-        let url = window.URL.createObjectURL(blob);
-        let a = document.createElement('a');
-        a.href = url;
+        // Validate that we actually got a PDF
+        if (blob.type !== 'application/pdf' && blob.size === 0) {
+          throw new Error('Invalid PDF response');
+        }
+
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
         a.download = `${resume?.basics?.name} - ${resume?.basics?.label}.pdf`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(downloadUrl);
       } else {
-        throw new Error('Error!');
+        const errorText = await response.text();
+        console.error('Server error:', errorText);
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
       }
-    } catch {
-      (e: Error) => {
-        console.error(e?.message);
-      };
+    } catch (e: any) {
+      console.error('PDF download error:', e?.message || e);
+      // You could add user notification here
     } finally {
       setIsExporting(false);
     }
@@ -95,29 +100,27 @@ export const Preview: FC = () => {
         <Grid templateColumns="1fr 1fr 1fr" width="100%">
           <GridItem></GridItem>
           <GridItem display="flex" justifyContent="center">
-            <NumberInput
-              defaultValue={marg}
+            <NumberInput.Root
+              defaultValue={marg.toString()}
               step={0.1}
               min={0.1}
               max={1}
-              onChange={(val) => setMarg(parseFloat(val))}
+              onValueChange={(details) => setMarg(parseFloat(details.value))}
             >
-              <NumberInputField bgColor="white" />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
+              <NumberInput.Control />
+              <NumberInput.Input bgColor="white" />
+            </NumberInput.Root>
           </GridItem>
           <GridItem display="flex" justifyContent="end">
             <Button
-              isLoading={isExporting}
+              loading={isExporting}
               loadingText="Exporting..."
               size="sm"
-              colorScheme="gray"
-              leftIcon={<Icon as={HiDownload} boxSize={5} />}
+              colorPalette="gray"
+              variant="subtle"
               onClick={getPDF}
             >
+              <Icon as={HiDownload} boxSize={5} />
               Download PDF
             </Button>
           </GridItem>
