@@ -131,7 +131,9 @@ export const exportPDF = onRequest(async (request, response) => {
     
     response.status(500).json({ 
       message: 'Error generating PDF',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error
+        ? error.message
+        : 'Unknown error'
     });
   }
 });
