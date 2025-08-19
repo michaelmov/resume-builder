@@ -39,7 +39,7 @@ export const Editor: FC = () => {
         Made with 💜 by{' '}
         <Link
           href="https://michaelmovsesov.com/"
-          isExternal
+          target="_blank"
           textDecoration="underline"
         >
           Michael Movsesov
