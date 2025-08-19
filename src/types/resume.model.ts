@@ -21,7 +21,7 @@ export interface Resume {
 
 export interface Award {
   title: string;
-  date: Date;
+  date: Date | string;
   awarder: string;
   summary: string;
 }
@@ -54,7 +54,7 @@ export interface Profile {
 
 export interface Certificate {
   name: string;
-  date: Date;
+  date: Date | string;
   issuer: string;
   url: string;
 }
@@ -64,8 +64,8 @@ export interface Education {
   url: string;
   area: string;
   studyType: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
   score: string;
   courses: string[];
 }
@@ -85,8 +85,8 @@ export interface Project {
   description: string;
   highlights: string[];
   keywords: string[];
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
   url: string;
   roles: string[];
   entity: string;
@@ -96,7 +96,7 @@ export interface Project {
 export interface Publication {
   name: string;
   publisher: string;
-  releaseDate: Date;
+  releaseDate: Date | string;
   url: string;
   summary: string;
 }
@@ -116,8 +116,8 @@ export interface Work {
   organization?: string;
   position: string;
   url: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
   summary: string;
   highlights: { value: string }[];
   name?: string;

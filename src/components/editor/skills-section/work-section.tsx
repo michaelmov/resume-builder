@@ -21,7 +21,6 @@ import {
   HiPlus,
 } from 'react-icons/hi';
 import { SectionTypes, Work } from '../../../types/resume.model';
-import { formatDate } from '../../../utils/date-utilities';
 import { EditorSection, EditorSubsection } from '../editor-sections';
 
 interface WorkSectionProps {
@@ -60,8 +59,8 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
     const newWork = {
       name: '',
       position: '',
-      startDate: formatDate(new Date('2005-02-03')),
-      endDate: formatDate(new Date('2008-11-03')),
+      startDate: '2005-02-03',
+      endDate: '2008-11-03',
       summary: '',
       organization: '',
       url: '',
@@ -92,10 +91,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                 <GridItem colSpan={1}>
                   <Field.Root id={`company-${field.id}`}>
                     <Field.Label>Company name</Field.Label>
-                    <Input
-                      type="text"
-                      {...register(`work.${index}.name`)}
-                    />
+                    <Input type="text" {...register(`work.${index}.name`)} />
                   </Field.Root>
                 </GridItem>
                 <GridItem colSpan={1}>
@@ -119,18 +115,13 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                 <GridItem colSpan={1}>
                   <Field.Root id={`end-${field.id}`}>
                     <Field.Label>End date</Field.Label>
-                    <Input
-                      type="text"
-                      {...register(`work.${index}.endDate`)}
-                    />
+                    <Input type="text" {...register(`work.${index}.endDate`)} />
                   </Field.Root>
                 </GridItem>
                 <GridItem colSpan={2}>
                   <Field.Root id={`summary-${field.id}`}>
                     <Field.Label>Summary</Field.Label>
-                    <Textarea
-                      {...register(`work.${index}.summary`)}
-                    />
+                    <Textarea {...register(`work.${index}.summary`)} />
                   </Field.Root>
                 </GridItem>
                 <GridItem colSpan={2}>
@@ -254,7 +245,7 @@ const HighlightInput: FC<HighlightInputProps> = ({
       />
       <Stack
         visibility={isActionButtonsVisible ? 'visible' : 'hidden'}
-        spacing={0.5}
+        gap={0.5}
       >
         <IconButton
           onClick={() => onMoveUp(index)}
