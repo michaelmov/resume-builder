@@ -15,7 +15,7 @@ setGlobalOptions({
 const url =
   process.env?.NODE_ENV === 'production' ?
     `https://${process.env?.GCLOUD_PROJECT}.web.app/export` :
-    'http://localhost:3000/export';
+    'http://localhost:5173/export';
 
 export const exportPDF = onRequest(async (request, response) => {
   try {
