@@ -56,18 +56,27 @@ export const Preview: FC = () => {
       if (response.status === 200) {
         const blob = await response.blob();
 
-        let url = window.URL.createObjectURL(blob);
-        let a = document.createElement('a');
-        a.href = url;
+        // Validate that we actually got a PDF
+        if (blob.type !== 'application/pdf' && blob.size === 0) {
+          throw new Error('Invalid PDF response');
+        }
+
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
         a.download = `${resume?.basics?.name} - ${resume?.basics?.label}.pdf`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(downloadUrl);
       } else {
-        throw new Error('Error!');
+        const errorText = await response.text();
+        console.error('Server error:', errorText);
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
       }
-    } catch {
-      (e: Error) => {
-        console.error(e?.message);
-      };
+    } catch (e: any) {
+      console.error('PDF download error:', e?.message || e);
+      // You could add user notification here
     } finally {
       setIsExporting(false);
     }
