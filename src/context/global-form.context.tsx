@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { SectionTypes } from '../types/resume.model';
 
 interface SectionFormState {
@@ -49,8 +55,9 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
     }));
   }, []);
 
-  const hasAnyDirtySection = Object.values(sections).some(
-    (section) => section?.isDirty === true
+  const hasAnyDirtySection = useMemo(
+    () => Object.values(sections).some((section) => section?.isDirty === true),
+    [sections]
   );
 
   const getDirtySections = useCallback((): SectionTypes[] => {

@@ -11,7 +11,7 @@ import {
   TextareaProps,
   Field,
 } from '@chakra-ui/react';
-import { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect, useCallback } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import {
   HiChevronDown,
@@ -51,10 +51,13 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
 
   const { isDirty } = formState;
 
-  const onSubmit = (data: FormProps) => {
-    onUpdate(SectionTypes.Work, data.work);
-    reset(data);
-  };
+  const onSubmit = useCallback(
+    (data: FormProps) => {
+      onUpdate(SectionTypes.Work, data.work);
+      reset(data);
+    },
+    [onUpdate, reset]
+  );
 
   // Register this section with the global form context
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { Box, Grid, GridItem, Input, Textarea, Field } from '@chakra-ui/react';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useCallback } from 'react';
 import { Basics, SectionTypes } from '../../types/resume.model';
 import { EditorSection } from './editor-sections';
 import { useForm } from 'react-hook-form';
@@ -17,10 +17,13 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
 
   const { isDirty } = formState;
 
-  const onSubmit = (data: Basics) => {
-    onUpdate(SectionTypes.Basics, data);
-    reset(data);
-  };
+  const onSubmit = useCallback(
+    (data: Basics) => {
+      onUpdate(SectionTypes.Basics, data);
+      reset(data);
+    },
+    [onUpdate, reset]
+  );
 
   // Register this section with the global form context
   useEffect(() => {

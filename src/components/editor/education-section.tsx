@@ -7,7 +7,7 @@ import {
   Textarea,
   Field,
 } from '@chakra-ui/react';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useCallback } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { SectionTypes, Education } from '../../types/resume.model';
 import { EditorSection, EditorSubsection } from './editor-sections';
@@ -44,10 +44,13 @@ export const EducationSection: FC<EducationSectionProps> = ({
 
   const { isDirty } = formState;
 
-  const onSubmit = (data: FormProps) => {
-    onUpdate(SectionTypes.Education, data.education);
-    reset(data);
-  };
+  const onSubmit = useCallback(
+    (data: FormProps) => {
+      onUpdate(SectionTypes.Education, data.education);
+      reset(data);
+    },
+    [onUpdate, reset]
+  );
 
   // Register this section with the global form context
   useEffect(() => {
