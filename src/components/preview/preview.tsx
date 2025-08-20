@@ -11,6 +11,8 @@ import { HiDownload } from 'react-icons/hi';
 import { BasicTemplate } from '../../resume-templates/basic.template';
 import { useResume } from '../../hooks/useResume';
 import { Paper } from './paper';
+import { PDFViewer } from '@react-pdf/renderer';
+import DuoTemplate from '../../resume-templates/duo';
 
 export const Preview: FC = () => {
   const { resume } = useResume();
@@ -82,9 +84,11 @@ export const Preview: FC = () => {
     }
   };
 
+  const template = <DuoTemplate resume={resume} />;
+
   return (
     <>
-      <Box
+      {/* <Box
         as="header"
         position="absolute"
         display="flex"
@@ -125,23 +129,13 @@ export const Preview: FC = () => {
             </Button>
           </GridItem>
         </Grid>
-      </Box>
-      <Box
-        ref={paperWrapperRef}
-        bgColor="gray.400"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        height="100%"
-        width="100%"
-        overflow="auto"
-        position="relative"
-        pt={24}
-      >
-        <Paper pagemargin={marg}>
+      </Box> */}
+      <PDFViewer width="100%" height="100%" showToolbar={false}>
+        {template}
+      </PDFViewer>
+      {/* <Paper pagemargin={marg}>
           <BasicTemplate resume={resume} />
-        </Paper>
-      </Box>
+        </Paper> */}
     </>
   );
 };
