@@ -1,18 +1,9 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Grid,
-  GridItem,
-  Heading,
-  Input,
-  Textarea,
-  Field,
-} from '@chakra-ui/react';
-import { FC, useEffect, useState } from 'react';
+import { Box, Grid, GridItem, Input, Textarea, Field } from '@chakra-ui/react';
+import { FC, useEffect, useCallback } from 'react';
 import { Basics, SectionTypes } from '../../types/resume.model';
 import { EditorSection } from './editor-sections';
 import { useForm } from 'react-hook-form';
+import { useGlobalForm } from '../../context/global-form.context';
 
 interface BasicsSectionProps {
   value: Basics;
@@ -22,20 +13,30 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
   const { register, handleSubmit, formState, reset } = useForm({
     defaultValues: value,
   });
+  const { registerSection, unregisterSection } = useGlobalForm();
 
   const { isDirty } = formState;
 
-  const onSubmit = (data: Basics) => {
-    onUpdate(SectionTypes.Basics, data);
-    reset(data);
-  };
+  const onSubmit = useCallback(
+    (data: Basics) => {
+      onUpdate(SectionTypes.Basics, data);
+      reset(data);
+    },
+    [onUpdate, reset]
+  );
+
+  // Register this section with the global form context
+  useEffect(() => {
+    registerSection(SectionTypes.Basics, {
+      isDirty,
+      handleSubmit: handleSubmit(onSubmit),
+    });
+
+    return () => unregisterSection(SectionTypes.Basics);
+  }, [isDirty, registerSection, unregisterSection, handleSubmit, onSubmit]);
 
   return (
-    <EditorSection
-      title="Basics"
-      onSaveClick={handleSubmit(onSubmit)}
-      saveIsDisabled={!isDirty}
-    >
+    <EditorSection title="Basics">
       <Box>
         <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
           <GridItem colSpan={1}>

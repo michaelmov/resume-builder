@@ -4,7 +4,6 @@ import {
   Flex,
   Grid,
   GridItem,
-  Icon,
   IconButton,
   Input,
   Stack,
@@ -12,7 +11,7 @@ import {
   TextareaProps,
   Field,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import { FC, useState, useEffect, useCallback } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import {
   HiChevronDown,
@@ -20,8 +19,9 @@ import {
   HiOutlineTrash,
   HiPlus,
 } from 'react-icons/hi';
-import { SectionTypes, Work } from '../../../types/resume.model';
-import { EditorSection, EditorSubsection } from '../editor-sections';
+import { SectionTypes, Work } from '../../types/resume.model';
+import { EditorSection, EditorSubsection } from './editor-sections';
+import { useGlobalForm } from '../../context/global-form.context';
 
 interface WorkSectionProps {
   value: Work[];
@@ -47,13 +47,27 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
       name: 'work',
     }
   );
+  const { registerSection, unregisterSection } = useGlobalForm();
 
   const { isDirty } = formState;
 
-  const onSubmit = (data: FormProps) => {
-    onUpdate(SectionTypes.Work, data.work);
-    reset(data);
-  };
+  const onSubmit = useCallback(
+    (data: FormProps) => {
+      onUpdate(SectionTypes.Work, data.work);
+      reset(data);
+    },
+    [onUpdate, reset]
+  );
+
+  // Register this section with the global form context
+  useEffect(() => {
+    registerSection(SectionTypes.Work, {
+      isDirty,
+      handleSubmit: handleSubmit(onSubmit),
+    });
+
+    return () => unregisterSection(SectionTypes.Work);
+  }, [isDirty, registerSection, unregisterSection, handleSubmit, onSubmit]);
 
   const addWork = () => {
     const newWork = {
@@ -70,11 +84,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
     append(newWork);
   };
   return (
-    <EditorSection
-      title="Work Experience"
-      onSaveClick={handleSubmit(onSubmit)}
-      saveIsDisabled={!isDirty}
-    >
+    <EditorSection title="Work Experience">
       <Box>
         {fields.map((field: any, index: number) => {
           return (
@@ -107,7 +117,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                   <Field.Root id={`start-${field.id}`}>
                     <Field.Label>Start date</Field.Label>
                     <Input
-                      type="text"
+                      type="date"
                       {...register(`work.${index}.startDate`)}
                     />
                   </Field.Root>
@@ -115,7 +125,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                 <GridItem colSpan={1}>
                   <Field.Root id={`end-${field.id}`}>
                     <Field.Label>End date</Field.Label>
-                    <Input type="text" {...register(`work.${index}.endDate`)} />
+                    <Input type="date" {...register(`work.${index}.endDate`)} />
                   </Field.Root>
                 </GridItem>
                 <GridItem colSpan={2}>
