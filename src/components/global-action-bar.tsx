@@ -15,25 +15,27 @@ export const GlobalActionBar: FC = () => {
   const sectionCount = dirtySections.length;
 
   return (
-    <ActionBar.Root open={hasAnyDirtySection}>
-      <ActionBar.Positioner>
-        <ActionBar.Content>
-          <ActionBar.SelectionTrigger>
-            {sectionCount} section{sectionCount > 1 ? 's' : ''} with unsaved
-            changes
-          </ActionBar.SelectionTrigger>
-          <ActionBar.Separator />
-          <Button
-            variant="solid"
-            colorPalette="purple"
-            size="sm"
-            onClick={saveAllSections}
-          >
-            <HiCheck />
-            Save All Changes
-          </Button>
-        </ActionBar.Content>
-      </ActionBar.Positioner>
+    <ActionBar.Root open={hasAnyDirtySection} portalled={false}>
+      <Portal>
+        <ActionBar.Positioner>
+          <ActionBar.Content justifyContent="start">
+            <ActionBar.SelectionTrigger>
+              {sectionCount} section{sectionCount > 1 ? 's' : ''} with unsaved
+              changes
+            </ActionBar.SelectionTrigger>
+            <ActionBar.Separator />
+            <Button
+              variant="solid"
+              colorPalette="purple"
+              size="sm"
+              onClick={saveAllSections}
+            >
+              <HiCheck />
+              Save All Changes
+            </Button>
+          </ActionBar.Content>
+        </ActionBar.Positioner>
+      </Portal>
     </ActionBar.Root>
   );
 };

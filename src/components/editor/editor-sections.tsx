@@ -1,4 +1,10 @@
-import { Box, BoxProps, Heading, IconButton } from '@chakra-ui/react';
+import {
+  Box,
+  BoxProps,
+  Collapsible,
+  Heading,
+  IconButton,
+} from '@chakra-ui/react';
 import { FC, useState } from 'react';
 import { HiOutlineTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
 
@@ -7,21 +13,47 @@ interface EditorSectionProps {
   children: React.ReactNode;
 }
 export const EditorSection: FC<EditorSectionProps> = ({ title, children }) => {
+  const [isOpen, setIsOpen] = useState(true);
+
   return (
-    <Box width="100%">
-      <Heading
-        as="h3"
-        fontSize="xl"
-        mb={2}
-        color="blackAlpha.600"
-        fontWeight="normal"
-      >
-        {title}
-      </Heading>
-      <Box as="section" bgColor="white" borderRadius={8} p={8} boxShadow="sm">
-        {children}
+    <Collapsible.Root
+      open={isOpen}
+      onOpenChange={(details) => setIsOpen(details.open)}
+    >
+      <Box width="100%">
+        <Collapsible.Trigger>
+          <Heading
+            as="h3"
+            fontSize="xl"
+            mb={2}
+            color="blackAlpha.600"
+            fontWeight="normal"
+            cursor="pointer"
+            display="flex"
+            alignItems="center"
+            gap={1}
+          >
+            <Box
+              as="span"
+              transform={isOpen ? 'rotate(0deg)' : 'rotate(-90deg)'}
+              transition="transform 0.2s ease-in-out"
+            >
+              <HiChevronDown />
+            </Box>
+            {title}
+          </Heading>
+        </Collapsible.Trigger>
+        <Collapsible.Content
+          as="section"
+          bgColor="white"
+          borderRadius={8}
+          p={8}
+          boxShadow="sm"
+        >
+          {children}
+        </Collapsible.Content>
       </Box>
-    </Box>
+    </Collapsible.Root>
   );
 };
 

@@ -1,4 +1,4 @@
-import { Box, Heading, Link, Portal, Stack } from '@chakra-ui/react';
+import { Box, Heading, Link, Stack } from '@chakra-ui/react';
 import { FC, useCallback } from 'react';
 import { useResume } from '../../hooks/useResume';
 import {
@@ -66,9 +66,7 @@ export const Editor: FC = () => {
         <SkillsSection value={resume.skills} onUpdate={onSectionUpdate} />
         <WorkSection value={resume.work} onUpdate={onSectionUpdate} />
         <EducationSection value={resume.education} onUpdate={onSectionUpdate} />
-        <Portal>
-          <GlobalActionBar />
-        </Portal>
+        <GlobalActionBar />
       </Stack>
     </GlobalFormProvider>
   );
