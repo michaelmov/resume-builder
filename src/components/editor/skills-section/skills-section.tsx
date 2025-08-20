@@ -1,15 +1,11 @@
-import {
-  Box,
-  Button,
-  Input,
-  Field,
-} from '@chakra-ui/react';
-import { FC } from 'react';
+import { Box, Button, Input, Field } from '@chakra-ui/react';
+import { FC, useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { SectionTypes, Skill } from '../../../types/resume.model';
 import { EditorSection, EditorSubsection } from '../editor-sections';
 import { HiPlus } from 'react-icons/hi';
 import { KeywordInput } from './keyword-input';
+import { useGlobalForm } from '../../../context/global-form.context';
 
 interface SkillsSectionProps {
   value: Skill[];
@@ -30,12 +26,11 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
         skills: value,
       },
     });
-  const { fields, append, remove, move } = useFieldArray(
-    {
-      control,
-      name: 'skills',
-    }
-  );
+  const { fields, append, remove, move } = useFieldArray({
+    control,
+    name: 'skills',
+  });
+  const { registerSection, unregisterSection } = useGlobalForm();
 
   const { isDirty } = formState;
 
@@ -43,6 +38,16 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
     onUpdate(SectionTypes.Skills, data.skills);
     reset(data);
   };
+
+  // Register this section with the global form context
+  useEffect(() => {
+    registerSection(SectionTypes.Skills, {
+      isDirty,
+      handleSubmit: handleSubmit(onSubmit),
+    });
+
+    return () => unregisterSection(SectionTypes.Skills);
+  }, [isDirty, registerSection, unregisterSection, handleSubmit, onSubmit]);
 
   const addSkill = () => {
     const newSkill = {
@@ -55,11 +60,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
   };
 
   return (
-    <EditorSection
-      title="Skills"
-      onSaveClick={handleSubmit(onSubmit)}
-      saveIsDisabled={!isDirty}
-    >
+    <EditorSection title="Skills">
       <Box>
         {fields.map((field: any, index: number) => {
           return (
@@ -73,13 +74,8 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
               moveDownDisabled={index >= fields.length - 1}
             >
               <Field.Root id={field.id} mb={4}>
-                <Field.Label display="inline-block">
-                  Skill name
-                </Field.Label>
-                <Input
-                  type="text"
-                  {...register(`skills.${index}.name`)}
-                />
+                <Field.Label display="inline-block">Skill name</Field.Label>
+                <Input type="text" {...register(`skills.${index}.name`)} />
               </Field.Root>
               <KeywordInput skillIndex={index} control={control} />
             </EditorSubsection>

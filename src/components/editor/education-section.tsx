@@ -7,11 +7,12 @@ import {
   Textarea,
   Field,
 } from '@chakra-ui/react';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { SectionTypes, Education } from '../../types/resume.model';
 import { EditorSection, EditorSubsection } from './editor-sections';
 import { HiPlus } from 'react-icons/hi';
+import { useGlobalForm } from '../../context/global-form.context';
 
 interface EducationSectionProps {
   value: Education[];
@@ -39,6 +40,7 @@ export const EducationSection: FC<EducationSectionProps> = ({
     control,
     name: 'education',
   });
+  const { registerSection, unregisterSection } = useGlobalForm();
 
   const { isDirty } = formState;
 
@@ -46,6 +48,16 @@ export const EducationSection: FC<EducationSectionProps> = ({
     onUpdate(SectionTypes.Education, data.education);
     reset(data);
   };
+
+  // Register this section with the global form context
+  useEffect(() => {
+    registerSection(SectionTypes.Education, {
+      isDirty,
+      handleSubmit: handleSubmit(onSubmit),
+    });
+
+    return () => unregisterSection(SectionTypes.Education);
+  }, [isDirty, registerSection, unregisterSection, handleSubmit, onSubmit]);
 
   const addEducation = () => {
     const newEducation = {
@@ -63,11 +75,7 @@ export const EducationSection: FC<EducationSectionProps> = ({
   };
 
   return (
-    <EditorSection
-      title="Education"
-      onSaveClick={handleSubmit(onSubmit)}
-      saveIsDisabled={!isDirty}
-    >
+    <EditorSection title="Education">
       <Box>
         {fields.map((field: any, index: number) => {
           return (

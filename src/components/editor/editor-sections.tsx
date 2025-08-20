@@ -1,27 +1,12 @@
-import {
-  Box,
-  BoxProps,
-  Button,
-  Flex,
-  Heading,
-  Icon,
-  IconButton,
-} from '@chakra-ui/react';
+import { Box, BoxProps, Heading, IconButton } from '@chakra-ui/react';
 import { FC, useState } from 'react';
 import { HiOutlineTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
 
 interface EditorSectionProps {
   title: string;
-  onSaveClick?: () => void;
-  saveIsDisabled?: boolean;
   children: React.ReactNode;
 }
-export const EditorSection: FC<EditorSectionProps> = ({
-  title,
-  children,
-  onSaveClick,
-  saveIsDisabled = false,
-}) => {
+export const EditorSection: FC<EditorSectionProps> = ({ title, children }) => {
   return (
     <Box width="100%">
       <Heading
@@ -35,17 +20,6 @@ export const EditorSection: FC<EditorSectionProps> = ({
       </Heading>
       <Box as="section" bgColor="white" borderRadius={8} p={8} boxShadow="sm">
         {children}
-        <Flex justifyContent="end" mt={6}>
-          <Button
-            colorPalette="purple"
-            mt={4}
-            onClick={onSaveClick}
-            size="sm"
-            disabled={saveIsDisabled}
-          >
-            Save
-          </Button>
-        </Flex>
       </Box>
     </Box>
   );

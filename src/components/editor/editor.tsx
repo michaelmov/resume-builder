@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Link, Stack } from '@chakra-ui/react';
+import { Box, Heading, Link, Stack } from '@chakra-ui/react';
 import { FC } from 'react';
 import { useResume } from '../../hooks/useResume';
 import {
@@ -11,7 +11,9 @@ import {
 import { BasicsSection } from './basics-section';
 import { EducationSection } from './education-section';
 import { SkillsSection } from './skills-section/skills-section';
-import { WorkSection } from './skills-section/work-section';
+import { WorkSection } from './work-section';
+import { GlobalFormProvider } from '../../context/global-form.context';
+import { GlobalActionBar } from '../global-action-bar';
 
 export const Editor: FC = () => {
   const { resume, updateBasics, updateSkills, updateWork, updateEducation } =
@@ -40,21 +42,29 @@ export const Editor: FC = () => {
   };
 
   return (
-    <Stack width="100%" position="relative" p={6} gap={8}>
-      <Heading as="h3" fontSize="medium" textAlign="center" fontWeight="normal">
-        Made with 💜 by{' '}
-        <Link
-          href="https://michaelmovsesov.com/"
-          target="_blank"
-          textDecoration="underline"
+    <GlobalFormProvider>
+      <Stack width="100%" position="relative" p={6} gap={8}>
+        <Heading
+          as="h3"
+          fontSize="medium"
+          textAlign="center"
+          fontWeight="normal"
         >
-          Michael Movsesov
-        </Link>
-      </Heading>
-      <BasicsSection value={resume.basics} onUpdate={onSectionUpdate} />
-      <SkillsSection value={resume.skills} onUpdate={onSectionUpdate} />
-      <WorkSection value={resume.work} onUpdate={onSectionUpdate} />
-      <EducationSection value={resume.education} onUpdate={onSectionUpdate} />
-    </Stack>
+          Made with 💜 by{' '}
+          <Link
+            href="https://michaelmovsesov.com/"
+            target="_blank"
+            textDecoration="underline"
+          >
+            Michael Movsesov
+          </Link>
+        </Heading>
+        <BasicsSection value={resume.basics} onUpdate={onSectionUpdate} />
+        <SkillsSection value={resume.skills} onUpdate={onSectionUpdate} />
+        <WorkSection value={resume.work} onUpdate={onSectionUpdate} />
+        <EducationSection value={resume.education} onUpdate={onSectionUpdate} />
+      </Stack>
+      <GlobalActionBar />
+    </GlobalFormProvider>
   );
 };
