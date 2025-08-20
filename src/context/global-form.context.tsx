@@ -69,7 +69,9 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
   const saveAllSections = useCallback(() => {
     Object.values(sections).forEach((section) => {
       if (section?.isDirty) {
-        section.handleSubmit();
+        setTimeout(() => {
+          section.handleSubmit();
+        });
       }
     });
   }, [sections]);

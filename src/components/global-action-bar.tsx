@@ -11,8 +11,6 @@ export const GlobalActionBar: FC = () => {
     return null;
   }
 
-  console.log('hasAnyDirtySection', hasAnyDirtySection);
-
   const dirtySections = getDirtySections();
   const sectionCount = dirtySections.length;
 
