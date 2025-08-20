@@ -1,5 +1,5 @@
 import { Box, Heading, Link, Portal, Stack } from '@chakra-ui/react';
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import { useResume } from '../../hooks/useResume';
 import {
   Basics,
@@ -19,27 +19,30 @@ export const Editor: FC = () => {
   const { resume, updateBasics, updateSkills, updateWork, updateEducation } =
     useResume();
 
-  const onSectionUpdate = (
-    sectionType: SectionTypes,
-    section: Basics | Skill[] | Education[] | Work[]
-  ) => {
-    switch (sectionType) {
-      case SectionTypes.Basics:
-        updateBasics(section as Basics);
-        break;
-      case SectionTypes.Skills:
-        updateSkills(section as Skill[]);
-        break;
-      case SectionTypes.Work:
-        updateWork(section as Work[]);
-        break;
-      case SectionTypes.Education:
-        updateEducation(section as Education[]);
-        break;
-      default:
-        break;
-    }
-  };
+  const onSectionUpdate = useCallback(
+    (
+      sectionType: SectionTypes,
+      section: Basics | Skill[] | Education[] | Work[]
+    ) => {
+      switch (sectionType) {
+        case SectionTypes.Basics:
+          updateBasics(section as Basics);
+          break;
+        case SectionTypes.Skills:
+          updateSkills(section as Skill[]);
+          break;
+        case SectionTypes.Work:
+          updateWork(section as Work[]);
+          break;
+        case SectionTypes.Education:
+          updateEducation(section as Education[]);
+          break;
+        default:
+          break;
+      }
+    },
+    [updateBasics, updateSkills, updateWork, updateEducation]
+  );
 
   return (
     <GlobalFormProvider>
