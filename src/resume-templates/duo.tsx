@@ -1,20 +1,23 @@
 import { FC } from 'react';
 import { Resume } from '../types/resume.model';
-import { Page, View, Text, Document } from '@react-pdf/renderer';
+import { Page, View, Text, Document, StyleSheet } from '@react-pdf/renderer';
 
 interface DuoTemplateProps {
   resume: Resume;
 }
 
-const DuoTemplate: FC<DuoTemplateProps> = ({ resume }) => {
+const styles = StyleSheet.create({
+  page: {
+    padding: 50,
+  },
+});
+
+const DuoTemplate = ({ resume }: DuoTemplateProps) => {
   return (
     <Document>
-      <Page size="A4">
+      <Page size="A4" style={styles.page}>
         <View>
-          <Text>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
+          <Text>{resume.basics.name}</Text>
         </View>
       </Page>
     </Document>
