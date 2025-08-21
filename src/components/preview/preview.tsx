@@ -17,7 +17,6 @@ export const Preview: FC = () => {
   const template = <DuoTemplate resume={resume} />;
   const [instance, update] = usePDF({ document: template });
   const [numPages, setNumPages] = useState<number>();
-  const [pageNumber, setPageNumber] = useState<number>(1);
 
   const blob = instance.blob;
 
@@ -34,19 +33,29 @@ export const Preview: FC = () => {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      justifyContent="center"
       backgroundColor="gray.300"
       width="100%"
-      height="100vh"
+      height="100%"
+      overflow="scroll"
+      padding="20"
     >
-      <Box shadow="xl">
-        <Document file={blob} onLoadSuccess={onDocumentLoadSuccess}>
-          <Page pageNumber={pageNumber} />
-        </Document>
-      </Box>
-      <p>
+      <Document
+        file={blob}
+        onLoadSuccess={onDocumentLoadSuccess}
+        scale={1.4}
+        className="pdf-document"
+      >
+        {/* Look at the total number of pages and render a page for each */}
+        {Array.from({ length: numPages ?? 0 }).map((_, index) => (
+          <Box shadow="xl" key={index} margin="6">
+            <Page key={index} pageNumber={index + 1} />
+          </Box>
+        ))}
+      </Document>
+
+      {/* <p>
         Page {pageNumber} of {numPages}
-      </p>
+      </p> */}
     </Box>
   );
 };
