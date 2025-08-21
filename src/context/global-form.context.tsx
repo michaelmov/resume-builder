@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from 'react';
 import { SectionTypes } from '../types/resume.model';
+import { useResume } from '../hooks/useResume';
 
 interface SectionFormState {
   isDirty: boolean;
@@ -29,6 +30,8 @@ const GlobalFormContext = createContext<GlobalFormContextType | null>(null);
 export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { resume } = useResume();
+
   const [sections, setSections] = useState<
     Record<SectionTypes, SectionFormState | null>
   >({
@@ -69,12 +72,12 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
   const saveAllSections = useCallback(() => {
     Object.values(sections).forEach((section) => {
       if (section?.isDirty) {
-        setTimeout(() => {
-          section.handleSubmit();
-        });
+        section.handleSubmit();
       }
     });
   }, [sections]);
+
+  console.log('resume', resume);
 
   return (
     <GlobalFormContext.Provider

@@ -262,16 +262,19 @@ const DuoTemplate = ({ resume }: { resume: Resume }) => {
           <Text>{resume.basics?.summary}</Text>
         </View>
         <SectionTitle title="Skills" />
-        {resume.skills.map((skill) => (
-          <SkillsSection key={skill.name} skill={skill} />
+        {resume.skills.map((skill, index) => (
+          <SkillsSection key={`${skill.name}-${index}`} skill={skill} />
         ))}
         <SectionTitle title="Work Experience" />
-        {resume.work.map((work) => (
-          <WorkExperience key={work.name} work={work} />
+        {resume.work.map((work, index) => (
+          <WorkExperience key={`${work.name}-${index}`} work={work} />
         ))}
         <SectionTitle title="Education" />
-        {resume.education.map((education) => (
-          <EducationSection key={education.institution} education={education} />
+        {resume.education.map((education, index) => (
+          <EducationSection
+            key={`${education.institution}-${index}`}
+            education={education}
+          />
         ))}
       </Page>
     </Document>

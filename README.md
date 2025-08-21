@@ -1,10 +1,9 @@
 # Developer Resume Builder
 
----
-
+A free and open source resume builder made for developers. You can quickly put together a simple resume using clean templates and export as a PDF.
 [Try it now!](https://michaelmov.github.io/resume-builder/)
 
-A free and open source resume builder made for developers. You can quickly put together a simple resume using clean templates and export as a PDF.
+---
 
 ### Highlights
 
