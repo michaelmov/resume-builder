@@ -1,0 +1,5 @@
+{
+  // Prettier
+  "prettier.singleQuote": true,
+  "prettier.jsxSingleQuote": false
+}
