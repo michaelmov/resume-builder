@@ -9,6 +9,7 @@ import { HiDownload } from 'react-icons/hi';
 
 import { useResume } from '../../hooks/useResume';
 import DuoTemplate from '../../resume-templates/duo';
+import { PreviewNavBar } from './preview-nav-bar';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -41,32 +42,7 @@ export const Preview: FC = () => {
       padding="20"
       zIndex={0}
     >
-      <Box
-        as="header"
-        position="absolute"
-        display="flex"
-        alignItems="center"
-        top={0}
-        width="100%"
-        height="60px"
-        bgColor="gray.600"
-        zIndex={900}
-        px={4}
-        boxShadow="md"
-      >
-        <Grid templateColumns="1fr 1fr 1fr" width="100%">
-          <GridItem />
-          <GridItem />
-          <GridItem display="flex" justifyContent="end">
-            <PDFDownloadLink document={template}>
-              <Button size="sm" colorPalette="gray" variant="subtle">
-                <Icon as={HiDownload} boxSize={5} />
-                Download PDF
-              </Button>
-            </PDFDownloadLink>
-          </GridItem>
-        </Grid>
-      </Box>
+      <PreviewNavBar resumeTemplate={template} />
       <Document
         file={blob}
         onLoadSuccess={onDocumentLoadSuccess}
