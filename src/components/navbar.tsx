@@ -1,9 +1,20 @@
-import { Box, Icon, IconButton, LinkBox, LinkOverlay, Spacer } from '@chakra-ui/react';
+import {
+  Box,
+  Icon,
+  IconButton,
+  LinkBox,
+  LinkOverlay,
+  Spacer,
+} from '@chakra-ui/react';
 import { FC } from 'react';
-import { HiOutlineBriefcase } from 'react-icons/hi';
+import { HiOutlineBriefcase, HiOutlineUpload } from 'react-icons/hi';
 import { VscGithub } from 'react-icons/vsc';
+import { Tooltip } from './ui/tooltip';
+import { useJsonImport } from '../hooks/useJsonImport';
 
 export const Navbar: FC = () => {
+  const { fileInputRef, triggerFileInput, handleFileChange } = useJsonImport();
+
   return (
     <Box
       as="nav"
@@ -18,17 +29,40 @@ export const Navbar: FC = () => {
     >
       <Icon as={HiOutlineBriefcase} boxSize={8} />
       <Spacer />
-      <LinkBox>
+      <Tooltip content="Import your resume">
         <IconButton
+          color="white"
           variant="ghost"
-          aria-label="Open Github repo"
+          aria-label="Import Resume"
           colorPalette="bg"
           _hover={{
             backgroundColor: 'purple.600',
           }}
+          onClick={triggerFileInput}
         >
-          <LinkOverlay href="https://github.com/michaelmov/resume-builder" target="_blank">
-          <VscGithub color='white' />
+          <HiOutlineUpload />
+        </IconButton>
+      </Tooltip>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
+      <LinkBox>
+        <IconButton
+          variant="ghost"
+          aria-label="Open Github repo"
+          _hover={{
+            backgroundColor: 'purple.600',
+          }}
+        >
+          <LinkOverlay
+            href="https://github.com/michaelmov/resume-builder"
+            target="_blank"
+          >
+            <VscGithub color="white" />
           </LinkOverlay>
         </IconButton>
       </LinkBox>
