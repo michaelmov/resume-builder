@@ -10,8 +10,11 @@ import { FC } from 'react';
 import { HiOutlineBriefcase, HiOutlineUpload } from 'react-icons/hi';
 import { VscGithub } from 'react-icons/vsc';
 import { Tooltip } from './ui/tooltip';
+import { useJsonImport } from '../hooks/useJsonImport';
 
 export const Navbar: FC = () => {
+  const { fileInputRef, triggerFileInput, handleFileChange } = useJsonImport();
+
   return (
     <Box
       as="nav"
@@ -35,10 +38,18 @@ export const Navbar: FC = () => {
           _hover={{
             backgroundColor: 'purple.600',
           }}
+          onClick={triggerFileInput}
         >
           <HiOutlineUpload />
         </IconButton>
       </Tooltip>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
       <LinkBox>
         <IconButton
           variant="ghost"
