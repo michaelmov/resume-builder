@@ -33,11 +33,12 @@ export const Preview: FC = () => {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      backgroundColor="gray.300"
+      backgroundColor="gray.400"
       width="100%"
       height="100%"
       overflow="scroll"
       padding="20"
+      zIndex={0}
     >
       <Document
         file={blob}
