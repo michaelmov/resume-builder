@@ -1,89 +1,46 @@
-import {
-  Box,
-  Button,
-  Icon,
-  Grid,
-  GridItem,
-  NumberInput,
-} from '@chakra-ui/react';
-import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
+
+import { Box, Button, Grid, GridItem, Icon } from '@chakra-ui/react';
+import { PDFDownloadLink, usePDF } from '@react-pdf/renderer';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/TextLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { HiDownload } from 'react-icons/hi';
-import { BasicTemplate } from '../../resume-templates/basic.template';
+
 import { useResume } from '../../hooks/useResume';
-import { Paper } from './paper';
+import DuoTemplate from '../../resume-templates/duo';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export const Preview: FC = () => {
   const { resume } = useResume();
-  const [isExporting, setIsExporting] = useState(false);
-  const paperWrapperRef = useRef<HTMLDivElement>(null);
-  const [scrollPos, setScrollPos] = useState(0);
 
-  const [marg, setMarg] = useState(0.5);
+  const template = <DuoTemplate resume={resume} />;
+  const [instance, update] = usePDF({ document: template });
+  const [numPages, setNumPages] = useState<number>();
 
-  const handleScroll = () => {
-    if (paperWrapperRef.current) {
-      setScrollPos(paperWrapperRef.current?.scrollTop);
-    }
-  };
+  const blob = instance.blob;
 
-  useLayoutEffect(() => {
-    paperWrapperRef?.current?.addEventListener('scroll', handleScroll);
-    return () =>
-      paperWrapperRef?.current?.removeEventListener('scroll', handleScroll);
-  });
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+    setNumPages(numPages);
+  }
 
   useEffect(() => {
-    setTimeout(() => {
-      if (paperWrapperRef.current) {
-        paperWrapperRef.current.scrollTo(0, scrollPos);
-      }
-    }, 100);
+    update(template);
   }, [resume]);
 
-  const getPDF = async () => {
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(resume),
-    };
-
-    const url = '/api/exportPDF';
-
-    try {
-      setIsExporting(true);
-      const response = await fetch(url, requestOptions);
-
-      if (response.status === 200) {
-        const blob = await response.blob();
-
-        // Validate that we actually got a PDF
-        if (blob.type !== 'application/pdf' && blob.size === 0) {
-          throw new Error('Invalid PDF response');
-        }
-
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = `${resume?.basics?.name} - ${resume?.basics?.label}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(downloadUrl);
-      } else {
-        const errorText = await response.text();
-        console.error('Server error:', errorText);
-        throw new Error(`Server error: ${response.status} - ${errorText}`);
-      }
-    } catch (e: any) {
-      console.error('PDF download error:', e?.message || e);
-      // You could add user notification here
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
   return (
-    <>
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      backgroundColor="gray.400"
+      width="100%"
+      height="100%"
+      overflow="scroll"
+      padding="20"
+      zIndex={0}
+    >
       <Box
         as="header"
         position="absolute"
@@ -98,50 +55,30 @@ export const Preview: FC = () => {
         boxShadow="md"
       >
         <Grid templateColumns="1fr 1fr 1fr" width="100%">
-          <GridItem></GridItem>
-          <GridItem display="flex" justifyContent="center">
-            <NumberInput.Root
-              defaultValue={marg.toString()}
-              step={0.1}
-              min={0.1}
-              max={1}
-              onValueChange={(details) => setMarg(parseFloat(details.value))}
-            >
-              <NumberInput.Control />
-              <NumberInput.Input bgColor="white" />
-            </NumberInput.Root>
-          </GridItem>
+          <GridItem />
+          <GridItem />
           <GridItem display="flex" justifyContent="end">
-            <Button
-              loading={isExporting}
-              loadingText="Exporting..."
-              size="sm"
-              colorPalette="gray"
-              variant="subtle"
-              onClick={getPDF}
-            >
-              <Icon as={HiDownload} boxSize={5} />
-              Download PDF
-            </Button>
+            <PDFDownloadLink document={template}>
+              <Button size="sm" colorPalette="gray" variant="subtle">
+                <Icon as={HiDownload} boxSize={5} />
+                Download PDF
+              </Button>
+            </PDFDownloadLink>
           </GridItem>
         </Grid>
       </Box>
-      <Box
-        ref={paperWrapperRef}
-        bgColor="gray.400"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        height="100%"
-        width="100%"
-        overflow="auto"
-        position="relative"
-        pt={24}
+      <Document
+        file={blob}
+        onLoadSuccess={onDocumentLoadSuccess}
+        scale={1.4}
+        className="pdf-document"
       >
-        <Paper pagemargin={marg}>
-          <BasicTemplate resume={resume} />
-        </Paper>
-      </Box>
-    </>
+        {Array.from({ length: numPages ?? 0 }).map((_, index) => (
+          <Box shadow="xl" key={`page-${index}`} margin="6">
+            <Page key={index} pageNumber={index + 1} />
+          </Box>
+        ))}
+      </Document>
+    </Box>
   );
 };

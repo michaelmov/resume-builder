@@ -17,7 +17,7 @@ export const GlobalActionBar: FC = () => {
   return (
     <ActionBar.Root open={hasAnyDirtySection} portalled={false}>
       <Portal>
-        <ActionBar.Positioner>
+        <ActionBar.Positioner zIndex={1000}>
           <ActionBar.Content justifyContent="start">
             <ActionBar.SelectionTrigger>
               {sectionCount} section{sectionCount > 1 ? 's' : ''} with unsaved
