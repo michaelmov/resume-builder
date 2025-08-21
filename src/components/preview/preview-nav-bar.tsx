@@ -13,7 +13,7 @@ import { PiFilePdfLight } from 'react-icons/pi';
 import { BsFiletypeJson, BsFiletypePdf } from 'react-icons/bs';
 import { useResume } from '../../hooks/useResume';
 import { useMemo } from 'react';
-
+import { exportResumeAsJson } from '../../utils/json-export';
 interface PreviewNavBarProps {
   resumeTemplate: JSX.Element;
 }
@@ -30,20 +30,7 @@ export const PreviewNavBar = ({ resumeTemplate }: PreviewNavBarProps) => {
   }, [resume]);
 
   const handleJsonExport = () => {
-    try {
-      const resumeData = JSON.stringify(resume, null, 2);
-      const blob = new Blob([resumeData], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${exportFileName}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error exporting JSON:', error);
-    }
+    exportResumeAsJson(resume, exportFileName);
   };
 
   return (
