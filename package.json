@@ -1,10 +1,13 @@
 {
   "name": "resume-builder",
   "version": "0.0.0",
+  "homepage": "https://michaelmovsesov.github.io/resume-builder",
   "scripts": {
     "dev": "vite --open",
     "build": "tsc && vite build --mode production",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.0.0",
@@ -25,6 +28,7 @@
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "gh-pages": "^6.3.0",
     "typescript": "^5.6.2",
     "vite": "^7.0.5"
   }
