@@ -4,6 +4,3 @@ dist
 dist-ssr
 *.local
 *.log
-**/.firebase
-**/.firebaserc
-**/*.log
