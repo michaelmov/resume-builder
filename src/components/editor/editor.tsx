@@ -53,7 +53,7 @@ export const Editor: FC = () => {
           textAlign="center"
           fontWeight="normal"
         >
-          Made with 💜 by{' '}
+          Made with ❤️ by{' '}
           <Link
             href="https://michaelmovsesov.com/"
             target="_blank"
