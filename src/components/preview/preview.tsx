@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 
-import { Box } from '@chakra-ui/react';
-import { usePDF } from '@react-pdf/renderer';
+import { Box, Button } from '@chakra-ui/react';
+import { PDFDownloadLink, usePDF } from '@react-pdf/renderer';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -45,17 +45,15 @@ export const Preview: FC = () => {
         scale={1.4}
         className="pdf-document"
       >
-        {/* Look at the total number of pages and render a page for each */}
         {Array.from({ length: numPages ?? 0 }).map((_, index) => (
-          <Box shadow="xl" key={index} margin="6">
+          <Box shadow="xl" key={`page-${index}`} margin="6">
             <Page key={index} pageNumber={index + 1} />
           </Box>
         ))}
       </Document>
-
-      {/* <p>
-        Page {pageNumber} of {numPages}
-      </p> */}
+      <PDFDownloadLink document={template}>
+        <Button>Download</Button>
+      </PDFDownloadLink>
     </Box>
   );
 };
