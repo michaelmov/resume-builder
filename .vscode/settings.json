@@ -1,5 +1,12 @@
 {
   // Prettier
   "prettier.singleQuote": true,
-  "prettier.jsxSingleQuote": false
+  "prettier.jsxSingleQuote": false,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // ESLint
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
 }

@@ -5,7 +5,7 @@ import {
   Heading,
   IconButton,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { HiOutlineTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
 
 interface EditorSectionProps {

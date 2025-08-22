@@ -1,6 +1,8 @@
-import { useRef, useCallback } from 'react';
-import { useResume } from './useResume';
+import React, { useRef, useCallback } from 'react';
+
 import { Resume } from '../types/resume.model';
+
+import { useResume } from './useResume';
 
 export const useJsonImport = () => {
   const { updateResume } = useResume();

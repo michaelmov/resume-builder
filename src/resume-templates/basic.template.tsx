@@ -7,11 +7,12 @@ import {
   List,
   Text,
 } from '@chakra-ui/react';
-import { forwardRef } from 'react';
 import { Global } from '@emotion/react';
+import { forwardRef } from 'react';
 import { FC, useMemo } from 'react';
-import { Resume } from '../types/resume.model';
 import { HiArrowSmRight } from 'react-icons/hi';
+
+import { Resume } from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
 
 const Fonts = () => (
@@ -32,7 +33,7 @@ interface BasicHeadingProps extends HeadingProps {
   decorationColor?: string;
 }
 const BasicHeading = forwardRef<HTMLHeadingElement, BasicHeadingProps>(
-  (props, ref) => {
+  function BasicHeading(props, ref) {
     const _fontSize = useMemo(() => {
       switch (props.as) {
         case 'h1':

@@ -1,6 +1,7 @@
 import { ActionBar, Button, Portal } from '@chakra-ui/react';
 import { FC } from 'react';
 import { HiCheck } from 'react-icons/hi';
+
 import { useGlobalForm } from '../context/global-form.context';
 
 export const GlobalActionBar: FC = () => {

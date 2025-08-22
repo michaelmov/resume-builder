@@ -19,9 +19,11 @@ import {
   HiOutlineTrash,
   HiPlus,
 } from 'react-icons/hi';
-import { SectionTypes, Work } from '../../types/resume.model';
-import { EditorSection, EditorSubsection } from './editor-sections';
+
 import { useGlobalForm } from '../../context/global-form.context';
+import { SectionTypes, Work } from '../../types/resume.model';
+
+import { EditorSection, EditorSubsection } from './editor-sections';
 
 interface WorkSectionProps {
   value: Work[];
@@ -41,12 +43,10 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
         work: value,
       },
     });
-  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
-    {
-      control,
-      name: 'work',
-    }
-  );
+  const { fields, append, remove, move } = useFieldArray({
+    control,
+    name: 'work',
+  });
   const { registerSection, unregisterSection } = useGlobalForm();
 
   const { isDirty } = formState;

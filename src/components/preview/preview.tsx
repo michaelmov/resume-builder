@@ -1,14 +1,13 @@
-import { FC, useEffect, useState } from 'react';
-
-import { Box, Button, Grid, GridItem, Icon } from '@chakra-ui/react';
-import { PDFDownloadLink, usePDF } from '@react-pdf/renderer';
+import { Box } from '@chakra-ui/react';
+import { usePDF } from '@react-pdf/renderer';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
-import { HiDownload } from 'react-icons/hi';
 
 import { useResume } from '../../hooks/useResume';
 import DuoTemplate from '../../resume-templates/duo';
+
 import { PreviewNavBar } from './preview-nav-bar';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -16,7 +15,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 export const Preview: FC = () => {
   const { resume } = useResume();
 
-  const template = <DuoTemplate resume={resume} />;
+  const template = useMemo(() => <DuoTemplate resume={resume} />, [resume]);
   const [instance, update] = usePDF({ document: template });
   const [numPages, setNumPages] = useState<number>();
 
@@ -28,7 +27,7 @@ export const Preview: FC = () => {
 
   useEffect(() => {
     update(template);
-  }, [resume]);
+  }, [resume, template, update]);
 
   return (
     <Box

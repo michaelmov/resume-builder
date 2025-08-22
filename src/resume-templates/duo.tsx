@@ -1,4 +1,3 @@
-import { Education, Resume, Skill, Work } from '../types/resume.model';
 import {
   Page,
   View,
@@ -10,6 +9,8 @@ import {
   Svg,
   Path,
 } from '@react-pdf/renderer';
+
+import { Education, Resume, Skill, Work } from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
 
 Font.register({

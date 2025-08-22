@@ -1,4 +1,5 @@
 import { Resume } from '../types/resume.model';
+
 import { formatDate } from './date-utilities';
 
 export const exportResumeAsText = (resume: Resume, fileName: string) => {

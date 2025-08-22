@@ -5,8 +5,8 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
+
 import { SectionTypes } from '../types/resume.model';
-import { useResume } from '../hooks/useResume';
 
 interface SectionFormState {
   isDirty: boolean;

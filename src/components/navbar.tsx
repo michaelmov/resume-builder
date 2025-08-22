@@ -9,8 +9,10 @@ import {
 import { FC } from 'react';
 import { HiOutlineBriefcase, HiOutlineUpload } from 'react-icons/hi';
 import { VscGithub } from 'react-icons/vsc';
-import { Tooltip } from './ui/tooltip';
+
 import { useJsonImport } from '../hooks/useJsonImport';
+
+import { Tooltip } from './ui/tooltip';
 
 export const Navbar: FC = () => {
   const { fileInputRef, triggerFileInput, handleFileChange } = useJsonImport();
