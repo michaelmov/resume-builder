@@ -6,7 +6,6 @@ import React, {
   useMemo,
 } from 'react';
 
-import { useResume } from '../hooks/useResume';
 import { SectionTypes } from '../types/resume.model';
 
 interface SectionFormState {
@@ -42,7 +41,7 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const registerSection = useCallback(
     (sectionType: SectionTypes, formState: SectionFormState) => {
-      setSections((prev) => ({
+      setSections(prev => ({
         ...prev,
         [sectionType]: formState,
       }));
@@ -51,25 +50,25 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   const unregisterSection = useCallback((sectionType: SectionTypes) => {
-    setSections((prev) => ({
+    setSections(prev => ({
       ...prev,
       [sectionType]: null,
     }));
   }, []);
 
   const hasAnyDirtySection = useMemo(
-    () => Object.values(sections).some((section) => section?.isDirty === true),
+    () => Object.values(sections).some(section => section?.isDirty === true),
     [sections]
   );
 
   const getDirtySections = useCallback((): SectionTypes[] => {
     return Object.keys(sections).filter(
-      (sectionType) => sections[sectionType as SectionTypes]?.isDirty === true
+      sectionType => sections[sectionType as SectionTypes]?.isDirty === true
     ) as SectionTypes[];
   }, [sections]);
 
   const saveAllSections = useCallback(() => {
-    Object.values(sections).forEach((section) => {
+    Object.values(sections).forEach(section => {
       if (section?.isDirty) {
         section.handleSubmit();
       }

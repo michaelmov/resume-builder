@@ -9,7 +9,6 @@ import { EditorSection, EditorSubsection } from '../editor-sections';
 
 import { KeywordInput } from './keyword-input';
 
-
 interface SkillsSectionProps {
   value: Skill[];
   onUpdate: (sectionType: SectionTypes, section: Skill[]) => void;

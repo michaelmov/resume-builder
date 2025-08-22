@@ -1,4 +1,10 @@
-import { createContext, Dispatch, FC, useEffect, useReducer } from 'react';
+import React, {
+  createContext,
+  Dispatch,
+  FC,
+  useEffect,
+  useReducer,
+} from 'react';
 
 import { useResumeLocalStorage } from '../hooks/useResumeLocalStorage';
 import { resumeMock } from '../mocks/resume.mock';
@@ -28,7 +34,7 @@ const ResumeProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     saveResume(state);
-  }, [state]);
+  }, [state, saveResume]);
 
   return <Provider value={{ state, dispatch }}>{children}</Provider>;
 };

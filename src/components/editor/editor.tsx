@@ -1,4 +1,4 @@
-import { Box, Heading, Link, Stack } from '@chakra-ui/react';
+import { Heading, Link, Stack } from '@chakra-ui/react';
 import { FC, useCallback } from 'react';
 
 import { GlobalFormProvider } from '../../context/global-form.context';

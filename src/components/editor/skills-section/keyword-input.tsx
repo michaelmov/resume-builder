@@ -20,7 +20,10 @@ interface KeywordInputProps {
   control: any;
 }
 
-export const KeywordInput: FC<KeywordInputProps> = ({ skillIndex, control }) => {
+export const KeywordInput: FC<KeywordInputProps> = ({
+  skillIndex,
+  control,
+}) => {
   const { fields, remove, append, move } = useFieldArray({
     control,
     name: `skills[${skillIndex}].keywords`,
@@ -45,8 +48,8 @@ export const KeywordInput: FC<KeywordInputProps> = ({ skillIndex, control }) => 
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = fields.findIndex((field) => field.id === active.id);
-      const newIndex = fields.findIndex((field) => field.id === over?.id);
+      const oldIndex = fields.findIndex(field => field.id === active.id);
+      const newIndex = fields.findIndex(field => field.id === over?.id);
       move(oldIndex, newIndex);
     }
   };

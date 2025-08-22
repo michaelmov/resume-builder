@@ -1,5 +1,5 @@
 import { ChakraProvider, Grid, GridItem } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { Editor } from './components/editor/editor';

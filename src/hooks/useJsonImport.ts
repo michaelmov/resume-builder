@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 
 import { Resume } from '../types/resume.model';
 
@@ -17,7 +17,7 @@ export const useJsonImport = () => {
       const file = event.target.files?.[0];
       if (file && file.type === 'application/json') {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = e => {
           try {
             const jsonContent = e.target?.result as string;
             const resumeData: Resume = JSON.parse(jsonContent);

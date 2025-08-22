@@ -43,12 +43,10 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
         work: value,
       },
     });
-  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
-    {
-      control,
-      name: 'work',
-    }
-  );
+  const { fields, append, remove, move } = useFieldArray({
+    control,
+    name: 'work',
+  });
   const { registerSection, unregisterSection } = useGlobalForm();
 
   const { isDirty } = formState;
@@ -192,9 +190,9 @@ const HighlightsList: FC<HighlightsListProps> = ({
             index={index}
             workIndex={workIndex}
             register={register}
-            onMoveUp={(idx) => move(idx, idx - 1)}
-            onMoveDown={(idx) => move(idx, idx + 1)}
-            onDelete={(idx) => remove(idx)}
+            onMoveUp={idx => move(idx, idx - 1)}
+            onMoveDown={idx => move(idx, idx + 1)}
+            onDelete={idx => remove(idx)}
             moveUpDisabled={index === 0}
             moveDownDisabled={index >= fields.length - 1}
           />

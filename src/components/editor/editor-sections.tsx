@@ -5,7 +5,7 @@ import {
   Heading,
   IconButton,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { HiOutlineTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
 
 interface EditorSectionProps {
@@ -18,7 +18,7 @@ export const EditorSection: FC<EditorSectionProps> = ({ title, children }) => {
   return (
     <Collapsible.Root
       open={isOpen}
-      onOpenChange={(details) => setIsOpen(details.open)}
+      onOpenChange={details => setIsOpen(details.open)}
     >
       <Box width="100%">
         <Collapsible.Trigger>

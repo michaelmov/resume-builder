@@ -46,8 +46,8 @@ export default [
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
 
-      // Disallow console.log statements
-      'no-console': 'error',
+      // Disallow console.log statements (but allow console.error and console.info)
+      'no-console': ['error', { allow: ['error', 'info'] }],
 
       // Import ordering rules
       'import/order': [

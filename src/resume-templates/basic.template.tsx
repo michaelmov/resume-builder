@@ -33,7 +33,7 @@ interface BasicHeadingProps extends HeadingProps {
   decorationColor?: string;
 }
 const BasicHeading = forwardRef<HTMLHeadingElement, BasicHeadingProps>(
-  (props, ref) => {
+  function BasicHeading(props, ref) {
     const _fontSize = useMemo(() => {
       switch (props.as) {
         case 'h1':

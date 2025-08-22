@@ -1,20 +1,7 @@
-import {
-  Box,
-  Button,
-  Grid,
-  GridItem,
-  Icon,
-  Menu,
-  Portal,
-} from '@chakra-ui/react';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import { useMemo } from 'react';
-import { BsFiletypeJson, BsFiletypePdf } from 'react-icons/bs';
-import { HiDotsVertical } from 'react-icons/hi';
-import { PiFilePdfLight } from 'react-icons/pi';
+import { Box, Grid, GridItem } from '@chakra-ui/react';
+import { JSX } from 'react';
 
 import { useResume } from '../../hooks/useResume';
-import { exportResumeAsJson } from '../../utils/json-export';
 
 import ExportMenu from './export-menu';
 interface PreviewNavBarProps {
@@ -22,6 +9,8 @@ interface PreviewNavBarProps {
 }
 
 export const PreviewNavBar = ({ resumeTemplate }: PreviewNavBarProps) => {
+  useResume();
+
   return (
     <Box
       as="header"
