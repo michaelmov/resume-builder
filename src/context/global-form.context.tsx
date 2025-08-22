@@ -30,8 +30,6 @@ const GlobalFormContext = createContext<GlobalFormContextType | null>(null);
 export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { resume } = useResume();
-
   const [sections, setSections] = useState<
     Record<SectionTypes, SectionFormState | null>
   >({
