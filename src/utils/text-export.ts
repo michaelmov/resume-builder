@@ -53,10 +53,10 @@ const generateAtsCompliantText = (resume: Resume): string => {
   // Skills Section
   if (resume.skills && resume.skills.length > 0) {
     sections.push('SKILLS');
-    resume.skills.forEach(skill => {
+    resume.skills.forEach((skill) => {
       if (skill.name && skill.keywords && skill.keywords.length > 0) {
         const keywords = skill.keywords
-          .map(keyword => keyword.value)
+          .map((keyword) => keyword.value)
           .join(', ');
         sections.push(`${skill.name}: ${keywords}`);
       }
@@ -67,7 +67,7 @@ const generateAtsCompliantText = (resume: Resume): string => {
   // Work Experience Section
   if (resume.work && resume.work.length > 0) {
     sections.push('WORK EXPERIENCE');
-    resume.work.forEach(work => {
+    resume.work.forEach((work) => {
       const startDate = formatDate(work.startDate);
       const endDate = formatDate(work.endDate) || 'Present';
 
@@ -80,7 +80,7 @@ const generateAtsCompliantText = (resume: Resume): string => {
       }
 
       if (work.highlights && work.highlights.length > 0) {
-        work.highlights.forEach(highlight => {
+        work.highlights.forEach((highlight) => {
           sections.push(`• ${highlight.value}`);
         });
       }
@@ -92,7 +92,7 @@ const generateAtsCompliantText = (resume: Resume): string => {
   // Education Section
   if (resume.education && resume.education.length > 0) {
     sections.push('EDUCATION');
-    resume.education.forEach(education => {
+    resume.education.forEach((education) => {
       const startDate = formatDate(education.startDate);
       const endDate = formatDate(education.endDate);
       const dateRange =

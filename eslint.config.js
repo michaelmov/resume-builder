@@ -79,6 +79,9 @@ export default [
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
 
+      // Arrow function rules
+      'arrow-parens': ['error', 'always'], // Require parentheses around arrow function arguments
+
       // Import rules
       'import/no-unresolved': 'error',
       'import/named': 'error',

@@ -14,7 +14,7 @@ export const SortableKeywordTagContainer: FC<
 > = ({ keywords, onRemove }) => {
   return (
     <SortableContext
-      items={keywords.map(k => k.id)}
+      items={keywords.map((k) => k.id)}
       strategy={rectSortingStrategy}
     >
       <Box display="flex" flexWrap="wrap" gap={2} mb={2}>

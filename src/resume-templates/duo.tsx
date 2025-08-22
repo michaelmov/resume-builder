@@ -185,7 +185,7 @@ const SkillsSection = ({ skill }: { skill: Skill }) => {
     <View style={{ marginBottom: 14 }}>
       <Text style={styles.skillTitle}>{skill.name}</Text>
       <View style={styles.skillKeywords}>
-        {skill.keywords.map(keyword => (
+        {skill.keywords.map((keyword) => (
           <View style={styles.skillKeyword} key={keyword.value}>
             <Text key={keyword.value}>{keyword.value}</Text>
           </View>

@@ -18,7 +18,7 @@ export const EditorSection: FC<EditorSectionProps> = ({ title, children }) => {
   return (
     <Collapsible.Root
       open={isOpen}
-      onOpenChange={details => setIsOpen(details.open)}
+      onOpenChange={(details) => setIsOpen(details.open)}
     >
       <Box width="100%">
         <Collapsible.Trigger>

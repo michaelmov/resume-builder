@@ -190,9 +190,9 @@ const HighlightsList: FC<HighlightsListProps> = ({
             index={index}
             workIndex={workIndex}
             register={register}
-            onMoveUp={idx => move(idx, idx - 1)}
-            onMoveDown={idx => move(idx, idx + 1)}
-            onDelete={idx => remove(idx)}
+            onMoveUp={(idx) => move(idx, idx - 1)}
+            onMoveDown={(idx) => move(idx, idx + 1)}
+            onDelete={(idx) => remove(idx)}
             moveUpDisabled={index === 0}
             moveDownDisabled={index >= fields.length - 1}
           />
