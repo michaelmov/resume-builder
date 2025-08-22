@@ -1,13 +1,15 @@
-import { useMemo } from 'react';
 import { Box, Button, Icon, Menu, Portal } from '@chakra-ui/react';
-import { BsFiletypeJson, BsFiletypeTxt } from 'react-icons/bs';
-import { HiDotsVertical } from 'react-icons/hi';
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import { useMemo } from 'react';
+import { BsFiletypeJson, BsFiletypeTxt } from 'react-icons/bs';
 import { BsFiletypePdf } from 'react-icons/bs';
+import { HiDotsVertical } from 'react-icons/hi';
+import { PiExportLight } from 'react-icons/pi';
+
 import { useResume } from '../../hooks/useResume';
 import { exportResumeAsJson } from '../../utils/json-export';
 import { exportResumeAsText } from '../../utils/text-export';
-import { PiExportLight } from 'react-icons/pi';
+
 
 const ExportMenu = ({ template }: { template: JSX.Element }) => {
   const { resume } = useResume();

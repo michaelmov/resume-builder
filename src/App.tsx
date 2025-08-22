@@ -1,10 +1,11 @@
-import { FC, useState } from 'react';
 import { ChakraProvider, Grid, GridItem } from '@chakra-ui/react';
+import { FC, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+
+import { Editor } from './components/editor/editor';
 import { Navbar } from './components/navbar';
 import { Preview } from './components/preview/preview';
 import { ResumeProvider } from './context/resume.context';
-import { Editor } from './components/editor/editor';
-import { Route, Routes } from 'react-router-dom';
 import { system } from './theme';
 
 const App: FC = () => {

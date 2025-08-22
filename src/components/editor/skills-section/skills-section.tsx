@@ -1,11 +1,14 @@
 import { Box, Button, Input, Field } from '@chakra-ui/react';
 import { FC, useEffect, useCallback } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { HiPlus } from 'react-icons/hi';
+
+import { useGlobalForm } from '../../../context/global-form.context';
 import { SectionTypes, Skill } from '../../../types/resume.model';
 import { EditorSection, EditorSubsection } from '../editor-sections';
-import { HiPlus } from 'react-icons/hi';
+
 import { KeywordInput } from './keyword-input';
-import { useGlobalForm } from '../../../context/global-form.context';
+
 
 interface SkillsSectionProps {
   value: Skill[];

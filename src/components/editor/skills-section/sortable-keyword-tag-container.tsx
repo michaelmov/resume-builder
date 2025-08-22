@@ -1,6 +1,7 @@
 import { Box } from '@chakra-ui/react';
-import { FC } from 'react';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
+import { FC } from 'react';
+
 import { SortableKeywordTag, KeywordItem } from './sortable-keyword-tag';
 
 interface SortableKeywordTagContainerProps {

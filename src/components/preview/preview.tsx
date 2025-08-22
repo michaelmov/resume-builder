@@ -1,7 +1,7 @@
-import { FC, useEffect, useState } from 'react';
 
 import { Box, Button, Grid, GridItem, Icon } from '@chakra-ui/react';
 import { PDFDownloadLink, usePDF } from '@react-pdf/renderer';
+import { FC, useEffect, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -9,6 +9,7 @@ import { HiDownload } from 'react-icons/hi';
 
 import { useResume } from '../../hooks/useResume';
 import DuoTemplate from '../../resume-templates/duo';
+
 import { PreviewNavBar } from './preview-nav-bar';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;

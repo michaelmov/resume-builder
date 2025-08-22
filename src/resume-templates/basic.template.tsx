@@ -7,11 +7,12 @@ import {
   List,
   Text,
 } from '@chakra-ui/react';
-import { forwardRef } from 'react';
 import { Global } from '@emotion/react';
+import { forwardRef } from 'react';
 import { FC, useMemo } from 'react';
-import { Resume } from '../types/resume.model';
 import { HiArrowSmRight } from 'react-icons/hi';
+
+import { Resume } from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
 
 const Fonts = () => (

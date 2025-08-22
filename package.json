@@ -1,6 +1,7 @@
 {
   "name": "resume-builder",
   "version": "0.0.0",
+  "type": "module",
   "homepage": "https://michaelmovsesov.github.io/resume-builder",
   "scripts": {
     "dev": "vite --open",
@@ -10,7 +11,10 @@
     "deploy": "gh-pages -d dist",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "format:staged": "prettier --write"
+    "format:staged": "prettier --write",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
+    "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 0"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.0.0",
@@ -28,10 +32,21 @@
     "react-router-dom": "^6.26.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.34.0",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "eslint": "^9.33.0",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
     "gh-pages": "^6.3.0",
+    "globals": "^16.3.0",
     "prettier": "^3.6.2",
     "typescript": "^5.6.2",
     "vite": "^7.0.5"

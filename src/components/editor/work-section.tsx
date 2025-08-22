@@ -19,9 +19,11 @@ import {
   HiOutlineTrash,
   HiPlus,
 } from 'react-icons/hi';
-import { SectionTypes, Work } from '../../types/resume.model';
-import { EditorSection, EditorSubsection } from './editor-sections';
+
 import { useGlobalForm } from '../../context/global-form.context';
+import { SectionTypes, Work } from '../../types/resume.model';
+
+import { EditorSection, EditorSubsection } from './editor-sections';
 
 interface WorkSectionProps {
   value: Work[];

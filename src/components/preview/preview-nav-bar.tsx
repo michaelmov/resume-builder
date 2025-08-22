@@ -8,12 +8,14 @@ import {
   Portal,
 } from '@chakra-ui/react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import { useMemo } from 'react';
+import { BsFiletypeJson, BsFiletypePdf } from 'react-icons/bs';
 import { HiDotsVertical } from 'react-icons/hi';
 import { PiFilePdfLight } from 'react-icons/pi';
-import { BsFiletypeJson, BsFiletypePdf } from 'react-icons/bs';
+
 import { useResume } from '../../hooks/useResume';
-import { useMemo } from 'react';
 import { exportResumeAsJson } from '../../utils/json-export';
+
 import ExportMenu from './export-menu';
 interface PreviewNavBarProps {
   resumeTemplate: JSX.Element;

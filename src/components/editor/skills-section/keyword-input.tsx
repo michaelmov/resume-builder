@@ -1,6 +1,4 @@
 import { Box, Input, Field } from '@chakra-ui/react';
-import { FC, KeyboardEvent } from 'react';
-import { useFieldArray } from 'react-hook-form';
 import {
   DndContext,
   closestCenter,
@@ -11,8 +9,11 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { SortableKeywordTagContainer } from './sortable-keyword-tag-container';
+import { FC, KeyboardEvent } from 'react';
+import { useFieldArray } from 'react-hook-form';
+
 import { KeywordItem } from './sortable-keyword-tag';
+import { SortableKeywordTagContainer } from './sortable-keyword-tag-container';
 
 interface KeywordInputProps {
   skillIndex: number;

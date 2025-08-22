@@ -1,7 +1,7 @@
 import { Tag } from '@chakra-ui/react';
-import { FC } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { FC } from 'react';
 
 interface KeywordItem {
   id: string;

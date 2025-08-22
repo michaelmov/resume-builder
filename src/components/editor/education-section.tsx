@@ -9,10 +9,12 @@ import {
 } from '@chakra-ui/react';
 import { FC, useEffect, useCallback } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { SectionTypes, Education } from '../../types/resume.model';
-import { EditorSection, EditorSubsection } from './editor-sections';
 import { HiPlus } from 'react-icons/hi';
+
 import { useGlobalForm } from '../../context/global-form.context';
+import { SectionTypes, Education } from '../../types/resume.model';
+
+import { EditorSection, EditorSubsection } from './editor-sections';
 
 interface EducationSectionProps {
   value: Education[];
