@@ -77,8 +77,6 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   }, [sections]);
 
-  console.log('resume', resume);
-
   return (
     <GlobalFormContext.Provider
       value={{
