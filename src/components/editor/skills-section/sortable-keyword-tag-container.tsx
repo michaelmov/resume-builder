@@ -9,18 +9,15 @@ interface SortableKeywordTagContainerProps {
   onRemove: (index: number) => void;
 }
 
-export const SortableKeywordTagContainer: FC<SortableKeywordTagContainerProps> = ({ 
-  keywords, 
-  onRemove 
-}) => {
+export const SortableKeywordTagContainer: FC<
+  SortableKeywordTagContainerProps
+> = ({ keywords, onRemove }) => {
   return (
-    <SortableContext items={keywords.map(k => k.id)} strategy={rectSortingStrategy}>
-      <Box 
-        display="flex" 
-        flexWrap="wrap" 
-        gap={2}
-        mb={2}
-      >
+    <SortableContext
+      items={keywords.map(k => k.id)}
+      strategy={rectSortingStrategy}
+    >
+      <Box display="flex" flexWrap="wrap" gap={2} mb={2}>
         {keywords.map((keyword, index) => {
           return (
             <SortableKeywordTag
