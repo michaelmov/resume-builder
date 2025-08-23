@@ -5,13 +5,5 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   base: '/resume-builder/',
-  server: {
-    proxy: {
-      '^/api/exportPDF': {
-        target:
-          'http://localhost:5001/resume-builder-dev-e1417/us-central1/exportPDF',
-        changeOrigin: true,
-      },
-    },
-  },
+  server: {},
 });
