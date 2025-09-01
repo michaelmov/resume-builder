@@ -185,9 +185,9 @@ const SkillsSection = ({ skill }: { skill: Skill }) => {
     <View style={{ marginBottom: 14 }}>
       <Text style={styles.skillTitle}>{skill.name}</Text>
       <View style={styles.skillKeywords}>
-        {skill.keywords.map((keyword) => (
-          <View style={styles.skillKeyword} key={keyword.value}>
-            <Text key={keyword.value}>{keyword.value}</Text>
+        {skill.keywords.map((keyword, index) => (
+          <View style={styles.skillKeyword} key={`${skill.name}-${index}`}>
+            <Text>{keyword.value}</Text>
           </View>
         ))}
       </View>
@@ -263,9 +263,9 @@ const DuoTemplate = ({ resume }: { resume: Resume }) => {
           <Text>{resume.basics?.summary}</Text>
         </View>
         <SectionTitle title="Skills" />
-        {resume.skills.map((skill, index) => (
-          <SkillsSection key={`${skill.name}-${index}`} skill={skill} />
-        ))}
+        {resume.skills.map((skill, index) => {
+          return <SkillsSection key={`${skill.name}-${index}`} skill={skill} />;
+        })}
         <SectionTitle title="Work Experience" />
         {resume.work.map((work, index) => (
           <WorkExperience key={`${work.name}-${index}`} work={work} />
