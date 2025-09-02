@@ -1,7 +1,7 @@
 import { Box, Button } from '@chakra-ui/react';
 import { usePDF } from '@react-pdf/renderer';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
+import { GoSidebarCollapse, GoSidebarExpand } from 'react-icons/go';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -51,7 +51,7 @@ export const Preview: FC<{
           onClick={() => onEditorCollapseChange(!isEditorCollapsed)}
           variant="subtle"
         >
-          {isEditorCollapsed ? <HiChevronRight /> : <HiChevronLeft />}
+          {isEditorCollapsed ? <GoSidebarCollapse /> : <GoSidebarExpand />}
         </Button>
       </Box>
       <Document
