@@ -2,10 +2,10 @@ import { Box, ChakraProvider, Flex } from '@chakra-ui/react';
 import { FC, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import { Editor } from './components/editor/editor';
-import { Navbar } from './components/navbar';
-import { Preview } from './components/preview/preview';
-import { ResumeProvider } from './context/resume.context';
+import { Editor } from './components/Editor/Editor';
+import { Navbar } from './components/Navbar';
+import { Preview } from './components/Preview/Preview';
+import { ResumeProvider } from './context/ResumeContext';
 import { system } from './theme';
 
 const App: FC = () => {

@@ -8,9 +8,9 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 
 import { useResume } from '../../hooks/useResume';
-import DuoTemplate from '../../resume-templates/duo';
+import DuoTemplate from '../../ResumeTemplates/Duo';
 
-import { PreviewNavBar } from './preview-nav-bar';
+import { PreviewNavBar } from './PreviewNavBar';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 

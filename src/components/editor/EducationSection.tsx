@@ -3,10 +3,10 @@ import { FC, useEffect, useCallback } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
-import { useGlobalForm } from '../../context/global-form.context';
+import { useGlobalForm } from '../../context/GlobalFormContext';
 import { SectionTypes, Education } from '../../types/resume.model';
 
-import { EditorSection, EditorSubsection } from './editor-sections';
+import { EditorSection, EditorSubsection } from './EditorSections';
 
 interface EducationSectionProps {
   value: Education[];

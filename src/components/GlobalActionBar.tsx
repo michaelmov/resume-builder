@@ -2,7 +2,7 @@ import { ActionBar, Button, Portal } from '@chakra-ui/react';
 import { FC } from 'react';
 import { HiCheck } from 'react-icons/hi';
 
-import { useGlobalForm } from '../context/global-form.context';
+import { useGlobalForm } from '../context/GlobalFormContext';
 
 export const GlobalActionBar: FC = () => {
   const { hasAnyDirtySection, saveAllSections, getDirtySections } =

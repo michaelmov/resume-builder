@@ -3,7 +3,7 @@ import { JSX } from 'react';
 
 import { useResume } from '../../hooks/useResume';
 
-import ExportMenu from './export-menu';
+import ExportMenu from './ExportMenu';
 interface PreviewNavBarProps {
   resumeTemplate: JSX.Element;
 }

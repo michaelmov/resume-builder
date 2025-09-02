@@ -12,8 +12,8 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { FC, KeyboardEvent } from 'react';
 import { useFieldArray } from 'react-hook-form';
 
-import { KeywordItem } from './sortable-keyword-tag';
-import { SortableKeywordTagContainer } from './sortable-keyword-tag-container';
+import { KeywordItem } from './SortableKeywordTag';
+import { SortableKeywordTagContainer } from './SortableKeywordTagContainer';
 
 interface KeywordInputProps {
   skillIndex: number;

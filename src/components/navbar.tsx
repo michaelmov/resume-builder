@@ -12,7 +12,7 @@ import { VscGithub } from 'react-icons/vsc';
 
 import { useJsonImport } from '../hooks/useJsonImport';
 
-import { Tooltip } from './ui/tooltip';
+import { Tooltip } from './ui/Tooltip';
 
 export const Navbar: FC = () => {
   const { fileInputRef, triggerFileInput, handleFileChange } = useJsonImport();

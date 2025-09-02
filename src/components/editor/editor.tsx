@@ -1,7 +1,7 @@
 import { Heading, Link, Stack } from '@chakra-ui/react';
 import { FC, useCallback } from 'react';
 
-import { GlobalFormProvider } from '../../context/global-form.context';
+import { GlobalFormProvider } from '../../context/GlobalFormContext';
 import { useResume } from '../../hooks/useResume';
 import {
   Basics,
@@ -10,12 +10,12 @@ import {
   Skill,
   Work,
 } from '../../types/resume.model';
-import { GlobalActionBar } from '../global-action-bar';
+import { GlobalActionBar } from '../GlobalActionBar';
 
-import { BasicsSection } from './basics-section';
-import { EducationSection } from './education-section';
-import { SkillsSection } from './skills-section/skills-section';
-import { WorkSection } from './work-section';
+import { BasicsSection } from './BasicsSection';
+import { EducationSection } from './EducationSection';
+import { SkillsSection } from './SkillsSection/SkillsSection';
+import { WorkSection } from './WorkSection';
 
 export const Editor: FC = () => {
   const { resume, updateBasics, updateSkills, updateWork, updateEducation } =

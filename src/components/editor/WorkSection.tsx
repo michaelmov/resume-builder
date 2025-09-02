@@ -20,10 +20,10 @@ import {
   HiPlus,
 } from 'react-icons/hi';
 
-import { useGlobalForm } from '../../context/global-form.context';
+import { useGlobalForm } from '../../context/GlobalFormContext';
 import { SectionTypes, Work } from '../../types/resume.model';
 
-import { EditorSection, EditorSubsection } from './editor-sections';
+import { EditorSection, EditorSubsection } from './EditorSections';
 
 interface WorkSectionProps {
   value: Work[];

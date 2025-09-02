@@ -2,7 +2,7 @@ import { Box } from '@chakra-ui/react';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { FC } from 'react';
 
-import { SortableKeywordTag, KeywordItem } from './sortable-keyword-tag';
+import { SortableKeywordTag, KeywordItem } from './SortableKeywordTag';
 
 interface SortableKeywordTagContainerProps {
   keywords: KeywordItem[];

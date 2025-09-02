@@ -2,10 +2,10 @@ import { Box, Grid, GridItem, Input, Textarea, Field } from '@chakra-ui/react';
 import { FC, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useGlobalForm } from '../../context/global-form.context';
+import { useGlobalForm } from '../../context/GlobalFormContext';
 import { Basics, SectionTypes } from '../../types/resume.model';
 
-import { EditorSection } from './editor-sections';
+import { EditorSection } from './EditorSections';
 
 interface BasicsSectionProps {
   value: Basics;

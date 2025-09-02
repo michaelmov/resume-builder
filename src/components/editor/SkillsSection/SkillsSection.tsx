@@ -3,11 +3,11 @@ import { FC, useEffect, useCallback } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
-import { useGlobalForm } from '../../../context/global-form.context';
+import { useGlobalForm } from '../../../context/GlobalFormContext';
 import { SectionTypes, Skill } from '../../../types/resume.model';
-import { EditorSection, EditorSubsection } from '../editor-sections';
+import { EditorSection, EditorSubsection } from '../EditorSections';
 
-import { KeywordInput } from './keyword-input';
+import { KeywordInput } from './KeywordInput';
 
 interface SkillsSectionProps {
   value: Skill[];
