@@ -1,6 +1,7 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
 import { usePDF } from '@react-pdf/renderer';
 import { FC, useEffect, useMemo, useState } from 'react';
+import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -12,7 +13,10 @@ import { PreviewNavBar } from './preview-nav-bar';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-export const Preview: FC = () => {
+export const Preview: FC<{
+  isEditorCollapsed: boolean;
+  onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
+}> = ({ isEditorCollapsed, onEditorCollapseChange }) => {
   const { resume } = useResume();
 
   const template = useMemo(() => <DuoTemplate resume={resume} />, [resume]);
@@ -42,6 +46,14 @@ export const Preview: FC = () => {
       zIndex={0}
     >
       <PreviewNavBar resumeTemplate={template} />
+      <Box position="absolute" left={-2}>
+        <Button
+          onClick={() => onEditorCollapseChange(!isEditorCollapsed)}
+          variant="subtle"
+        >
+          {isEditorCollapsed ? <HiChevronRight /> : <HiChevronLeft />}
+        </Button>
+      </Box>
       <Document
         file={blob}
         onLoadSuccess={onDocumentLoadSuccess}
