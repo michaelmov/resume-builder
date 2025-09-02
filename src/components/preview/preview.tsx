@@ -72,6 +72,7 @@ export const Preview: FC<{
         <IconButton
           onClick={() => setScale(Math.min(scale + 0.1, MAX_SCALE))}
           variant="subtle"
+          rounded="full"
           disabled={scale === MAX_SCALE}
         >
           <HiOutlineZoomIn />
@@ -79,6 +80,7 @@ export const Preview: FC<{
         <IconButton
           onClick={() => setScale(Math.max(scale - 0.1, MIN_SCALE))}
           variant="subtle"
+          rounded="full"
           disabled={scale === MIN_SCALE}
         >
           <HiOutlineZoomOut />
