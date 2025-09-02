@@ -10,7 +10,7 @@ import { useResumeLocalStorage } from '../hooks/useResumeLocalStorage';
 import { resumeMock } from '../mocks/resume.mock';
 import { Resume } from '../types/resume.model';
 
-import { ACTIONTYPE, resumeReducer } from './resume.reducer';
+import { ACTIONTYPE, resumeReducer } from './ResumeReducer';
 
 interface ResumeContext {
   state: Resume;

@@ -1,7 +1,7 @@
 import { useContext, useCallback } from 'react';
 
-import { ACTIONS } from '../context/resume.reducer';
 import { resumeStoreContext } from '../context/ResumeContext';
+import { ACTIONS } from '../context/ResumeReducer';
 import { Basics, Resume, Skill, Work, Education } from '../types/resume.model';
 
 export const useResume = () => {
