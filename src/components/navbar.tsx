@@ -29,8 +29,7 @@ export const Navbar: FC = () => {
       color="white"
       py={3}
     >
-      <Icon as={HiOutlineBriefcase} boxSize={8} />
-      <Spacer />
+      <Icon as={HiOutlineBriefcase} boxSize={8} marginBottom={3} />
       <Tooltip content="Import your resume">
         <IconButton
           color="white"
@@ -52,6 +51,7 @@ export const Navbar: FC = () => {
         style={{ display: 'none' }}
         onChange={handleFileChange}
       />
+      <Spacer />
       <LinkBox>
         <IconButton
           variant="ghost"
