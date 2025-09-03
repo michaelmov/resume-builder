@@ -37,6 +37,7 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
     [SectionTypes.Skills]: null,
     [SectionTypes.Work]: null,
     [SectionTypes.Education]: null,
+    [SectionTypes.Projects]: null,
   });
 
   const registerSection = useCallback(

@@ -2,7 +2,7 @@ import { useContext, useCallback } from 'react';
 
 import { resumeStoreContext } from '../context/ResumeContext';
 import { ACTIONS } from '../context/ResumeReducer';
-import { Basics, Resume, Skill, Work, Education } from '../types/resume.model';
+import { Basics, Resume, Skill, Work, Education, Project } from '../types/resume.model';
 
 export const useResume = () => {
   const { dispatch, state } = useContext(resumeStoreContext);
@@ -52,6 +52,15 @@ export const useResume = () => {
     [dispatch]
   );
 
+  const updateProjects = useCallback(
+    (payload: Project[]) => {
+      if (dispatch) {
+        dispatch({ type: ACTIONS.updateProjects, payload });
+      }
+    },
+    [dispatch]
+  );
+
   return {
     resume: state,
     updateResume,
@@ -59,5 +68,6 @@ export const useResume = () => {
     updateSkills,
     updateWork,
     updateEducation,
+    updateProjects,
   };
 };

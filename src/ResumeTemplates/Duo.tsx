@@ -10,7 +10,7 @@ import {
   Path,
 } from '@react-pdf/renderer';
 
-import { Education, Resume, Skill, Work } from '../types/resume.model';
+import { Education, Project, Resume, Skill, Work } from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
 
 Font.register({
@@ -140,6 +140,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  projectHeading: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  projectName: {
+    fontFamily: 'Poppins Bold',
+  },
+  projectDescription: {
+    marginTop: 6,
+  },
+  projectHighlights: {
+    marginTop: 8,
+  },
+  projectHighlight: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginBottom: 6,
+  },
 });
 
 const ArrowSmRight = ({
@@ -237,6 +257,36 @@ const EducationSection = ({ education }: { education: Education }) => {
   );
 };
 
+const ProjectSection = ({ project }: { project: Project }) => {
+  const startDate = formatDate(project.startDate);
+  const endDate = formatDate(project.endDate) || 'Present';
+
+  return (
+    <View style={{ marginBottom: 14 }}>
+      <View style={styles.projectHeading}>
+        <Text style={styles.projectName}>{project.name}</Text>
+        <Text style={styles.textLight}>{project.type}</Text>
+        <Text style={styles.textLight}>
+          {startDate} - {endDate}
+        </Text>
+      </View>
+      {project.description && (
+        <View style={styles.projectDescription}>
+          <Text>{project.description}</Text>
+        </View>
+      )}
+      <View style={styles.projectHighlights}>
+        {project?.highlights?.map((highlight, index) => (
+          <View key={index} style={styles.projectHighlight}>
+            <ArrowSmRight color={colors.primaryDark} />
+            <Text style={{ marginLeft: 2 }}>{highlight}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
+
 const DuoTemplate = ({ resume }: { resume: Resume }) => {
   return (
     <Document>
@@ -276,6 +326,10 @@ const DuoTemplate = ({ resume }: { resume: Resume }) => {
             key={`${education.institution}-${index}`}
             education={education}
           />
+        ))}
+        <SectionTitle title="Projects" />
+        {resume.projects.map((project, index) => (
+          <ProjectSection key={`${project.name}-${index}`} project={project} />
         ))}
       </Page>
     </Document>

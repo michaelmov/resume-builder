@@ -3,6 +3,7 @@ export enum SectionTypes {
   Skills = 'skills',
   Work = 'work',
   Education = 'education',
+  Projects = 'projects',
 }
 
 export interface Resume {
