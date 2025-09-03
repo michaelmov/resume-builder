@@ -74,11 +74,11 @@ export const EditorSection: FC<EditorSectionProps> = ({
               >
                 {isHidden ? (
                   <Icon color="gray.400">
-                    <HiEye />
+                    <HiEyeOff />
                   </Icon>
                 ) : (
                   <Icon color="gray.400">
-                    <HiEyeOff />
+                    <HiEye />
                   </Icon>
                 )}
               </IconButton>
