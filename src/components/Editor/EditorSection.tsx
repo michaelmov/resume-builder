@@ -1,26 +1,35 @@
 import {
   Box,
   BoxProps,
-  Checkbox,
   Collapsible,
   Flex,
   Heading,
   IconButton,
+  Icon,
 } from '@chakra-ui/react';
 import React, { FC, useState } from 'react';
-import { HiOutlineTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
+import {
+  HiOutlineTrash,
+  HiChevronUp,
+  HiChevronDown,
+  HiEyeOff,
+  HiEye,
+} from 'react-icons/hi';
 
+import { Tooltip } from '../ui/Tooltip';
 interface EditorSectionProps {
   title: string;
   children: React.ReactNode;
   isHidden?: boolean;
   onHiddenChange?: (isHidden: boolean) => void;
+  enableShowHideToggle?: boolean;
 }
 export const EditorSection: FC<EditorSectionProps> = ({
   title,
   children,
   isHidden = false,
   onHiddenChange,
+  enableShowHideToggle = true,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -57,17 +66,24 @@ export const EditorSection: FC<EditorSectionProps> = ({
               {title}
             </Heading>
           </Collapsible.Trigger>
-          <Checkbox.Root
-            width="100%"
-            display="flex"
-            justifyContent="end"
-            checked={isHidden}
-            onCheckedChange={(e) => onHiddenChange?.(e.checked === true)}
-          >
-            <Checkbox.HiddenInput />
-            <Checkbox.Control />
-            <Checkbox.Label color={'gray.500'}>Hide section</Checkbox.Label>
-          </Checkbox.Root>
+          {enableShowHideToggle && (
+            <Tooltip content={isHidden ? 'Show section' : 'Hide section'}>
+              <IconButton
+                variant="ghost"
+                onClick={() => onHiddenChange?.(!isHidden)}
+              >
+                {isHidden ? (
+                  <Icon color="gray.400">
+                    <HiEye />
+                  </Icon>
+                ) : (
+                  <Icon color="gray.400">
+                    <HiEyeOff />
+                  </Icon>
+                )}
+              </IconButton>
+            </Tooltip>
+          )}
         </Flex>
         <Collapsible.Content
           as="section"

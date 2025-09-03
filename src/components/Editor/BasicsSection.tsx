@@ -55,6 +55,7 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
       title="Basics"
       isHidden={resume.sectionVisibility?.[SectionTypes.Basics] || false}
       onHiddenChange={handleHiddenChange}
+      enableShowHideToggle={false}
     >
       <Box>
         <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
