@@ -4,9 +4,10 @@ import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
+import { useResume } from '../../hooks/useResume';
 import { SectionTypes, Education } from '../../types/resume.model';
 
-import { EditorSection, EditorSubsection } from './EditorSections';
+import { EditorSection, EditorSubsection } from './EditorSection';
 
 interface EducationSectionProps {
   value: Education[];
@@ -22,6 +23,7 @@ export const EducationSection: FC<EducationSectionProps> = ({
   value,
   onUpdate,
 }) => {
+  const { resume, updateSectionVisibility } = useResume();
   const { control, register, formState, handleSubmit, reset } =
     useForm<FormProps>({
       mode: 'onChange',
@@ -71,8 +73,23 @@ export const EducationSection: FC<EducationSectionProps> = ({
     append(newEducation);
   };
 
+  const handleHiddenChange = useCallback(
+    (isHidden: boolean) => {
+      const currentVisibility = resume.sectionVisibility || {};
+      updateSectionVisibility({
+        ...currentVisibility,
+        [SectionTypes.Education]: isHidden,
+      });
+    },
+    [resume.sectionVisibility, updateSectionVisibility]
+  );
+
   return (
-    <EditorSection title="Education">
+    <EditorSection
+      title="Education"
+      isHidden={resume.sectionVisibility?.[SectionTypes.Education] || false}
+      onHiddenChange={handleHiddenChange}
+    >
       <Box>
         {fields.map(
           (field: FieldArrayWithId<FormProps, 'education'>, index: number) => {

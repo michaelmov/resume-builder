@@ -8,7 +8,7 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 
 import { useResume } from '../../hooks/useResume';
-import DuoTemplate from '../../ResumeTemplates/Duo';
+import DuoTemplate from '../../templates/Duo';
 
 import { PreviewNavBar } from './PreviewNavBar';
 

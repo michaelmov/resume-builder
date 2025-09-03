@@ -3,15 +3,17 @@ import { FC, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
+import { useResume } from '../../hooks/useResume';
 import { Basics, SectionTypes } from '../../types/resume.model';
 
-import { EditorSection } from './EditorSections';
+import { EditorSection } from './EditorSection';
 
 interface BasicsSectionProps {
   value: Basics;
   onUpdate: (sectionType: SectionTypes, section: Basics) => void;
 }
 export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
+  const { resume, updateSectionVisibility } = useResume();
   const { register, handleSubmit, formState, reset } = useForm({
     defaultValues: value,
   });
@@ -37,8 +39,23 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
     return () => unregisterSection(SectionTypes.Basics);
   }, [isDirty, registerSection, unregisterSection, handleSubmit, onSubmit]);
 
+  const handleHiddenChange = useCallback(
+    (isHidden: boolean) => {
+      const currentVisibility = resume.sectionVisibility || {};
+      updateSectionVisibility({
+        ...currentVisibility,
+        [SectionTypes.Basics]: isHidden,
+      });
+    },
+    [resume.sectionVisibility, updateSectionVisibility]
+  );
+
   return (
-    <EditorSection title="Basics">
+    <EditorSection
+      title="Basics"
+      isHidden={resume.sectionVisibility?.[SectionTypes.Basics] || false}
+      onHiddenChange={handleHiddenChange}
+    >
       <Box>
         <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
           <GridItem colSpan={1}>

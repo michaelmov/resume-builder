@@ -1,7 +1,9 @@
 import {
   Box,
   BoxProps,
+  Checkbox,
   Collapsible,
+  Flex,
   Heading,
   IconButton,
 } from '@chakra-ui/react';
@@ -11,8 +13,15 @@ import { HiOutlineTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
 interface EditorSectionProps {
   title: string;
   children: React.ReactNode;
+  isHidden?: boolean;
+  onHiddenChange?: (isHidden: boolean) => void;
 }
-export const EditorSection: FC<EditorSectionProps> = ({ title, children }) => {
+export const EditorSection: FC<EditorSectionProps> = ({
+  title,
+  children,
+  isHidden = false,
+  onHiddenChange,
+}) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -21,28 +30,45 @@ export const EditorSection: FC<EditorSectionProps> = ({ title, children }) => {
       onOpenChange={(details) => setIsOpen(details.open)}
     >
       <Box width="100%">
-        <Collapsible.Trigger>
-          <Heading
-            as="h3"
-            fontSize="xl"
-            mb={2}
-            color="blackAlpha.600"
-            fontWeight="normal"
-            cursor="pointer"
+        <Flex width="100%" justifyContent="space-between" alignItems="center">
+          <Collapsible.Trigger
             display="flex"
-            alignItems="center"
-            gap={1}
+            justifyContent="space-between"
+            width="100%"
           >
-            <Box
-              as="span"
-              transform={isOpen ? 'rotate(0deg)' : 'rotate(-90deg)'}
-              transition="transform 0.2s ease-in-out"
+            <Heading
+              as="h3"
+              fontSize="xl"
+              mb={2}
+              color="blackAlpha.600"
+              fontWeight="normal"
+              cursor="pointer"
+              display="flex"
+              alignItems="center"
+              gap={1}
             >
-              <HiChevronDown />
-            </Box>
-            {title}
-          </Heading>
-        </Collapsible.Trigger>
+              <Box
+                as="span"
+                transform={isOpen ? 'rotate(0deg)' : 'rotate(-90deg)'}
+                transition="transform 0.2s ease-in-out"
+              >
+                <HiChevronDown />
+              </Box>
+              {title}
+            </Heading>
+          </Collapsible.Trigger>
+          <Checkbox.Root
+            width="100%"
+            display="flex"
+            justifyContent="end"
+            checked={isHidden}
+            onCheckedChange={(e) => onHiddenChange?.(e.checked === true)}
+          >
+            <Checkbox.HiddenInput />
+            <Checkbox.Control />
+            <Checkbox.Label color={'gray.500'}>Hide section</Checkbox.Label>
+          </Checkbox.Root>
+        </Flex>
         <Collapsible.Content
           as="section"
           bgColor="white"

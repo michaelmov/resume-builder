@@ -21,9 +21,10 @@ import {
 } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
+import { useResume } from '../../hooks/useResume';
 import { SectionTypes, Project } from '../../types/resume.model';
 
-import { EditorSection, EditorSubsection } from './EditorSections';
+import { EditorSection, EditorSubsection } from './EditorSection';
 
 interface ProjectsSectionProps {
   value: Project[];
@@ -35,7 +36,11 @@ interface FormProps {
   projects: Project[];
 }
 
-export const ProjectsSection: FC<ProjectsSectionProps> = ({ value, onUpdate }) => {
+export const ProjectsSection: FC<ProjectsSectionProps> = ({
+  value,
+  onUpdate,
+}) => {
+  const { resume, updateSectionVisibility } = useResume();
   const { control, register, formState, handleSubmit, reset } =
     useForm<FormProps>({
       mode: 'onChange',
@@ -86,8 +91,23 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({ value, onUpdate }) =
     append(newProject);
   };
 
+  const handleHiddenChange = useCallback(
+    (isHidden: boolean) => {
+      const currentVisibility = resume.sectionVisibility || {};
+      updateSectionVisibility({
+        ...currentVisibility,
+        [SectionTypes.Projects]: isHidden,
+      });
+    },
+    [resume.sectionVisibility, updateSectionVisibility]
+  );
+
   return (
-    <EditorSection title="Projects">
+    <EditorSection
+      title="Projects"
+      isHidden={resume.sectionVisibility?.[SectionTypes.Projects] || false}
+      onHiddenChange={handleHiddenChange}
+    >
       <Box>
         {fields.map((field: any, index: number) => {
           return (
@@ -104,13 +124,19 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({ value, onUpdate }) =
                 <GridItem colSpan={1}>
                   <Field.Root id={`project-name-${field.id}`}>
                     <Field.Label>Project name</Field.Label>
-                    <Input type="text" {...register(`projects.${index}.name`)} />
+                    <Input
+                      type="text"
+                      {...register(`projects.${index}.name`)}
+                    />
                   </Field.Root>
                 </GridItem>
                 <GridItem colSpan={1}>
                   <Field.Root id={`project-type-${field.id}`}>
                     <Field.Label>Type</Field.Label>
-                    <Input type="text" {...register(`projects.${index}.type`)} />
+                    <Input
+                      type="text"
+                      {...register(`projects.${index}.type`)}
+                    />
                   </Field.Root>
                 </GridItem>
                 <GridItem colSpan={1}>

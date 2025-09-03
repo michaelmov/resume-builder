@@ -51,7 +51,11 @@ const generateAtsCompliantText = (resume: Resume): string => {
   }
 
   // Skills Section
-  if (resume.skills && resume.skills.length > 0) {
+  if (
+    resume.skills &&
+    resume.skills.length > 0 &&
+    !resume.sectionVisibility?.skills
+  ) {
     sections.push('SKILLS');
     resume.skills.forEach((skill) => {
       if (skill.name && skill.keywords && skill.keywords.length > 0) {
@@ -65,7 +69,11 @@ const generateAtsCompliantText = (resume: Resume): string => {
   }
 
   // Work Experience Section
-  if (resume.work && resume.work.length > 0) {
+  if (
+    resume.work &&
+    resume.work.length > 0 &&
+    !resume.sectionVisibility?.work
+  ) {
     sections.push('WORK EXPERIENCE');
     resume.work.forEach((work) => {
       const startDate = formatDate(work.startDate);
@@ -90,7 +98,11 @@ const generateAtsCompliantText = (resume: Resume): string => {
   }
 
   // Education Section
-  if (resume.education && resume.education.length > 0) {
+  if (
+    resume.education &&
+    resume.education.length > 0 &&
+    !resume.sectionVisibility?.education
+  ) {
     sections.push('EDUCATION');
     resume.education.forEach((education) => {
       const startDate = formatDate(education.startDate);
@@ -99,6 +111,36 @@ const generateAtsCompliantText = (resume: Resume): string => {
         startDate && endDate ? ` | ${startDate} - ${endDate}` : '';
 
       sections.push(`${education.institution} | ${education.area}${dateRange}`);
+    });
+    sections.push(''); // Empty line
+  }
+
+  // Projects Section
+  if (
+    resume.projects &&
+    resume.projects.length > 0 &&
+    !resume.sectionVisibility?.projects
+  ) {
+    sections.push('PROJECTS');
+    resume.projects.forEach((project) => {
+      const startDate = formatDate(project.startDate);
+      const endDate = formatDate(project.endDate);
+      const dateRange =
+        startDate && endDate ? ` | ${startDate} - ${endDate}` : '';
+
+      sections.push(`${project.name}${dateRange}`);
+
+      if (project.description) {
+        sections.push(project.description);
+      }
+
+      if (project.highlights && project.highlights.length > 0) {
+        project.highlights.forEach((highlight) => {
+          sections.push(`• ${highlight}`);
+        });
+      }
+
+      sections.push(''); // Empty line between projects
     });
   }
 

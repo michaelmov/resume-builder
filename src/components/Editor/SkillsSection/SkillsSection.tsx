@@ -4,8 +4,9 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../../context/GlobalFormContext';
+import { useResume } from '../../../hooks/useResume';
 import { SectionTypes, Skill } from '../../../types/resume.model';
-import { EditorSection, EditorSubsection } from '../EditorSections';
+import { EditorSection, EditorSubsection } from '../EditorSection';
 
 import { KeywordInput } from './KeywordInput';
 
@@ -20,6 +21,7 @@ interface FormProps {
 }
 
 export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
+  const { resume, updateSectionVisibility } = useResume();
   const { control, register, formState, handleSubmit, reset } =
     useForm<FormProps>({
       mode: 'onChange',
@@ -64,8 +66,23 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
     append(newSkill);
   };
 
+  const handleHiddenChange = useCallback(
+    (isHidden: boolean) => {
+      const currentVisibility = resume.sectionVisibility || {};
+      updateSectionVisibility({
+        ...currentVisibility,
+        [SectionTypes.Skills]: isHidden,
+      });
+    },
+    [resume.sectionVisibility, updateSectionVisibility]
+  );
+
   return (
-    <EditorSection title="Skills">
+    <EditorSection
+      title="Skills"
+      isHidden={resume.sectionVisibility?.[SectionTypes.Skills] || false}
+      onHiddenChange={handleHiddenChange}
+    >
       <Box>
         {fields.map((field: any, index: number) => {
           return (

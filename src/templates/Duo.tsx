@@ -312,25 +312,46 @@ const DuoTemplate = ({ resume }: { resume: Resume }) => {
         <View style={styles.summary}>
           <Text>{resume.basics?.summary}</Text>
         </View>
-        <SectionTitle title="Skills" />
-        {resume.skills.map((skill, index) => {
-          return <SkillsSection key={`${skill.name}-${index}`} skill={skill} />;
-        })}
-        <SectionTitle title="Work Experience" />
-        {resume.work.map((work, index) => (
-          <WorkExperience key={`${work.name}-${index}`} work={work} />
-        ))}
-        <SectionTitle title="Education" />
-        {resume.education.map((education, index) => (
-          <EducationSection
-            key={`${education.institution}-${index}`}
-            education={education}
-          />
-        ))}
-        <SectionTitle title="Projects" />
-        {resume.projects.map((project, index) => (
-          <ProjectSection key={`${project.name}-${index}`} project={project} />
-        ))}
+        {!resume.sectionVisibility?.skills && (
+          <>
+            <SectionTitle title="Skills" />
+            {resume.skills.map((skill, index) => {
+              return (
+                <SkillsSection key={`${skill.name}-${index}`} skill={skill} />
+              );
+            })}
+          </>
+        )}
+        {!resume.sectionVisibility?.work && (
+          <>
+            <SectionTitle title="Work Experience" />
+            {resume.work.map((work, index) => (
+              <WorkExperience key={`${work.name}-${index}`} work={work} />
+            ))}
+          </>
+        )}
+        {!resume.sectionVisibility?.education && (
+          <>
+            <SectionTitle title="Education" />
+            {resume.education.map((education, index) => (
+              <EducationSection
+                key={`${education.institution}-${index}`}
+                education={education}
+              />
+            ))}
+          </>
+        )}
+        {!resume.sectionVisibility?.projects && (
+          <>
+            <SectionTitle title="Projects" />
+            {resume.projects.map((project, index) => (
+              <ProjectSection
+                key={`${project.name}-${index}`}
+                project={project}
+              />
+            ))}
+          </>
+        )}
       </Page>
     </Document>
   );

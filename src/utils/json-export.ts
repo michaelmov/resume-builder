@@ -2,7 +2,23 @@ import { Resume } from '../types/resume.model';
 
 export const exportResumeAsJson = (resume: Resume, exportFileName: string) => {
   try {
-    const resumeData = JSON.stringify(resume, null, 2);
+    // Create a filtered resume based on section visibility
+    const filteredResume = { ...resume };
+
+    if (resume.sectionVisibility?.skills) {
+      filteredResume.skills = [];
+    }
+    if (resume.sectionVisibility?.work) {
+      filteredResume.work = [];
+    }
+    if (resume.sectionVisibility?.education) {
+      filteredResume.education = [];
+    }
+    if (resume.sectionVisibility?.projects) {
+      filteredResume.projects = [];
+    }
+
+    const resumeData = JSON.stringify(filteredResume, null, 2);
     const blob = new Blob([resumeData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

@@ -123,4 +123,11 @@ export const resumeMock: Resume = {
       type: 'application',
     },
   ],
+  sectionVisibility: {
+    basics: false,
+    skills: false,
+    work: false,
+    education: false,
+    projects: false,
+  },
 };

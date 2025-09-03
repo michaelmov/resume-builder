@@ -2,7 +2,15 @@ import { useContext, useCallback } from 'react';
 
 import { resumeStoreContext } from '../context/ResumeContext';
 import { ACTIONS } from '../context/ResumeReducer';
-import { Basics, Resume, Skill, Work, Education, Project } from '../types/resume.model';
+import {
+  Basics,
+  Resume,
+  Skill,
+  Work,
+  Education,
+  Project,
+  SectionVisibility,
+} from '../types/resume.model';
 
 export const useResume = () => {
   const { dispatch, state } = useContext(resumeStoreContext);
@@ -61,6 +69,15 @@ export const useResume = () => {
     [dispatch]
   );
 
+  const updateSectionVisibility = useCallback(
+    (payload: SectionVisibility) => {
+      if (dispatch) {
+        dispatch({ type: ACTIONS.updateSectionVisibility, payload });
+      }
+    },
+    [dispatch]
+  );
+
   return {
     resume: state,
     updateResume,
@@ -69,5 +86,6 @@ export const useResume = () => {
     updateWork,
     updateEducation,
     updateProjects,
+    updateSectionVisibility,
   };
 };

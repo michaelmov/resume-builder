@@ -6,6 +6,14 @@ export enum SectionTypes {
   Projects = 'projects',
 }
 
+export interface SectionVisibility {
+  [SectionTypes.Basics]?: boolean;
+  [SectionTypes.Skills]?: boolean;
+  [SectionTypes.Work]?: boolean;
+  [SectionTypes.Education]?: boolean;
+  [SectionTypes.Projects]?: boolean;
+}
+
 export interface Resume {
   basics: Basics;
   work: Work[];
@@ -19,6 +27,7 @@ export interface Resume {
   interests: Interest[];
   references: Reference[];
   projects: Project[];
+  sectionVisibility?: SectionVisibility;
 }
 
 export interface Award {

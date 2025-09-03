@@ -21,9 +21,10 @@ import {
 } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
+import { useResume } from '../../hooks/useResume';
 import { SectionTypes, Work } from '../../types/resume.model';
 
-import { EditorSection, EditorSubsection } from './EditorSections';
+import { EditorSection, EditorSubsection } from './EditorSection';
 
 interface WorkSectionProps {
   value: Work[];
@@ -35,6 +36,7 @@ interface FormProps {
   work: Work[];
 }
 export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
+  const { resume, updateSectionVisibility } = useResume();
   const { control, register, formState, handleSubmit, reset } =
     useForm<FormProps>({
       mode: 'onChange',
@@ -83,8 +85,23 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
 
     append(newWork);
   };
+
+  const handleHiddenChange = useCallback(
+    (isHidden: boolean) => {
+      const currentVisibility = resume.sectionVisibility || {};
+      updateSectionVisibility({
+        ...currentVisibility,
+        [SectionTypes.Work]: isHidden,
+      });
+    },
+    [resume.sectionVisibility, updateSectionVisibility]
+  );
   return (
-    <EditorSection title="Work Experience">
+    <EditorSection
+      title="Work Experience"
+      isHidden={resume.sectionVisibility?.[SectionTypes.Work] || false}
+      onHiddenChange={handleHiddenChange}
+    >
       <Box>
         {fields.map((field: any, index: number) => {
           return (
