@@ -24,7 +24,8 @@ import { useGlobalForm } from '../../context/GlobalFormContext';
 import { useResume } from '../../hooks/useResume';
 import { SectionTypes, Work } from '../../types/resume.model';
 
-import { EditorSection, EditorSubsection } from './EditorSection';
+import { EditorSection } from './EditorSection';
+import { EditorSubsection } from './EditorSubsection';
 
 interface WorkSectionProps {
   value: Work[];
@@ -106,6 +107,8 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
         {fields.map((field: any, index: number) => {
           return (
             <EditorSubsection
+              title={field.name}
+              subtitle={field.position}
               key={field.id}
               onDeleteClick={() => remove(index)}
               onMoveUpClick={() => move(index, index - 1)}

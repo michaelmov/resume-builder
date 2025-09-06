@@ -6,7 +6,8 @@ import { HiPlus } from 'react-icons/hi';
 import { useGlobalForm } from '../../../context/GlobalFormContext';
 import { useResume } from '../../../hooks/useResume';
 import { SectionTypes, Skill } from '../../../types/resume.model';
-import { EditorSection, EditorSubsection } from '../EditorSection';
+import { EditorSection } from '../EditorSection';
+import { EditorSubsection } from '../EditorSubsection';
 
 import { KeywordInput } from './KeywordInput';
 
@@ -87,6 +88,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
         {fields.map((field: any, index: number) => {
           return (
             <EditorSubsection
+              title={field.name}
               onDeleteClick={() => remove(index)}
               mb={6}
               key={field.id}

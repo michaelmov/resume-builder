@@ -7,7 +7,8 @@ import { useGlobalForm } from '../../context/GlobalFormContext';
 import { useResume } from '../../hooks/useResume';
 import { SectionTypes, Education } from '../../types/resume.model';
 
-import { EditorSection, EditorSubsection } from './EditorSection';
+import { EditorSection } from './EditorSection';
+import { EditorSubsection } from './EditorSubsection';
 
 interface EducationSectionProps {
   value: Education[];
@@ -95,6 +96,8 @@ export const EducationSection: FC<EducationSectionProps> = ({
           (field: FieldArrayWithId<FormProps, 'education'>, index: number) => {
             return (
               <EditorSubsection
+                title={field.institution}
+                subtitle={field.area}
                 onDeleteClick={() => remove(index)}
                 mb={6}
                 key={field.id}
