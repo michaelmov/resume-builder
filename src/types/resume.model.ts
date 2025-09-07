@@ -129,6 +129,7 @@ export interface Work {
   url: string;
   startDate: Date | string;
   endDate: Date | string;
+  isPresent: boolean;
   summary: string;
   highlights: { value: string }[];
   name?: string;

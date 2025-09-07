@@ -217,7 +217,7 @@ const SkillsSection = ({ skill }: { skill: Skill }) => {
 
 const WorkExperience = ({ work }: { work: Work }) => {
   const startDate = formatDate(work.startDate);
-  const endDate = formatDate(work.endDate) || 'Present';
+  const endDate = (work.isPresent ? 'Present' : formatDate(work.endDate)) || '';
 
   return (
     <View style={{ marginBottom: 14 }}>

@@ -10,9 +10,10 @@ import {
   Textarea,
   TextareaProps,
   Field,
+  Checkbox,
 } from '@chakra-ui/react';
 import { FC, useState, useEffect, useCallback } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useFieldArray, useForm, Controller } from 'react-hook-form';
 import {
   HiChevronDown,
   HiChevronUp,
@@ -78,6 +79,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
       position: '',
       startDate: '2005-02-03',
       endDate: '2008-11-03',
+      isPresent: false,
       summary: '',
       organization: '',
       url: '',
@@ -96,6 +98,13 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
       });
     },
     [resume.sectionVisibility, updateSectionVisibility]
+  );
+
+  const isEndDateInputDisabled = useCallback(
+    (index: number) => {
+      return fields[index]?.isPresent || false;
+    },
+    [fields]
   );
   return (
     <EditorSection
@@ -145,8 +154,34 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                 <GridItem colSpan={1}>
                   <Field.Root id={`end-${field.id}`}>
                     <Field.Label>End date</Field.Label>
-                    <Input type="date" {...register(`work.${index}.endDate`)} />
+                    <Input
+                      type="date"
+                      {...register(`work.${index}.endDate`)}
+                      disabled={isEndDateInputDisabled(index)}
+                    />
                   </Field.Root>
+                  <Flex justifyContent="flex-end" mt={2}>
+                    <Controller
+                      name={`work.${index}.isPresent`}
+                      control={control}
+                      render={({ field: { onChange, value } }) => (
+                        <Checkbox.Root
+                          variant="outline"
+                          colorPalette="purple"
+                          checked={value}
+                          onCheckedChange={(details) =>
+                            onChange(details.checked)
+                          }
+                        >
+                          <Checkbox.HiddenInput />
+                          <Checkbox.Control cursor="pointer" />
+                          <Checkbox.Label fontWeight="normal" cursor="pointer">
+                            I still work here
+                          </Checkbox.Label>
+                        </Checkbox.Root>
+                      )}
+                    />
+                  </Flex>
                 </GridItem>
                 <GridItem colSpan={2}>
                   <Field.Root id={`summary-${field.id}`}>
