@@ -5,6 +5,7 @@
   "homepage": "https://michaelmovsesov.github.io/resume-builder",
   "scripts": {
     "dev": "vite --open",
+    "dev:host": "vite --open --host",
     "build": "tsc && vite build --mode production",
     "preview": "vite preview",
     "predeploy": "npm run build",
