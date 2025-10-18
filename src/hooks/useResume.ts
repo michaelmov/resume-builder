@@ -1,7 +1,7 @@
 import { useContext, useCallback } from 'react';
 
-import { resumeStoreContext } from '../context/ResumeContext';
-import { ACTIONS } from '../context/ResumeReducer';
+import { resumeStoreContext } from '../context/ResumeContext/ResumeContext';
+import { ACTIONS } from '../context/ResumeContext/ResumeReducer';
 import {
   Basics,
   Resume,

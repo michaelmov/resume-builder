@@ -6,7 +6,7 @@ import {
   Education,
   Project,
   SectionVisibility,
-} from '../types/resume.model';
+} from '../../types/resume.model';
 
 export enum ACTIONS {
   updateResume = 'UPDATE_RESUME',
