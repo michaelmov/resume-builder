@@ -1,14 +1,21 @@
-import { Box, Grid, GridItem } from '@chakra-ui/react';
+import { Box, Grid, GridItem, IconButton } from '@chakra-ui/react';
 import { JSX } from 'react';
+import { GoSidebarCollapse, GoSidebarExpand } from 'react-icons/go';
 
 import { useResume } from '../../hooks/useResume';
 
 import ExportMenu from './ExportMenu';
 interface PreviewNavBarProps {
   resumeTemplate: JSX.Element;
+  isEditorCollapsed: boolean;
+  onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
 }
 
-export const PreviewNavBar = ({ resumeTemplate }: PreviewNavBarProps) => {
+export const PreviewNavBar = ({
+  resumeTemplate,
+  isEditorCollapsed,
+  onEditorCollapseChange,
+}: PreviewNavBarProps) => {
   useResume();
 
   return (
@@ -25,8 +32,18 @@ export const PreviewNavBar = ({ resumeTemplate }: PreviewNavBarProps) => {
       px={4}
       boxShadow="md"
     >
-      <Grid templateColumns="1fr 1fr 1fr" width="100%">
-        <GridItem />
+      <Grid templateColumns="1fr 1fr 1fr" width="100%" alignItems="center">
+        <GridItem display="flex" justifyContent="start">
+          <IconButton
+            aria-label={isEditorCollapsed ? 'Expand editor' : 'Collapse editor'}
+            onClick={() => onEditorCollapseChange(!isEditorCollapsed)}
+            variant="ghost"
+            color="white"
+            _hover={{ backgroundColor: 'whiteAlpha.200' }}
+          >
+            {isEditorCollapsed ? <GoSidebarCollapse /> : <GoSidebarExpand />}
+          </IconButton>
+        </GridItem>
         <GridItem />
         <GridItem display="flex" justifyContent="end">
           <ExportMenu template={resumeTemplate} />

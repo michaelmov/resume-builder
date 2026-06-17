@@ -1,7 +1,6 @@
 import { Box, IconButton, Flex } from '@chakra-ui/react';
 import { usePDF } from '@react-pdf/renderer';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { GoSidebarCollapse, GoSidebarExpand } from 'react-icons/go';
 import { HiOutlineZoomIn, HiOutlineZoomOut } from 'react-icons/hi';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -50,16 +49,11 @@ export const Preview: FC<{
       padding="20"
       zIndex={0}
     >
-      <PreviewNavBar resumeTemplate={template} />
-      <Box position="absolute" left={-1}>
-        <IconButton
-          onClick={() => onEditorCollapseChange(!isEditorCollapsed)}
-          variant="subtle"
-          zIndex="overlay"
-        >
-          {isEditorCollapsed ? <GoSidebarCollapse /> : <GoSidebarExpand />}
-        </IconButton>
-      </Box>
+      <PreviewNavBar
+        resumeTemplate={template}
+        isEditorCollapsed={isEditorCollapsed}
+        onEditorCollapseChange={onEditorCollapseChange}
+      />
       <Flex
         position="absolute"
         right={0}

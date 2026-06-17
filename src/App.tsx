@@ -19,18 +19,14 @@ const App: FC = () => {
             path="/"
             element={
               <Flex maxHeight="100vh">
-                {/* Navbar */}
+                {/* Navbar — remains while the editor slides */}
                 <Box flexShrink={0} zIndex="banner">
                   <Navbar />
                 </Box>
 
-                {/* Editor Panel */}
+                {/* Editor Panel — slides out (keeping its width) when collapsed */}
                 <Box
-                  width={
-                    isEditorCollapsed
-                      ? '0'
-                      : { base: '300px', xl: '450px', '2xl': '600px' }
-                  }
+                  width={{ base: '300px', xl: '450px', '2xl': '600px' }}
                   maxWidth="600px"
                   bgColor="gray.100"
                   maxHeight="100vh"
@@ -38,6 +34,11 @@ const App: FC = () => {
                   transition="all 0.3s ease-in-out"
                   transform={
                     isEditorCollapsed ? 'translateX(-100%)' : 'translateX(0)'
+                  }
+                  marginRight={
+                    isEditorCollapsed
+                      ? { base: '-300px', xl: '-450px', '2xl': '-600px' }
+                      : '0'
                   }
                   flexShrink={0}
                 >
