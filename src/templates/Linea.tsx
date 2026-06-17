@@ -48,7 +48,7 @@ Font.register({
 });
 
 const colors = {
-  paper: '#fbfaf7',
+  paper: '#ffffff',
   ink: '#211c17',
   muted: '#6f655c',
   faint: '#a79d91',
