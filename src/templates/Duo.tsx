@@ -12,6 +12,7 @@ import {
 
 import { Education, Project, Resume, Skill, Work } from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
+import { ensureProtocol } from '../utils/url-utilities';
 
 Font.register({
   family: 'Roboto Mono',
@@ -303,7 +304,7 @@ const DuoTemplate = ({ resume }: { resume: Resume }) => {
           <Text>{resume.basics?.phone}</Text>
           <Text>{resume.basics?.email}</Text>
           <Link
-            src={resume.basics?.url}
+            src={ensureProtocol(resume.basics?.url)}
             style={{ color: colors.secondaryLight, textDecoration: 'none' }}
           >
             {resume.basics?.url}

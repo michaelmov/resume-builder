@@ -1,6 +1,7 @@
 import { Resume } from '../types/resume.model';
 
 import { formatDate } from './date-utilities';
+import { ensureProtocol } from './url-utilities';
 
 export const exportResumeAsText = (resume: Resume, fileName: string) => {
   const textContent = generateAtsCompliantText(resume);
@@ -35,7 +36,7 @@ const generateAtsCompliantText = (resume: Resume): string => {
     contactInfo.push(resume.basics.location.city);
   if (resume.basics?.phone) contactInfo.push(resume.basics.phone);
   if (resume.basics?.email) contactInfo.push(resume.basics.email);
-  if (resume.basics?.url) contactInfo.push(resume.basics.url);
+  if (resume.basics?.url) contactInfo.push(ensureProtocol(resume.basics.url)!);
 
   if (contactInfo.length > 0) {
     sections.push(contactInfo.join(' | '));
