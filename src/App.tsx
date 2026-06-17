@@ -18,7 +18,7 @@ const App: FC = () => {
           <Route
             path="/"
             element={
-              <Flex maxHeight="100vh">
+              <Flex height="100dvh" maxHeight="100dvh" overflow="hidden">
                 {/* Navbar — remains while the editor slides */}
                 <Box flexShrink={0} zIndex="banner">
                   <Navbar />
@@ -29,7 +29,8 @@ const App: FC = () => {
                   width={{ base: '300px', xl: '450px', '2xl': '600px' }}
                   maxWidth="600px"
                   bgColor="gray.100"
-                  maxHeight="100vh"
+                  height="100%"
+                  maxHeight="100%"
                   overflow="auto"
                   transition="all 0.3s ease-in-out"
                   transform={
@@ -49,7 +50,8 @@ const App: FC = () => {
                 <Box
                   flex={1}
                   overflow="hidden"
-                  maxHeight="100vh"
+                  height="100%"
+                  maxHeight="100%"
                   position="relative"
                 >
                   <Preview

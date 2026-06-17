@@ -20,7 +20,7 @@ export const Navbar: FC = () => {
   return (
     <Box
       as="nav"
-      height="100vh"
+      height="100dvh"
       width={50}
       background="purple.500"
       display="flex"
