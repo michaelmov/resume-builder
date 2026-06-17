@@ -4,12 +4,16 @@ import { GoSidebarCollapse, GoSidebarExpand } from 'react-icons/go';
 
 import { useResume } from '../../hooks/useResume';
 
+import AccentMenu from './AccentMenu';
 import ExportMenu from './ExportMenu';
 import TemplateMenu from './TemplateMenu';
 interface PreviewNavBarProps {
   resumeTemplate: JSX.Element;
   selectedTemplateId: string;
   onTemplateChange: (templateId: string) => void;
+  selectedAccentId: string | null;
+  resolvedAccentId: string;
+  onAccentChange: (accentId: string | null) => void;
   isEditorCollapsed: boolean;
   onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
 }
@@ -18,6 +22,9 @@ export const PreviewNavBar = ({
   resumeTemplate,
   selectedTemplateId,
   onTemplateChange,
+  selectedAccentId,
+  resolvedAccentId,
+  onAccentChange,
   isEditorCollapsed,
   onEditorCollapseChange,
 }: PreviewNavBarProps) => {
@@ -49,10 +56,15 @@ export const PreviewNavBar = ({
             {isEditorCollapsed ? <GoSidebarCollapse /> : <GoSidebarExpand />}
           </IconButton>
         </GridItem>
-        <GridItem display="flex" justifyContent="center">
+        <GridItem display="flex" justifyContent="center" gap={2}>
           <TemplateMenu
             selectedTemplateId={selectedTemplateId}
             onTemplateChange={onTemplateChange}
+          />
+          <AccentMenu
+            selectedAccentId={selectedAccentId}
+            resolvedAccentId={resolvedAccentId}
+            onAccentChange={onAccentChange}
           />
         </GridItem>
         <GridItem display="flex" justifyContent="end">

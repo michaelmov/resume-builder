@@ -7,11 +7,13 @@ import {
   Font,
   Link,
 } from '@react-pdf/renderer';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 import { Education, Project, Resume, Skill, Work } from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
+
+import { AccentPalette } from './accents';
 
 const FONTS = 'https://raw.githubusercontent.com/google/fonts/main/ofl';
 
@@ -53,209 +55,219 @@ const colors = {
   muted: '#6f655c',
   faint: '#a79d91',
   rule: '#e4ded3',
-  accent: '#9c3a26',
 };
 
-const styles = StyleSheet.create({
-  page: {
-    paddingHorizontal: 50,
-    paddingTop: 46,
-    paddingBottom: 46,
-    backgroundColor: colors.paper,
-    color: colors.ink,
-    fontSize: 10,
-    fontFamily: 'Spectral',
-    lineHeight: 1.5,
-  },
+const makeStyles = (accent: AccentPalette) =>
+  StyleSheet.create({
+    page: {
+      paddingHorizontal: 50,
+      paddingTop: 46,
+      paddingBottom: 46,
+      backgroundColor: colors.paper,
+      color: colors.ink,
+      fontSize: 10,
+      fontFamily: 'Spectral',
+      lineHeight: 1.5,
+    },
 
-  // Masthead
-  kicker: {
-    fontFamily: 'Barlow Semi Condensed',
-    fontWeight: 600,
-    fontSize: 9,
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-    color: colors.accent,
-  },
-  name: {
-    fontFamily: 'Spectral',
-    fontWeight: 500,
-    fontSize: 31,
-    lineHeight: 1.05,
-    letterSpacing: -0.5,
-    marginTop: 5,
-    color: colors.ink,
-  },
-  ruleThick: {
-    marginTop: 14,
-    borderBottomWidth: 1.6,
-    borderBottomColor: colors.accent,
-  },
-  ruleThin: {
-    marginTop: 1.6,
-    borderBottomWidth: 0.5,
-    borderBottomColor: colors.ink,
-  },
-  contact: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    marginTop: 9,
-  },
-  contactItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  contactText: {
-    fontFamily: 'Barlow',
-    fontWeight: 400,
-    fontSize: 9,
-    color: colors.muted,
-  },
-  contactLink: {
-    fontFamily: 'Barlow',
-    fontWeight: 500,
-    fontSize: 9,
-    color: colors.accent,
-    textDecoration: 'none',
-  },
-  dot: {
-    fontFamily: 'Barlow',
-    fontSize: 9,
-    color: colors.faint,
-    marginHorizontal: 7,
-  },
-  summary: {
-    marginTop: 15,
-    fontSize: 10.5,
-    lineHeight: 1.55,
-    color: colors.ink,
-  },
+    // Masthead
+    kicker: {
+      fontFamily: 'Barlow Semi Condensed',
+      fontWeight: 600,
+      fontSize: 9,
+      letterSpacing: 3,
+      textTransform: 'uppercase',
+      color: accent.strong,
+    },
+    name: {
+      fontFamily: 'Spectral',
+      fontWeight: 500,
+      fontSize: 31,
+      lineHeight: 1.05,
+      letterSpacing: -0.5,
+      marginTop: 5,
+      color: colors.ink,
+    },
+    ruleThick: {
+      marginTop: 14,
+      borderBottomWidth: 1.6,
+      borderBottomColor: accent.strong,
+    },
+    ruleThin: {
+      marginTop: 1.6,
+      borderBottomWidth: 0.5,
+      borderBottomColor: colors.ink,
+    },
+    contact: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      marginTop: 9,
+    },
+    contactItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    contactText: {
+      fontFamily: 'Barlow',
+      fontWeight: 400,
+      fontSize: 9,
+      color: colors.muted,
+    },
+    contactLink: {
+      fontFamily: 'Barlow',
+      fontWeight: 500,
+      fontSize: 9,
+      color: accent.strong,
+      textDecoration: 'none',
+    },
+    dot: {
+      fontFamily: 'Barlow',
+      fontSize: 9,
+      color: colors.faint,
+      marginHorizontal: 7,
+    },
+    summary: {
+      marginTop: 15,
+      fontSize: 10.5,
+      lineHeight: 1.55,
+      color: colors.ink,
+    },
 
-  // Section scaffolding
-  section: {
-    marginTop: 24,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    marginBottom: 13,
-  },
-  sectionIndex: {
-    fontFamily: 'Spectral',
-    fontWeight: 500,
-    fontSize: 10,
-    color: colors.accent,
-    marginRight: 8,
-  },
-  sectionTitle: {
-    fontFamily: 'Barlow Semi Condensed',
-    fontWeight: 600,
-    fontSize: 11,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    color: colors.ink,
-  },
-  sectionRule: {
-    flex: 1,
-    marginLeft: 11,
-    marginBottom: 3,
-    borderBottomWidth: 0.75,
-    borderBottomColor: colors.rule,
-  },
+    // Section scaffolding
+    section: {
+      marginTop: 24,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      marginBottom: 13,
+    },
+    sectionIndex: {
+      fontFamily: 'Spectral',
+      fontWeight: 500,
+      fontSize: 10,
+      color: accent.strong,
+      marginRight: 8,
+    },
+    sectionTitle: {
+      fontFamily: 'Barlow Semi Condensed',
+      fontWeight: 600,
+      fontSize: 11,
+      letterSpacing: 2,
+      textTransform: 'uppercase',
+      color: colors.ink,
+    },
+    sectionRule: {
+      flex: 1,
+      marginLeft: 11,
+      marginBottom: 3,
+      borderBottomWidth: 0.75,
+      borderBottomColor: colors.rule,
+    },
 
-  // Entries (work / education / projects)
-  entry: {
-    marginBottom: 13,
-  },
-  entryHead: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
-  },
-  entryTitle: {
-    fontFamily: 'Spectral',
-    fontWeight: 600,
-    fontSize: 12,
-    color: colors.ink,
-    flex: 1,
-    paddingRight: 12,
-  },
-  entryDates: {
-    fontFamily: 'Barlow Semi Condensed',
-    fontWeight: 600,
-    fontSize: 8.5,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: colors.faint,
-  },
-  entryRole: {
-    fontFamily: 'Barlow',
-    fontWeight: 500,
-    fontSize: 8.5,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    color: colors.accent,
-    marginTop: 3,
-  },
-  entrySummary: {
-    fontSize: 9.5,
-    lineHeight: 1.5,
-    color: colors.muted,
-    marginTop: 5,
-  },
+    // Entries (work / education / projects)
+    entry: {
+      marginBottom: 13,
+    },
+    entryHead: {
+      flexDirection: 'row',
+      alignItems: 'baseline',
+      justifyContent: 'space-between',
+    },
+    entryTitle: {
+      fontFamily: 'Spectral',
+      fontWeight: 600,
+      fontSize: 12,
+      color: colors.ink,
+      flex: 1,
+      paddingRight: 12,
+    },
+    entryDates: {
+      fontFamily: 'Barlow Semi Condensed',
+      fontWeight: 600,
+      fontSize: 8.5,
+      letterSpacing: 1,
+      textTransform: 'uppercase',
+      color: colors.faint,
+    },
+    entryRole: {
+      fontFamily: 'Barlow',
+      fontWeight: 500,
+      fontSize: 8.5,
+      letterSpacing: 1.2,
+      textTransform: 'uppercase',
+      color: accent.strong,
+      marginTop: 3,
+    },
+    entrySummary: {
+      fontSize: 9.5,
+      lineHeight: 1.5,
+      color: colors.muted,
+      marginTop: 5,
+    },
 
-  // Highlight bullets
-  bulletRow: {
-    flexDirection: 'row',
-    marginTop: 4,
-  },
-  bulletMark: {
-    width: 8,
-    height: 1.2,
-    backgroundColor: colors.accent,
-    marginTop: 6,
-    marginRight: 8,
-  },
-  bulletText: {
-    flex: 1,
-    fontSize: 9.5,
-    lineHeight: 1.5,
-    color: colors.ink,
-  },
+    // Highlight bullets
+    bulletRow: {
+      flexDirection: 'row',
+      marginTop: 4,
+    },
+    bulletMark: {
+      width: 8,
+      height: 1.2,
+      backgroundColor: accent.strong,
+      marginTop: 6,
+      marginRight: 8,
+    },
+    bulletText: {
+      flex: 1,
+      fontSize: 9.5,
+      lineHeight: 1.5,
+      color: colors.ink,
+    },
 
-  // Skills — an index-style definition list
-  skillRow: {
-    flexDirection: 'row',
-    marginBottom: 9,
-  },
-  skillName: {
-    width: '30%',
-    paddingRight: 12,
-    fontFamily: 'Barlow',
-    fontWeight: 600,
-    fontSize: 8.5,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    color: colors.ink,
-    marginTop: 1,
-  },
-  skillKeywords: {
-    flex: 1,
-    fontSize: 10,
-    lineHeight: 1.45,
-    color: colors.muted,
-  },
-});
+    // Skills — an index-style definition list
+    skillRow: {
+      flexDirection: 'row',
+      marginBottom: 9,
+    },
+    skillName: {
+      width: '30%',
+      paddingRight: 12,
+      fontFamily: 'Barlow',
+      fontWeight: 600,
+      fontSize: 8.5,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase',
+      color: colors.ink,
+      marginTop: 1,
+    },
+    skillKeywords: {
+      flex: 1,
+      fontSize: 10,
+      lineHeight: 1.45,
+      color: colors.muted,
+    },
+  });
 
-const Highlight = ({ value }: { value: string }) => (
+type Styles = ReturnType<typeof makeStyles>;
+
+const Highlight = ({ value, styles }: { value: string; styles: Styles }) => (
   <View style={styles.bulletRow}>
     <View style={styles.bulletMark} />
     <Text style={styles.bulletText}>{value}</Text>
   </View>
 );
 
-const SectionHeader = ({ index, title }: { index: number; title: string }) => (
+const SectionHeader = ({
+  index,
+  title,
+  styles,
+}: {
+  index: number;
+  title: string;
+  styles: Styles;
+}) => (
   <View style={styles.sectionHeader}>
     <Text style={styles.sectionIndex}>{String(index).padStart(2, '0')}</Text>
     <Text style={styles.sectionTitle}>{title}</Text>
@@ -263,7 +275,7 @@ const SectionHeader = ({ index, title }: { index: number; title: string }) => (
   </View>
 );
 
-const SkillsSection = ({ skill }: { skill: Skill }) => (
+const SkillsSection = ({ skill, styles }: { skill: Skill; styles: Styles }) => (
   <View style={styles.skillRow}>
     <Text style={styles.skillName}>{skill.name}</Text>
     <Text style={styles.skillKeywords}>
@@ -272,7 +284,7 @@ const SkillsSection = ({ skill }: { skill: Skill }) => (
   </View>
 );
 
-const WorkExperience = ({ work }: { work: Work }) => {
+const WorkExperience = ({ work, styles }: { work: Work; styles: Styles }) => {
   const startDate = formatDate(work.startDate);
   const endDate = (work.isPresent ? 'Present' : formatDate(work.endDate)) || '';
 
@@ -287,13 +299,19 @@ const WorkExperience = ({ work }: { work: Work }) => {
       {work.position && <Text style={styles.entryRole}>{work.position}</Text>}
       {work.summary && <Text style={styles.entrySummary}>{work.summary}</Text>}
       {work?.highlights?.map((highlight, index) => (
-        <Highlight key={index} value={highlight.value} />
+        <Highlight key={index} value={highlight.value} styles={styles} />
       ))}
     </View>
   );
 };
 
-const EducationSection = ({ education }: { education: Education }) => {
+const EducationSection = ({
+  education,
+  styles,
+}: {
+  education: Education;
+  styles: Styles;
+}) => {
   const detail = [education.studyType, education.area]
     .filter(Boolean)
     .join(' · ');
@@ -311,7 +329,13 @@ const EducationSection = ({ education }: { education: Education }) => {
   );
 };
 
-const ProjectSection = ({ project }: { project: Project }) => {
+const ProjectSection = ({
+  project,
+  styles,
+}: {
+  project: Project;
+  styles: Styles;
+}) => {
   const startDate = formatDate(project.startDate);
   const endDate = formatDate(project.endDate) || 'Present';
 
@@ -328,13 +352,20 @@ const ProjectSection = ({ project }: { project: Project }) => {
         <Text style={styles.entrySummary}>{project.description}</Text>
       )}
       {project?.highlights?.map((highlight, index) => (
-        <Highlight key={index} value={highlight} />
+        <Highlight key={index} value={highlight} styles={styles} />
       ))}
     </View>
   );
 };
 
-const LineaTemplate = ({ resume }: { resume: Resume }) => {
+const LineaTemplate = ({
+  resume,
+  accent,
+}: {
+  resume: Resume;
+  accent: AccentPalette;
+}) => {
+  const styles = useMemo(() => makeStyles(accent), [accent]);
   const { basics, skills, work, education, projects, sectionVisibility } =
     resume;
 
@@ -357,7 +388,11 @@ const LineaTemplate = ({ resume }: { resume: Resume }) => {
     sections.push({
       title: 'Expertise',
       body: skills.map((skill, index) => (
-        <SkillsSection key={`${skill.name}-${index}`} skill={skill} />
+        <SkillsSection
+          key={`${skill.name}-${index}`}
+          skill={skill}
+          styles={styles}
+        />
       )),
     });
   }
@@ -366,7 +401,11 @@ const LineaTemplate = ({ resume }: { resume: Resume }) => {
     sections.push({
       title: 'Experience',
       body: work.map((item, index) => (
-        <WorkExperience key={`${item.name}-${index}`} work={item} />
+        <WorkExperience
+          key={`${item.name}-${index}`}
+          work={item}
+          styles={styles}
+        />
       )),
     });
   }
@@ -378,6 +417,7 @@ const LineaTemplate = ({ resume }: { resume: Resume }) => {
         <EducationSection
           key={`${item.institution}-${index}`}
           education={item}
+          styles={styles}
         />
       )),
     });
@@ -387,7 +427,11 @@ const LineaTemplate = ({ resume }: { resume: Resume }) => {
     sections.push({
       title: 'Selected Work',
       body: projects.map((item, index) => (
-        <ProjectSection key={`${item.name}-${index}`} project={item} />
+        <ProjectSection
+          key={`${item.name}-${index}`}
+          project={item}
+          styles={styles}
+        />
       )),
     });
   }
@@ -417,7 +461,11 @@ const LineaTemplate = ({ resume }: { resume: Resume }) => {
 
         {sections.map((section, index) => (
           <View key={section.title} style={styles.section}>
-            <SectionHeader index={index + 1} title={section.title} />
+            <SectionHeader
+              index={index + 1}
+              title={section.title}
+              styles={styles}
+            />
             {section.body}
           </View>
         ))}

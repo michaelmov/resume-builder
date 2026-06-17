@@ -9,10 +9,13 @@ import {
   Svg,
   Path,
 } from '@react-pdf/renderer';
+import { useMemo } from 'react';
 
 import { Education, Project, Resume, Skill, Work } from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
+
+import { AccentPalette } from './accents';
 
 Font.register({
   family: 'Roboto Mono',
@@ -30,147 +33,148 @@ Font.register({
 });
 
 const colors = {
-  primary: '#dbeafe',
-  primaryDark: '#bfdbfe',
   secondaryDark: '#3f3f46',
   secondaryLight: '#a1a1aa',
 };
 
-const styles = StyleSheet.create({
-  page: {
-    padding: 40,
-    color: colors.secondaryDark,
-    fontSize: 10,
-    fontFamily: 'Poppins',
-  },
-  textLight: {
-    color: colors.secondaryLight,
-  },
-  name: {
-    fontFamily: 'Roboto Mono',
-    fontSize: 24,
-  },
-  headingWrap: {
-    position: 'relative',
-  },
-  headingUnderline: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    height: 15,
-    backgroundColor: colors.primary,
-  },
-  headingLabel: {
-    fontFamily: 'Poppins',
-    fontSize: 12,
-    color: colors.secondaryLight,
-    marginTop: 2,
-  },
-  contactInfo: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 8,
-    color: colors.secondaryLight,
-  },
-  summary: {
-    marginTop: 18,
-  },
-  sectionTitleWrap: {
-    display: 'flex',
-    position: 'relative',
-    width: 'auto',
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontFamily: 'Roboto Mono',
-    fontSize: 16,
-    marginTop: 18,
-  },
-  sectionTitleUnderline: {
-    backgroundColor: colors.primary,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    height: 8,
-  },
-  workExperienceHeading: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  workExperienceName: {
-    fontFamily: 'Poppins Bold',
-  },
-  workExperienceSummary: {
-    marginTop: 6,
-  },
-  workExperienceHighlights: {
-    marginTop: 8,
-  },
-  workExperienceHighlight: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginBottom: 6,
-  },
-  skillTitle: {
-    fontFamily: 'Poppins Bold',
-    marginBottom: 4,
-  },
-  skillKeywords: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 4,
-  },
-  skillKeyword: {
-    fontSize: 8,
-    borderWidth: 1,
-    borderColor: colors.primaryDark,
-    borderRadius: 4,
-    paddingLeft: 4,
-    paddingRight: 4,
-  },
-  educationWrap: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  projectHeading: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  projectName: {
-    fontFamily: 'Poppins Bold',
-  },
-  projectDescription: {
-    marginTop: 6,
-  },
-  projectHighlights: {
-    marginTop: 8,
-  },
-  projectHighlight: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginBottom: 6,
-  },
-});
+const makeStyles = (accent: AccentPalette) =>
+  StyleSheet.create({
+    page: {
+      padding: 40,
+      color: colors.secondaryDark,
+      fontSize: 10,
+      fontFamily: 'Poppins',
+    },
+    textLight: {
+      color: colors.secondaryLight,
+    },
+    name: {
+      fontFamily: 'Roboto Mono',
+      fontSize: 24,
+    },
+    headingWrap: {
+      position: 'relative',
+    },
+    headingUnderline: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      width: '100%',
+      height: 15,
+      backgroundColor: accent.soft,
+    },
+    headingLabel: {
+      fontFamily: 'Poppins',
+      fontSize: 12,
+      color: colors.secondaryLight,
+      marginTop: 2,
+    },
+    contactInfo: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: '100%',
+      marginTop: 8,
+      color: colors.secondaryLight,
+    },
+    summary: {
+      marginTop: 18,
+    },
+    sectionTitleWrap: {
+      display: 'flex',
+      position: 'relative',
+      width: 'auto',
+      marginBottom: 12,
+    },
+    sectionTitle: {
+      fontFamily: 'Roboto Mono',
+      fontSize: 16,
+      marginTop: 18,
+    },
+    sectionTitleUnderline: {
+      backgroundColor: accent.soft,
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      height: 8,
+    },
+    workExperienceHeading: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    workExperienceName: {
+      fontFamily: 'Poppins Bold',
+    },
+    workExperienceSummary: {
+      marginTop: 6,
+    },
+    workExperienceHighlights: {
+      marginTop: 8,
+    },
+    workExperienceHighlight: {
+      display: 'flex',
+      flexDirection: 'row',
+      marginBottom: 6,
+    },
+    skillTitle: {
+      fontFamily: 'Poppins Bold',
+      marginBottom: 4,
+    },
+    skillKeywords: {
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 4,
+    },
+    skillKeyword: {
+      fontSize: 8,
+      borderWidth: 1,
+      borderColor: accent.muted,
+      borderRadius: 4,
+      paddingLeft: 4,
+      paddingRight: 4,
+    },
+    educationWrap: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    projectHeading: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    projectName: {
+      fontFamily: 'Poppins Bold',
+    },
+    projectDescription: {
+      marginTop: 6,
+    },
+    projectHighlights: {
+      marginTop: 8,
+    },
+    projectHighlight: {
+      display: 'flex',
+      flexDirection: 'row',
+      marginBottom: 6,
+    },
+  });
+
+type Styles = ReturnType<typeof makeStyles>;
 
 const ArrowSmRight = ({
   width = 16,
   height = 16,
-  color = colors.primaryDark,
+  color,
 }: {
   width?: number;
   height?: number;
-  color?: string;
+  color: string;
 }) => (
   <Svg viewBox="0 0 24 24" width={width} height={height}>
     <Path
@@ -187,9 +191,11 @@ const ArrowSmRight = ({
 const SectionTitle = ({
   title,
   underlineWidth = '100%',
+  styles,
 }: {
   title: string;
   underlineWidth?: number | string;
+  styles: Styles;
 }) => {
   return (
     <View style={styles.sectionTitleWrap}>
@@ -201,7 +207,7 @@ const SectionTitle = ({
   );
 };
 
-const SkillsSection = ({ skill }: { skill: Skill }) => {
+const SkillsSection = ({ skill, styles }: { skill: Skill; styles: Styles }) => {
   return (
     <View style={{ marginBottom: 14 }}>
       <Text style={styles.skillTitle}>{skill.name}</Text>
@@ -216,7 +222,15 @@ const SkillsSection = ({ skill }: { skill: Skill }) => {
   );
 };
 
-const WorkExperience = ({ work }: { work: Work }) => {
+const WorkExperience = ({
+  work,
+  styles,
+  accent,
+}: {
+  work: Work;
+  styles: Styles;
+  accent: AccentPalette;
+}) => {
   const startDate = formatDate(work.startDate);
   const endDate = (work.isPresent ? 'Present' : formatDate(work.endDate)) || '';
 
@@ -237,7 +251,7 @@ const WorkExperience = ({ work }: { work: Work }) => {
       <View style={styles.workExperienceHighlights}>
         {work?.highlights?.map((highlight, index) => (
           <View key={index} style={styles.workExperienceHighlight}>
-            <ArrowSmRight color={colors.primaryDark} />
+            <ArrowSmRight color={accent.muted} />
             <Text style={{ marginLeft: 2 }}>{highlight.value}</Text>
           </View>
         ))}
@@ -246,7 +260,13 @@ const WorkExperience = ({ work }: { work: Work }) => {
   );
 };
 
-const EducationSection = ({ education }: { education: Education }) => {
+const EducationSection = ({
+  education,
+  styles,
+}: {
+  education: Education;
+  styles: Styles;
+}) => {
   return (
     <View style={{ ...styles.educationWrap, marginBottom: 14 }}>
       <Text style={styles.workExperienceName}>{education.institution}</Text>
@@ -258,7 +278,15 @@ const EducationSection = ({ education }: { education: Education }) => {
   );
 };
 
-const ProjectSection = ({ project }: { project: Project }) => {
+const ProjectSection = ({
+  project,
+  styles,
+  accent,
+}: {
+  project: Project;
+  styles: Styles;
+  accent: AccentPalette;
+}) => {
   const startDate = formatDate(project.startDate);
   const endDate = formatDate(project.endDate) || 'Present';
 
@@ -279,7 +307,7 @@ const ProjectSection = ({ project }: { project: Project }) => {
       <View style={styles.projectHighlights}>
         {project?.highlights?.map((highlight, index) => (
           <View key={index} style={styles.projectHighlight}>
-            <ArrowSmRight color={colors.primaryDark} />
+            <ArrowSmRight color={accent.muted} />
             <Text style={{ marginLeft: 2 }}>{highlight}</Text>
           </View>
         ))}
@@ -288,7 +316,15 @@ const ProjectSection = ({ project }: { project: Project }) => {
   );
 };
 
-const DuoTemplate = ({ resume }: { resume: Resume }) => {
+const DuoTemplate = ({
+  resume,
+  accent,
+}: {
+  resume: Resume;
+  accent: AccentPalette;
+}) => {
+  const styles = useMemo(() => makeStyles(accent), [accent]);
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -315,40 +351,52 @@ const DuoTemplate = ({ resume }: { resume: Resume }) => {
         </View>
         {!resume.sectionVisibility?.skills && (
           <>
-            <SectionTitle title="Skills" />
+            <SectionTitle title="Skills" styles={styles} />
             {resume.skills.map((skill, index) => {
               return (
-                <SkillsSection key={`${skill.name}-${index}`} skill={skill} />
+                <SkillsSection
+                  key={`${skill.name}-${index}`}
+                  skill={skill}
+                  styles={styles}
+                />
               );
             })}
           </>
         )}
         {!resume.sectionVisibility?.work && (
           <>
-            <SectionTitle title="Work Experience" />
+            <SectionTitle title="Work Experience" styles={styles} />
             {resume.work.map((work, index) => (
-              <WorkExperience key={`${work.name}-${index}`} work={work} />
+              <WorkExperience
+                key={`${work.name}-${index}`}
+                work={work}
+                styles={styles}
+                accent={accent}
+              />
             ))}
           </>
         )}
         {!resume.sectionVisibility?.education && (
           <>
-            <SectionTitle title="Education" />
+            <SectionTitle title="Education" styles={styles} />
             {resume.education.map((education, index) => (
               <EducationSection
                 key={`${education.institution}-${index}`}
                 education={education}
+                styles={styles}
               />
             ))}
           </>
         )}
         {!resume.sectionVisibility?.projects && (
           <>
-            <SectionTitle title="Projects" />
+            <SectionTitle title="Projects" styles={styles} />
             {resume.projects.map((project, index) => (
               <ProjectSection
                 key={`${project.name}-${index}`}
                 project={project}
+                styles={styles}
+                accent={accent}
               />
             ))}
           </>

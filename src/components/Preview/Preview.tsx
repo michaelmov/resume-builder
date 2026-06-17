@@ -6,9 +6,11 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 
+import { useAccentLocalStorage } from '../../hooks/useAccentLocalStorage';
 import { useResume } from '../../hooks/useResume';
 import { useTemplateLocalStorage } from '../../hooks/useTemplateLocalStorage';
 import { DEFAULT_TEMPLATE_ID, templates } from '../../templates';
+import { getAccent } from '../../templates/accents';
 
 import { PreviewNavBar } from './PreviewNavBar';
 
@@ -23,25 +25,38 @@ export const Preview: FC<{
 }> = ({ isEditorCollapsed, onEditorCollapseChange }) => {
   const { resume } = useResume();
   const { getTemplateId, saveTemplateId } = useTemplateLocalStorage();
+  const { getAccentId, saveAccentId } = useAccentLocalStorage();
 
   const [templateId, setTemplateId] = useState<string>(
     () => getTemplateId() ?? DEFAULT_TEMPLATE_ID
   );
+  const [accentId, setAccentId] = useState<string | null>(() => getAccentId());
 
   useEffect(() => {
     saveTemplateId(templateId);
   }, [templateId, saveTemplateId]);
 
-  const SelectedTemplate = useMemo(
+  useEffect(() => {
+    saveAccentId(accentId);
+  }, [accentId, saveAccentId]);
+
+  const activeTemplate = useMemo(
     () =>
-      templates.find((template) => template.id === templateId)?.Component ??
-      templates[0].Component,
+      templates.find((template) => template.id === templateId) ?? templates[0],
     [templateId]
   );
 
+  // "Auto" (accentId === null) falls back to the active template's signature accent.
+  const accent = useMemo(
+    () => getAccent(accentId ?? activeTemplate.defaultAccentId),
+    [accentId, activeTemplate]
+  );
+
+  const SelectedTemplate = activeTemplate.Component;
+
   const template = useMemo(
-    () => <SelectedTemplate resume={resume} />,
-    [SelectedTemplate, resume]
+    () => <SelectedTemplate resume={resume} accent={accent} />,
+    [SelectedTemplate, resume, accent]
   );
   const [instance, update] = usePDF({ document: template });
   const [numPages, setNumPages] = useState<number>();
@@ -73,6 +88,9 @@ export const Preview: FC<{
         resumeTemplate={template}
         selectedTemplateId={templateId}
         onTemplateChange={setTemplateId}
+        selectedAccentId={accentId}
+        resolvedAccentId={accent.id}
+        onAccentChange={setAccentId}
         isEditorCollapsed={isEditorCollapsed}
         onEditorCollapseChange={onEditorCollapseChange}
       />
