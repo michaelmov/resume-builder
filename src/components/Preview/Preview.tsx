@@ -7,7 +7,8 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 
 import { useResume } from '../../hooks/useResume';
-import DuoTemplate from '../../templates/Duo';
+import { useTemplateLocalStorage } from '../../hooks/useTemplateLocalStorage';
+import { DEFAULT_TEMPLATE_ID, templates } from '../../templates';
 
 import { PreviewNavBar } from './PreviewNavBar';
 
@@ -21,8 +22,27 @@ export const Preview: FC<{
   onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
 }> = ({ isEditorCollapsed, onEditorCollapseChange }) => {
   const { resume } = useResume();
+  const { getTemplateId, saveTemplateId } = useTemplateLocalStorage();
 
-  const template = useMemo(() => <DuoTemplate resume={resume} />, [resume]);
+  const [templateId, setTemplateId] = useState<string>(
+    () => getTemplateId() ?? DEFAULT_TEMPLATE_ID
+  );
+
+  useEffect(() => {
+    saveTemplateId(templateId);
+  }, [templateId, saveTemplateId]);
+
+  const SelectedTemplate = useMemo(
+    () =>
+      templates.find((template) => template.id === templateId)?.Component ??
+      templates[0].Component,
+    [templateId]
+  );
+
+  const template = useMemo(
+    () => <SelectedTemplate resume={resume} />,
+    [SelectedTemplate, resume]
+  );
   const [instance, update] = usePDF({ document: template });
   const [numPages, setNumPages] = useState<number>();
   const [scale, setScale] = useState<number>(1.4);
@@ -51,6 +71,8 @@ export const Preview: FC<{
     >
       <PreviewNavBar
         resumeTemplate={template}
+        selectedTemplateId={templateId}
+        onTemplateChange={setTemplateId}
         isEditorCollapsed={isEditorCollapsed}
         onEditorCollapseChange={onEditorCollapseChange}
       />

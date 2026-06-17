@@ -5,14 +5,19 @@ import { GoSidebarCollapse, GoSidebarExpand } from 'react-icons/go';
 import { useResume } from '../../hooks/useResume';
 
 import ExportMenu from './ExportMenu';
+import TemplateMenu from './TemplateMenu';
 interface PreviewNavBarProps {
   resumeTemplate: JSX.Element;
+  selectedTemplateId: string;
+  onTemplateChange: (templateId: string) => void;
   isEditorCollapsed: boolean;
   onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
 }
 
 export const PreviewNavBar = ({
   resumeTemplate,
+  selectedTemplateId,
+  onTemplateChange,
   isEditorCollapsed,
   onEditorCollapseChange,
 }: PreviewNavBarProps) => {
@@ -44,7 +49,12 @@ export const PreviewNavBar = ({
             {isEditorCollapsed ? <GoSidebarCollapse /> : <GoSidebarExpand />}
           </IconButton>
         </GridItem>
-        <GridItem />
+        <GridItem display="flex" justifyContent="center">
+          <TemplateMenu
+            selectedTemplateId={selectedTemplateId}
+            onTemplateChange={onTemplateChange}
+          />
+        </GridItem>
         <GridItem display="flex" justifyContent="end">
           <ExportMenu template={resumeTemplate} />
         </GridItem>
