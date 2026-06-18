@@ -57,6 +57,10 @@ Font.register({
   ],
 });
 
+// Disable react-pdf's automatic hyphenation so words wrap whole instead of
+// breaking mid-syllable with a dash (most noticeable in the dense skills list).
+Font.registerHyphenationCallback((word) => [word]);
+
 const colors = {
   paper: '#ffffff',
   ink: '#211c17',
@@ -234,27 +238,41 @@ const makeStyles = (accent: AccentPalette) =>
       color: colors.ink,
     },
 
-    // Skills — an index-style definition list
+    // Skills — an index-style definition list with discrete keyword tags
     skillRow: {
       flexDirection: 'row',
-      marginBottom: 9,
+      marginBottom: 8,
     },
     skillName: {
-      width: '30%',
-      paddingRight: 12,
+      width: '28%',
+      paddingRight: 14,
+      paddingTop: 2,
       fontFamily: 'Barlow',
       fontWeight: 600,
       fontSize: 8.5,
+      lineHeight: 1,
       letterSpacing: 0.8,
       textTransform: 'uppercase',
       color: colors.ink,
-      marginTop: 1,
     },
     skillKeywords: {
       flex: 1,
-      fontSize: 10,
-      lineHeight: 1.45,
-      color: colors.muted,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+    keyword: {
+      fontFamily: 'Spectral',
+      fontWeight: 500,
+      fontSize: 9,
+      lineHeight: 1,
+      color: colors.ink,
+      backgroundColor: accent.soft,
+      borderRadius: 2,
+      paddingTop: 1,
+      paddingBottom: 4.5,
+      paddingHorizontal: 6,
+      marginRight: 4,
+      marginBottom: 4,
     },
   });
 
@@ -284,11 +302,15 @@ const SectionHeader = ({
 );
 
 const SkillsSection = ({ skill, styles }: { skill: Skill; styles: Styles }) => (
-  <View style={styles.skillRow}>
+  <View style={styles.skillRow} wrap={false}>
     <Text style={styles.skillName}>{skill.name}</Text>
-    <Text style={styles.skillKeywords}>
-      {skill.keywords.map((keyword) => keyword.value).join('   ·   ')}
-    </Text>
+    <View style={styles.skillKeywords}>
+      {skill.keywords.map((keyword, index) => (
+        <Text key={`${keyword.value}-${index}`} style={styles.keyword}>
+          {keyword.value}
+        </Text>
+      ))}
+    </View>
   </View>
 );
 
