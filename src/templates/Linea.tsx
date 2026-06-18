@@ -9,7 +9,15 @@ import {
 } from '@react-pdf/renderer';
 import { ReactNode, useMemo } from 'react';
 
-import { Education, Project, Resume, Skill, Work } from '../types/resume.model';
+import {
+  Education,
+  Project,
+  Resume,
+  SECTION_TITLES,
+  SectionTypes,
+  Skill,
+  Work,
+} from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
 
@@ -386,7 +394,7 @@ const LineaTemplate = ({
 
   if (!sectionVisibility?.skills) {
     sections.push({
-      title: 'Expertise',
+      title: SECTION_TITLES[SectionTypes.Skills],
       body: skills.map((skill, index) => (
         <SkillsSection
           key={`${skill.name}-${index}`}
@@ -399,7 +407,7 @@ const LineaTemplate = ({
 
   if (!sectionVisibility?.work) {
     sections.push({
-      title: 'Experience',
+      title: SECTION_TITLES[SectionTypes.Work],
       body: work.map((item, index) => (
         <WorkExperience
           key={`${item.name}-${index}`}
@@ -412,7 +420,7 @@ const LineaTemplate = ({
 
   if (!sectionVisibility?.education) {
     sections.push({
-      title: 'Education',
+      title: SECTION_TITLES[SectionTypes.Education],
       body: education.map((item, index) => (
         <EducationSection
           key={`${item.institution}-${index}`}
@@ -425,7 +433,7 @@ const LineaTemplate = ({
 
   if (!sectionVisibility?.projects) {
     sections.push({
-      title: 'Selected Work',
+      title: SECTION_TITLES[SectionTypes.Projects],
       body: projects.map((item, index) => (
         <ProjectSection
           key={`${item.name}-${index}`}

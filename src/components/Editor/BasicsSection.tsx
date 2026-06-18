@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
 import { useResume } from '../../hooks/useResume';
-import { Basics, SectionTypes } from '../../types/resume.model';
+import { Basics, SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
 
@@ -52,7 +52,7 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
 
   return (
     <EditorSection
-      title="Basics"
+      title={SECTION_TITLES[SectionTypes.Basics]}
       isHidden={resume.sectionVisibility?.[SectionTypes.Basics] || false}
       onHiddenChange={handleHiddenChange}
       enableShowHideToggle={false}

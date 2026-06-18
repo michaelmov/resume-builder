@@ -22,7 +22,7 @@ import {
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
 import { useResume } from '../../hooks/useResume';
-import { SectionTypes, Project } from '../../types/resume.model';
+import { SECTION_TITLES, SectionTypes, Project } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
@@ -105,7 +105,7 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
 
   return (
     <EditorSection
-      title="Projects"
+      title={SECTION_TITLES[SectionTypes.Projects]}
       isHidden={resume.sectionVisibility?.[SectionTypes.Projects] || false}
       onHiddenChange={handleHiddenChange}
     >

@@ -14,6 +14,15 @@ export interface SectionVisibility {
   [SectionTypes.Projects]?: boolean;
 }
 
+/** Display titles for each section, shared by the editor and PDF templates. */
+export const SECTION_TITLES: Record<SectionTypes, string> = {
+  [SectionTypes.Basics]: 'Basics',
+  [SectionTypes.Skills]: 'Skills',
+  [SectionTypes.Work]: 'Work Experience',
+  [SectionTypes.Education]: 'Education',
+  [SectionTypes.Projects]: 'Projects',
+};
+
 export interface Resume {
   basics: Basics;
   work: Work[];

@@ -11,7 +11,15 @@ import {
 } from '@react-pdf/renderer';
 import { useMemo } from 'react';
 
-import { Education, Project, Resume, Skill, Work } from '../types/resume.model';
+import {
+  Education,
+  Project,
+  Resume,
+  SECTION_TITLES,
+  SectionTypes,
+  Skill,
+  Work,
+} from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
 
@@ -351,7 +359,10 @@ const DuoTemplate = ({
         </View>
         {!resume.sectionVisibility?.skills && (
           <>
-            <SectionTitle title="Skills" styles={styles} />
+            <SectionTitle
+              title={SECTION_TITLES[SectionTypes.Skills]}
+              styles={styles}
+            />
             {resume.skills.map((skill, index) => {
               return (
                 <SkillsSection
@@ -365,7 +376,10 @@ const DuoTemplate = ({
         )}
         {!resume.sectionVisibility?.work && (
           <>
-            <SectionTitle title="Work Experience" styles={styles} />
+            <SectionTitle
+              title={SECTION_TITLES[SectionTypes.Work]}
+              styles={styles}
+            />
             {resume.work.map((work, index) => (
               <WorkExperience
                 key={`${work.name}-${index}`}
@@ -378,7 +392,10 @@ const DuoTemplate = ({
         )}
         {!resume.sectionVisibility?.education && (
           <>
-            <SectionTitle title="Education" styles={styles} />
+            <SectionTitle
+              title={SECTION_TITLES[SectionTypes.Education]}
+              styles={styles}
+            />
             {resume.education.map((education, index) => (
               <EducationSection
                 key={`${education.institution}-${index}`}
@@ -390,7 +407,10 @@ const DuoTemplate = ({
         )}
         {!resume.sectionVisibility?.projects && (
           <>
-            <SectionTitle title="Projects" styles={styles} />
+            <SectionTitle
+              title={SECTION_TITLES[SectionTypes.Projects]}
+              styles={styles}
+            />
             {resume.projects.map((project, index) => (
               <ProjectSection
                 key={`${project.name}-${index}`}

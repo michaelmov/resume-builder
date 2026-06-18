@@ -5,7 +5,7 @@ import { HiPlus } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../../context/GlobalFormContext';
 import { useResume } from '../../../hooks/useResume';
-import { SectionTypes, Skill } from '../../../types/resume.model';
+import { SECTION_TITLES, SectionTypes, Skill } from '../../../types/resume.model';
 import { EditorSection } from '../EditorSection';
 import { EditorSubsection } from '../EditorSubsection';
 
@@ -80,7 +80,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
 
   return (
     <EditorSection
-      title="Skills"
+      title={SECTION_TITLES[SectionTypes.Skills]}
       isHidden={resume.sectionVisibility?.[SectionTypes.Skills] || false}
       onHiddenChange={handleHiddenChange}
     >
