@@ -12,6 +12,7 @@ import { ReactNode, useMemo } from 'react';
 import {
   Education,
   Project,
+  resolveSectionOrder,
   Resume,
   SECTION_TITLES,
   SectionTypes,
@@ -412,10 +413,14 @@ const LineaTemplate = ({
     ),
   ].filter(Boolean);
 
-  const sections: { title: string; body: ReactNode }[] = [];
+  // Each reorderable section is keyed so the Editor's order can drive the
+  // numbered layout here.
+  const sectionContent: Partial<
+    Record<SectionTypes, { title: string; body: ReactNode }>
+  > = {};
 
   if (!sectionVisibility?.skills) {
-    sections.push({
+    sectionContent[SectionTypes.Skills] = {
       title: SECTION_TITLES[SectionTypes.Skills],
       body: skills.map((skill, index) => (
         <SkillsSection
@@ -424,11 +429,11 @@ const LineaTemplate = ({
           styles={styles}
         />
       )),
-    });
+    };
   }
 
   if (!sectionVisibility?.work) {
-    sections.push({
+    sectionContent[SectionTypes.Work] = {
       title: SECTION_TITLES[SectionTypes.Work],
       body: work.map((item, index) => (
         <WorkExperience
@@ -437,11 +442,11 @@ const LineaTemplate = ({
           styles={styles}
         />
       )),
-    });
+    };
   }
 
   if (!sectionVisibility?.education) {
-    sections.push({
+    sectionContent[SectionTypes.Education] = {
       title: SECTION_TITLES[SectionTypes.Education],
       body: education.map((item, index) => (
         <EducationSection
@@ -450,11 +455,11 @@ const LineaTemplate = ({
           styles={styles}
         />
       )),
-    });
+    };
   }
 
   if (!sectionVisibility?.projects) {
-    sections.push({
+    sectionContent[SectionTypes.Projects] = {
       title: SECTION_TITLES[SectionTypes.Projects],
       body: projects.map((item, index) => (
         <ProjectSection
@@ -463,8 +468,14 @@ const LineaTemplate = ({
           styles={styles}
         />
       )),
-    });
+    };
   }
+
+  const sections = resolveSectionOrder(resume.sectionOrder)
+    .map((type) => sectionContent[type])
+    .filter((section): section is { title: string; body: ReactNode } =>
+      Boolean(section)
+    );
 
   return (
     <Document>

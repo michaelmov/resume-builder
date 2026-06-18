@@ -9,11 +9,12 @@ import {
   Svg,
   Path,
 } from '@react-pdf/renderer';
-import { useMemo } from 'react';
+import { Fragment, ReactNode, useMemo } from 'react';
 
 import {
   Education,
   Project,
+  resolveSectionOrder,
   Resume,
   SECTION_TITLES,
   SectionTypes,
@@ -333,6 +334,86 @@ const DuoTemplate = ({
 }) => {
   const styles = useMemo(() => makeStyles(accent), [accent]);
 
+  // Each reorderable section is keyed so the Editor's order can drive the
+  // layout here; hidden sections are simply omitted.
+  const sectionContent: Partial<Record<SectionTypes, ReactNode>> = {};
+
+  if (!resume.sectionVisibility?.skills) {
+    sectionContent[SectionTypes.Skills] = (
+      <>
+        <SectionTitle
+          title={SECTION_TITLES[SectionTypes.Skills]}
+          styles={styles}
+        />
+        {resume.skills.map((skill, index) => (
+          <SkillsSection
+            key={`${skill.name}-${index}`}
+            skill={skill}
+            styles={styles}
+          />
+        ))}
+      </>
+    );
+  }
+
+  if (!resume.sectionVisibility?.work) {
+    sectionContent[SectionTypes.Work] = (
+      <>
+        <SectionTitle
+          title={SECTION_TITLES[SectionTypes.Work]}
+          styles={styles}
+        />
+        {resume.work.map((work, index) => (
+          <WorkExperience
+            key={`${work.name}-${index}`}
+            work={work}
+            styles={styles}
+            accent={accent}
+          />
+        ))}
+      </>
+    );
+  }
+
+  if (!resume.sectionVisibility?.education) {
+    sectionContent[SectionTypes.Education] = (
+      <>
+        <SectionTitle
+          title={SECTION_TITLES[SectionTypes.Education]}
+          styles={styles}
+        />
+        {resume.education.map((education, index) => (
+          <EducationSection
+            key={`${education.institution}-${index}`}
+            education={education}
+            styles={styles}
+          />
+        ))}
+      </>
+    );
+  }
+
+  if (!resume.sectionVisibility?.projects) {
+    sectionContent[SectionTypes.Projects] = (
+      <>
+        <SectionTitle
+          title={SECTION_TITLES[SectionTypes.Projects]}
+          styles={styles}
+        />
+        {resume.projects.map((project, index) => (
+          <ProjectSection
+            key={`${project.name}-${index}`}
+            project={project}
+            styles={styles}
+            accent={accent}
+          />
+        ))}
+      </>
+    );
+  }
+
+  const orderedSections = resolveSectionOrder(resume.sectionOrder);
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -357,69 +438,12 @@ const DuoTemplate = ({
         <View style={styles.summary}>
           <Text>{resume.basics?.summary}</Text>
         </View>
-        {!resume.sectionVisibility?.skills && (
-          <>
-            <SectionTitle
-              title={SECTION_TITLES[SectionTypes.Skills]}
-              styles={styles}
-            />
-            {resume.skills.map((skill, index) => {
-              return (
-                <SkillsSection
-                  key={`${skill.name}-${index}`}
-                  skill={skill}
-                  styles={styles}
-                />
-              );
-            })}
-          </>
-        )}
-        {!resume.sectionVisibility?.work && (
-          <>
-            <SectionTitle
-              title={SECTION_TITLES[SectionTypes.Work]}
-              styles={styles}
-            />
-            {resume.work.map((work, index) => (
-              <WorkExperience
-                key={`${work.name}-${index}`}
-                work={work}
-                styles={styles}
-                accent={accent}
-              />
-            ))}
-          </>
-        )}
-        {!resume.sectionVisibility?.education && (
-          <>
-            <SectionTitle
-              title={SECTION_TITLES[SectionTypes.Education]}
-              styles={styles}
-            />
-            {resume.education.map((education, index) => (
-              <EducationSection
-                key={`${education.institution}-${index}`}
-                education={education}
-                styles={styles}
-              />
-            ))}
-          </>
-        )}
-        {!resume.sectionVisibility?.projects && (
-          <>
-            <SectionTitle
-              title={SECTION_TITLES[SectionTypes.Projects]}
-              styles={styles}
-            />
-            {resume.projects.map((project, index) => (
-              <ProjectSection
-                key={`${project.name}-${index}`}
-                project={project}
-                styles={styles}
-                accent={accent}
-              />
-            ))}
-          </>
+        {orderedSections.map((sectionType) =>
+          sectionContent[sectionType] ? (
+            <Fragment key={sectionType}>
+              {sectionContent[sectionType]}
+            </Fragment>
+          ) : null
         )}
       </Page>
     </Document>

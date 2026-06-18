@@ -6,23 +6,18 @@ import React, {
   useMemo,
 } from 'react';
 
-import { SectionTypes } from '../types/resume.model';
-
 interface SectionFormState {
   isDirty: boolean;
   handleSubmit: () => void;
 }
 
 interface GlobalFormContextType {
-  sections: Record<SectionTypes, SectionFormState | null>;
-  registerSection: (
-    sectionType: SectionTypes,
-    formState: SectionFormState
-  ) => void;
-  unregisterSection: (sectionType: SectionTypes) => void;
+  sections: Record<string, SectionFormState | null>;
+  registerSection: (sectionId: string, formState: SectionFormState) => void;
+  unregisterSection: (sectionId: string) => void;
   hasAnyDirtySection: boolean;
   saveAllSections: () => void;
-  getDirtySections: () => SectionTypes[];
+  getDirtySections: () => string[];
 }
 
 const GlobalFormContext = createContext<GlobalFormContextType | null>(null);
@@ -31,29 +26,23 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [sections, setSections] = useState<
-    Record<SectionTypes, SectionFormState | null>
-  >({
-    [SectionTypes.Basics]: null,
-    [SectionTypes.Skills]: null,
-    [SectionTypes.Work]: null,
-    [SectionTypes.Education]: null,
-    [SectionTypes.Projects]: null,
-  });
+    Record<string, SectionFormState | null>
+  >({});
 
   const registerSection = useCallback(
-    (sectionType: SectionTypes, formState: SectionFormState) => {
+    (sectionId: string, formState: SectionFormState) => {
       setSections((prev) => ({
         ...prev,
-        [sectionType]: formState,
+        [sectionId]: formState,
       }));
     },
     []
   );
 
-  const unregisterSection = useCallback((sectionType: SectionTypes) => {
+  const unregisterSection = useCallback((sectionId: string) => {
     setSections((prev) => ({
       ...prev,
-      [sectionType]: null,
+      [sectionId]: null,
     }));
   }, []);
 
@@ -62,10 +51,10 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
     [sections]
   );
 
-  const getDirtySections = useCallback((): SectionTypes[] => {
+  const getDirtySections = useCallback((): string[] => {
     return Object.keys(sections).filter(
-      (sectionType) => sections[sectionType as SectionTypes]?.isDirty === true
-    ) as SectionTypes[];
+      (sectionId) => sections[sectionId]?.isDirty === true
+    );
   }, [sections]);
 
   const saveAllSections = useCallback(() => {

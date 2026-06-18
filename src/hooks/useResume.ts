@@ -9,6 +9,7 @@ import {
   Work,
   Education,
   Project,
+  SectionTypes,
   SectionVisibility,
 } from '../types/resume.model';
 
@@ -78,6 +79,15 @@ export const useResume = () => {
     [dispatch]
   );
 
+  const updateSectionOrder = useCallback(
+    (payload: SectionTypes[]) => {
+      if (dispatch) {
+        dispatch({ type: ACTIONS.updateSectionOrder, payload });
+      }
+    },
+    [dispatch]
+  );
+
   return {
     resume: state,
     updateResume,
@@ -87,5 +97,6 @@ export const useResume = () => {
     updateEducation,
     updateProjects,
     updateSectionVisibility,
+    updateSectionOrder,
   };
 };

@@ -23,6 +23,46 @@ export const SECTION_TITLES: Record<SectionTypes, string> = {
   [SectionTypes.Projects]: 'Projects',
 };
 
+/**
+ * Main sections that can be reordered in the editor and output. Basics is
+ * deliberately excluded — it is always rendered first as the resume header.
+ */
+export const REORDERABLE_SECTIONS: SectionTypes[] = [
+  SectionTypes.Skills,
+  SectionTypes.Work,
+  SectionTypes.Education,
+  SectionTypes.Projects,
+];
+
+/**
+ * Resolve the effective order of the reorderable sections, tolerating a
+ * missing, partial, or stale `sectionOrder` (older saved resumes, or a section
+ * type added after the order was last persisted): keep any saved entries that
+ * are still valid and de-duplicated, then append any reorderable sections not
+ * yet listed in their default order.
+ */
+export const resolveSectionOrder = (
+  order?: SectionTypes[]
+): SectionTypes[] => {
+  const seen = new Set<SectionTypes>();
+  const resolved: SectionTypes[] = [];
+
+  (order ?? []).forEach((section) => {
+    if (REORDERABLE_SECTIONS.includes(section) && !seen.has(section)) {
+      seen.add(section);
+      resolved.push(section);
+    }
+  });
+
+  REORDERABLE_SECTIONS.forEach((section) => {
+    if (!seen.has(section)) {
+      resolved.push(section);
+    }
+  });
+
+  return resolved;
+};
+
 export interface Resume {
   basics: Basics;
   work: Work[];
@@ -37,6 +77,8 @@ export interface Resume {
   references: Reference[];
   projects: Project[];
   sectionVisibility?: SectionVisibility;
+  /** Order of the reorderable main sections (excludes Basics). */
+  sectionOrder?: SectionTypes[];
 }
 
 export interface Award {

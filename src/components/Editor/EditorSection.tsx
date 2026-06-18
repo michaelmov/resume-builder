@@ -6,10 +6,13 @@ import {
   IconButton,
   Icon,
 } from '@chakra-ui/react';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { HiChevronDown, HiEyeOff, HiEye } from 'react-icons/hi';
+import { MdDragIndicator } from 'react-icons/md';
 
 import { Tooltip } from '../ui/Tooltip';
+
+import { useDragHandle, useIsSectionDragging } from './SortableSection';
 
 interface EditorSectionProps {
   title: string;
@@ -26,14 +29,51 @@ export const EditorSection: FC<EditorSectionProps> = ({
   enableShowHideToggle = true,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
+  const dragHandle = useDragHandle();
+  const isSectionDragging = useIsSectionDragging();
+
+  // Collapse every section once a drag begins so reorder targets stay compact,
+  // and keep them collapsed after the drop (the user re-opens as needed).
+  useEffect(() => {
+    if (isSectionDragging) {
+      setIsOpen(false);
+    }
+  }, [isSectionDragging]);
+
+  // `isOpen` catches up via the effect a tick later; force the collapsed view
+  // on the very first drag frame so there is no flash of the expanded section.
+  const open = isSectionDragging ? false : isOpen;
 
   return (
     <Collapsible.Root
-      open={isOpen}
-      onOpenChange={(details) => setIsOpen(details.open)}
+      open={open}
+      onOpenChange={(details) => {
+        if (!isSectionDragging) {
+          setIsOpen(details.open);
+        }
+      }}
     >
       <Box width="100%">
         <Flex width="100%" justifyContent="space-between" alignItems="center">
+          {dragHandle && (
+            <Tooltip content="Drag to reorder section">
+              <IconButton
+                ref={dragHandle.setActivatorNodeRef}
+                {...dragHandle.attributes}
+                {...dragHandle.listeners}
+                aria-label="Reorder section"
+                variant="ghost"
+                size="sm"
+                color="gray.400"
+                cursor={dragHandle.isDragging ? 'grabbing' : 'grab'}
+                touchAction="none"
+                mr={1}
+                mb={2}
+              >
+                <MdDragIndicator />
+              </IconButton>
+            </Tooltip>
+          )}
           <Collapsible.Trigger
             display="flex"
             justifyContent="space-between"
@@ -52,7 +92,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
             >
               <Box
                 as="span"
-                transform={isOpen ? 'rotate(0deg)' : 'rotate(-90deg)'}
+                transform={open ? 'rotate(0deg)' : 'rotate(-90deg)'}
                 transition="transform 0.2s ease-in-out"
               >
                 <HiChevronDown />
