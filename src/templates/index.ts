@@ -3,6 +3,7 @@ import { ComponentType } from 'react';
 import { Resume } from '../types/resume.model';
 
 import { AccentPalette } from './accents';
+import AriaTemplate from './Aria';
 import DuoTemplate from './Duo';
 import LineaTemplate from './Linea';
 
@@ -31,6 +32,12 @@ export const templates: TemplateDefinition[] = [
     name: 'Linea',
     defaultAccentId: 'clay',
     Component: LineaTemplate,
+  },
+  {
+    id: 'aria',
+    name: 'Aria',
+    defaultAccentId: 'sage',
+    Component: AriaTemplate,
   },
 ];
 
