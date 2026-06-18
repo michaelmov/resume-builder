@@ -471,7 +471,8 @@ const LineaTemplate = ({
     };
   }
 
-  const sections = resolveSectionOrder(resume.sectionOrder)
+  const sectionOrder = resolveSectionOrder(resume.sectionOrder);
+  const sections = sectionOrder
     .map((type) => sectionContent[type])
     .filter((section): section is { title: string; body: ReactNode } =>
       Boolean(section)
@@ -479,7 +480,10 @@ const LineaTemplate = ({
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      {/* Key the page by the section order so react-pdf fully re-lays-out the
+          page when sections are reordered (otherwise it reuses cached layout
+          for the unchanged section blocks and the order appears stale). */}
+      <Page size="A4" style={styles.page} key={sectionOrder.join('-')}>
         <View>
           {basics?.label && (
             <Text style={styles.kicker}>{basics.label.toUpperCase()}</Text>

@@ -416,7 +416,10 @@ const DuoTemplate = ({
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      {/* Key the page by the section order so react-pdf fully re-lays-out the
+          page when sections are reordered (otherwise it reuses cached layout
+          for the unchanged section blocks and the order appears stale). */}
+      <Page size="A4" style={styles.page} key={orderedSections.join('-')}>
         <View style={styles.headingWrap}>
           <View style={styles.headingUnderline} />
           <Text style={styles.name}>{resume.basics?.name}</Text>
