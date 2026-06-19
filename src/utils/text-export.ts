@@ -18,7 +18,7 @@ export const exportResumeAsText = (resume: Resume, fileName: string) => {
   URL.revokeObjectURL(url);
 };
 
-const generateAtsCompliantText = (resume: Resume): string => {
+export const generateAtsCompliantText = (resume: Resume): string => {
   const sections: string[] = [];
 
   // Header Section
