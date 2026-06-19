@@ -10,12 +10,13 @@ npm run build          # tsc typecheck + production Vite build → dist/
 npm run preview        # Serve the production build locally
 npm run lint           # ESLint over .ts/.tsx/.js/.jsx (lint:fix to autofix, lint:check for 0 warnings)
 npm run format         # Prettier write (format:check to verify)
+npm run test           # Vitest (run once); test:watch for watch mode
 npm run deploy         # Build + publish dist/ to GitHub Pages (gh-pages branch)
 ```
 
 - Node version is pinned to `20.19.0` (`.nvmrc`).
-- A Husky pre-commit hook runs `npm run lint` — commits fail on lint errors.
-- There is **no test suite** in this repo.
+- A Husky pre-commit hook runs `npm run lint && npm test` — commits fail on lint errors or failing tests (lint runs first and short-circuits).
+- Tests use **Vitest** (config lives in `vite.config.ts` under `test`). Coverage is currently limited to the JSON Resume import/export adapter (`src/utils/jsonresume.test.ts`); there is no component/UI test setup.
 
 ## Architecture
 
@@ -59,6 +60,7 @@ Although the `Resume` interface includes many JSON-Resume sections (awards, volu
 
 - **Export** (`Preview/ExportMenu.tsx`): PDF (the live `usePDF` blob), JSON (`utils/json-export.ts`), and ATS-plain-text (`utils/text-export.ts`).
 - **Import** (`useJsonImport.ts`, wired in `Navbar.tsx`): reads a JSON Resume file and replaces the whole store via `updateResume`.
+- **`utils/jsonresume.ts`** is the translation/validation layer between the internal `Resume` model and the standard [JSON Resume](https://jsonresume.org/) schema, used by both JSON export and import. The internal model deliberately diverges from the schema — `work`/`volunteer` `highlights` and `skills` `keywords` are `{ value }[]` (for react-hook-form), dates may be `Date` objects, and `isPresent`/`sectionVisibility`/`sectionOrder` are app-only — so `toJsonResume` unwraps lists to `string[]`, normalizes dates to `YYYY-MM-DD`, drops `isPresent` in favor of omitting `endDate`, and tucks app state under `meta["resume-builder"]`. `fromJsonResume` reverses this and validates the input with a lenient **zod** schema (`jsonResumeSchema`), throwing a descriptive error for non-resume files. It tolerates both real JSON Resume files and this app's legacy exports. Covered by `jsonresume.test.ts`.
 
 ## Conventions
 

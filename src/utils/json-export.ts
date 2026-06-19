@@ -1,5 +1,7 @@
 import { Resume } from '../types/resume.model';
 
+import { toJsonResume } from './jsonresume';
+
 export const exportResumeAsJson = (resume: Resume, exportFileName: string) => {
   try {
     // Create a filtered resume based on section visibility
@@ -18,7 +20,9 @@ export const exportResumeAsJson = (resume: Resume, exportFileName: string) => {
       filteredResume.projects = [];
     }
 
-    const resumeData = JSON.stringify(filteredResume, null, 2);
+    // Convert to the standard JSON Resume schema so the file interoperates
+    // with other JSON Resume tooling.
+    const resumeData = JSON.stringify(toJsonResume(filteredResume), null, 2);
     const blob = new Blob([resumeData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
