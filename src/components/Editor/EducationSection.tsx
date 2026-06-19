@@ -87,6 +87,7 @@ export const EducationSection: FC<EducationSectionProps> = ({
 
   return (
     <EditorSection
+      id={SectionTypes.Education}
       title={SECTION_TITLES[SectionTypes.Education]}
       isHidden={resume.sectionVisibility?.[SectionTypes.Education] || false}
       onHiddenChange={handleHiddenChange}

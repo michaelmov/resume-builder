@@ -6,29 +6,40 @@ import {
   IconButton,
   Icon,
 } from '@chakra-ui/react';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { HiChevronDown, HiEyeOff, HiEye } from 'react-icons/hi';
 import { MdDragIndicator } from 'react-icons/md';
 
 import { Tooltip } from '../ui/Tooltip';
 
+import { useSectionOpenState } from './OpenSectionContext';
 import { useDragHandle, useIsSectionDragging } from './SortableSection';
 
 interface EditorSectionProps {
+  /** Unique id used to coordinate the single-open accordion behavior. */
+  id: string;
   title: string;
   children: React.ReactNode;
   isHidden?: boolean;
   onHiddenChange?: (isHidden: boolean) => void;
   enableShowHideToggle?: boolean;
+  /**
+   * Render the section as a permanent, always-expanded card with no collapse,
+   * reorder, or hide affordances. Used for Basics, whose name and contact
+   * details head every resume and so can't be hidden or collapsed away.
+   */
+  alwaysOpen?: boolean;
 }
 export const EditorSection: FC<EditorSectionProps> = ({
+  id,
   title,
   children,
   isHidden = false,
   onHiddenChange,
   enableShowHideToggle = true,
+  alwaysOpen = false,
 }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useSectionOpenState(id);
   const dragHandle = useDragHandle();
   const isSectionDragging = useIsSectionDragging();
 
@@ -38,7 +49,34 @@ export const EditorSection: FC<EditorSectionProps> = ({
     if (isSectionDragging) {
       setIsOpen(false);
     }
-  }, [isSectionDragging]);
+  }, [isSectionDragging, setIsOpen]);
+
+  // A pinned section (Basics) is a permanent fixture: it always shows its
+  // content, has no chevron/hide controls, and pulls the title inside the card
+  // so it reads as one grounded block rather than a collapsible panel.
+  if (alwaysOpen) {
+    return (
+      <Box
+        as="section"
+        width="100%"
+        bgColor="white"
+        borderRadius={8}
+        boxShadow="sm"
+        borderLeftWidth="3px"
+        borderLeftColor="purple.400"
+        overflow="hidden"
+      >
+        <Flex align="center" px={8} pt={6} pb={4}>
+          <Heading as="h3" fontSize="xl" fontWeight="medium" color="gray.700">
+            {title}
+          </Heading>
+        </Flex>
+        <Box px={8} pb={8}>
+          {children}
+        </Box>
+      </Box>
+    );
+  }
 
   // `isOpen` catches up via the effect a tick later; force the collapsed view
   // on the very first drag frame so there is no flash of the expanded section.

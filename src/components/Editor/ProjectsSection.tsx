@@ -105,6 +105,7 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
 
   return (
     <EditorSection
+      id={SectionTypes.Projects}
       title={SECTION_TITLES[SectionTypes.Projects]}
       isHidden={resume.sectionVisibility?.[SectionTypes.Projects] || false}
       onHiddenChange={handleHiddenChange}

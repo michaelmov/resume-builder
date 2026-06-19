@@ -80,6 +80,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
 
   return (
     <EditorSection
+      id={SectionTypes.Skills}
       title={SECTION_TITLES[SectionTypes.Skills]}
       isHidden={resume.sectionVisibility?.[SectionTypes.Skills] || false}
       onHiddenChange={handleHiddenChange}

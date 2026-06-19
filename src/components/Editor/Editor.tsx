@@ -35,6 +35,7 @@ import { GlobalActionBar } from '../GlobalActionBar';
 
 import { BasicsSection } from './BasicsSection';
 import { EducationSection } from './EducationSection';
+import { OpenSectionProvider } from './OpenSectionContext';
 import { ProjectsSection } from './ProjectsSection';
 import { SkillsSection } from './SkillsSection/SkillsSection';
 import {
@@ -166,46 +167,48 @@ const EditorContent: FC = () => {
 
   return (
     <SectionDraggingProvider value={isDraggingSection}>
-      <Stack width="100%" position="relative" p={6} gap={8}>
-        <Heading
-          as="h3"
-          fontSize="medium"
-          textAlign="center"
-          fontWeight="normal"
-        >
-          Made with 💜 by{' '}
-          <Link
-            href="https://michaelmovsesov.com/"
-            target="_blank"
-            textDecoration="underline"
+      <OpenSectionProvider>
+        <Stack width="100%" position="relative" p={6} gap={8}>
+          <Heading
+            as="h3"
+            fontSize="medium"
+            textAlign="center"
+            fontWeight="normal"
           >
-            Michael Movsesov
-          </Link>
-        </Heading>
-        {sectionComponents[SectionTypes.Basics]}
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
-          onDragStart={() => setIsDraggingSection(true)}
-          onDragEnd={handleDragEnd}
-          onDragCancel={() => setIsDraggingSection(false)}
-        >
-          <SortableContext
-            items={pendingOrder}
-            strategy={verticalListSortingStrategy}
+            Made with 💜 by{' '}
+            <Link
+              href="https://michaelmovsesov.com/"
+              target="_blank"
+              textDecoration="underline"
+            >
+              Michael Movsesov
+            </Link>
+          </Heading>
+          {sectionComponents[SectionTypes.Basics]}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
+            onDragStart={() => setIsDraggingSection(true)}
+            onDragEnd={handleDragEnd}
+            onDragCancel={() => setIsDraggingSection(false)}
           >
-            <Stack width="100%" gap={8}>
-              {pendingOrder.map((sectionType) => (
-                <SortableSection key={sectionType} id={sectionType}>
-                  {sectionComponents[sectionType]}
-                </SortableSection>
-              ))}
-            </Stack>
-          </SortableContext>
-        </DndContext>
-        <GlobalActionBar />
-      </Stack>
+            <SortableContext
+              items={pendingOrder}
+              strategy={verticalListSortingStrategy}
+            >
+              <Stack width="100%" gap={8}>
+                {pendingOrder.map((sectionType) => (
+                  <SortableSection key={sectionType} id={sectionType}>
+                    {sectionComponents[sectionType]}
+                  </SortableSection>
+                ))}
+              </Stack>
+            </SortableContext>
+          </DndContext>
+          <GlobalActionBar />
+        </Stack>
+      </OpenSectionProvider>
     </SectionDraggingProvider>
   );
 };
