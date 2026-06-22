@@ -5,7 +5,7 @@ import {
   ACTIONS,
   SectionData,
 } from '../context/ResumeContext/ResumeReducer';
-import { Resume, SectionTypes } from '../types/resume.model';
+import { Resume, SectionTitles, SectionTypes } from '../types/resume.model';
 
 export const useResume = () => {
   const { dispatch, state } = useContext(resumeStoreContext);
@@ -32,10 +32,18 @@ export const useResume = () => {
     [dispatch]
   );
 
+  const updateSectionTitles = useCallback(
+    (payload: SectionTitles | undefined) => {
+      dispatch?.({ type: ACTIONS.updateSectionTitles, payload });
+    },
+    [dispatch]
+  );
+
   return {
     resume: state,
     updateResume,
     updateSectionData,
     updateSectionOrder,
+    updateSectionTitles,
   };
 };

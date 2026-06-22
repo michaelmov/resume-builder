@@ -13,6 +13,7 @@ import {
   Award,
   Certificate,
   Education,
+  getSectionTitle,
   Interest,
   Language,
   Project,
@@ -20,7 +21,6 @@ import {
   Reference,
   resolveSectionOrder,
   Resume,
-  SECTION_TITLES,
   SectionTypes,
   Skill,
   Work,
@@ -554,7 +554,7 @@ const LineaTemplate = ({
 
   const sectionOrder = resolveSectionOrder(resume.sectionOrder);
   const sections = sectionOrder.map((type) => ({
-    title: SECTION_TITLES[type],
+    title: getSectionTitle(type, resume.sectionTitles),
     body: sectionContent[type],
   }));
 

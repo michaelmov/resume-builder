@@ -1,7 +1,7 @@
 import {
+  getSectionTitle,
   resolveSectionOrder,
   Resume,
-  SECTION_TITLES,
   SectionTypes,
 } from '../types/resume.model';
 
@@ -60,7 +60,8 @@ export const generateAtsCompliantText = (resume: Resume): string => {
     sections.push(''); // Empty line
   }
 
-  const heading = (type: SectionTypes) => SECTION_TITLES[type].toUpperCase();
+  const heading = (type: SectionTypes) =>
+    getSectionTitle(type, resume.sectionTitles).toUpperCase();
 
   // One builder per reorderable section. Each returns an empty list when its
   // section has no content, so empty (and inactive) sections are omitted.

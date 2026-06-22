@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { resumeMock } from '../mocks/resume.mock';
-import { Resume, Work } from '../types/resume.model';
+import { Resume, SectionTypes, Work } from '../types/resume.model';
 
 import { fromJsonResume, toJsonResume } from './jsonresume';
 
@@ -276,6 +276,33 @@ describe('round-trip', () => {
     expect(back.skills[0].keywords).toEqual(resumeMock.skills[0].keywords);
     expect(back.projects[0].highlights).toEqual(resumeMock.projects[0].highlights);
     expect(back.sectionVisibility).toEqual(resumeMock.sectionVisibility);
+  });
+
+  it('round-trips custom section titles via namespaced meta', () => {
+    const resume = emptyResume();
+    resume.work = [workEntry()];
+    resume.sectionOrder = [SectionTypes.Work];
+    resume.sectionTitles = { [SectionTypes.Work]: 'Experience' };
+
+    const json = JSON.parse(JSON.stringify(toJsonResume(resume)));
+    // Stored under the app's namespaced meta so other tools ignore it.
+    expect(json.meta['resume-builder'].sectionTitles).toEqual({
+      [SectionTypes.Work]: 'Experience',
+    });
+
+    const back = fromJsonResume(json);
+    expect(back.sectionTitles).toEqual({ [SectionTypes.Work]: 'Experience' });
+  });
+
+  it('drops a custom title that merely repeats the default', () => {
+    const resume = emptyResume();
+    resume.work = [workEntry()];
+    resume.sectionTitles = { [SectionTypes.Work]: 'Work Experience' };
+
+    const back = fromJsonResume(
+      JSON.parse(JSON.stringify(toJsonResume(resume)))
+    );
+    expect(back.sectionTitles).toBeUndefined();
   });
 
   it('round-trips a present role (isPresent → omit endDate → isPresent)', () => {

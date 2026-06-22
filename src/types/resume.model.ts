@@ -38,6 +38,42 @@ export const SECTION_TITLES: Record<SectionTypes, string> = {
   [SectionTypes.Projects]: 'Projects',
 };
 
+/** User-supplied display titles, overriding {@link SECTION_TITLES} per type. */
+export type SectionTitles = Partial<Record<SectionTypes, string>>;
+
+/**
+ * Effective display title for a section: a user override when set, otherwise the
+ * built-in default. Used by the editor header and every PDF/text output.
+ */
+export const getSectionTitle = (
+  type: SectionTypes,
+  custom?: SectionTitles
+): string => {
+  const override = custom?.[type]?.trim();
+  return override ? override : SECTION_TITLES[type];
+};
+
+/**
+ * Strip a custom-titles map down to meaningful overrides: drop blank entries and
+ * any that merely repeat the default. Used before persisting/exporting and to
+ * compare two maps for equality.
+ */
+export const normalizeSectionTitles = (
+  titles?: SectionTitles
+): SectionTitles => {
+  const out: SectionTitles = {};
+  if (!titles) {
+    return out;
+  }
+  (Object.keys(titles) as SectionTypes[]).forEach((type) => {
+    const trimmed = titles[type]?.trim();
+    if (trimmed && trimmed !== SECTION_TITLES[type]) {
+      out[type] = trimmed;
+    }
+  });
+  return out;
+};
+
 /** One-line descriptions surfaced in the "Add Section" picker. */
 export const SECTION_DESCRIPTIONS: Partial<Record<SectionTypes, string>> = {
   [SectionTypes.Work]: 'Jobs, roles, and accomplishments',
@@ -164,6 +200,8 @@ export interface Resume {
   sectionVisibility?: SectionVisibility;
   /** Order of the reorderable main sections (excludes Basics). */
   sectionOrder?: SectionTypes[];
+  /** Per-section title overrides; absent types fall back to {@link SECTION_TITLES}. */
+  sectionTitles?: SectionTitles;
 }
 
 export interface Award {

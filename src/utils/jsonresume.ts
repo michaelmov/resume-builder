@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
 import {
+  normalizeSectionTitles,
   REORDERABLE_SECTIONS,
   Resume,
+  SectionTitles,
   SectionTypes,
   SectionVisibility,
 } from '../types/resume.model';
@@ -345,6 +347,7 @@ export const toJsonResume = (resume: Resume): JsonResume => {
       [META_NAMESPACE]: omitEmpty({
         sectionVisibility: resume.sectionVisibility,
         sectionOrder: resume.sectionOrder,
+        sectionTitles: resume.sectionTitles,
       }),
     },
   };
@@ -383,6 +386,7 @@ export const fromJsonResume = (input: unknown): Resume => {
   const appMeta = (r.meta?.[META_NAMESPACE] ?? {}) as {
     sectionVisibility?: SectionVisibility;
     sectionOrder?: SectionTypes[];
+    sectionTitles?: SectionTitles;
   };
 
   const resume: Resume = {
@@ -500,6 +504,10 @@ export const fromJsonResume = (input: unknown): Resume => {
       : dataSections.length > 0
         ? dataSections
         : undefined;
+
+  const customTitles = normalizeSectionTitles(appMeta.sectionTitles);
+  resume.sectionTitles =
+    Object.keys(customTitles).length > 0 ? customTitles : undefined;
 
   return resume;
 };

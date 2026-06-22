@@ -24,7 +24,10 @@ import {
 import { SectionData } from '../../context/ResumeContext/ResumeReducer';
 import { useResume } from '../../hooks/useResume';
 import {
+  getSectionTitle,
+  normalizeSectionTitles,
   resolveSectionOrder,
+  SectionTitles,
   SectionTypes,
 } from '../../types/resume.model';
 import { GlobalActionBar } from '../GlobalActionBar';
@@ -51,15 +54,28 @@ import {
 } from './SortableSection';
 import { WorkSection } from './WorkSection';
 
-// Registration id for the staged section set + order in the global form, so
-// adding, removing, and reordering all participate in "Save All Changes".
+// Registration ids for the staged section set/order and per-section titles in
+// the global form, so adding, removing, reordering, and renaming all
+// participate in "Save All Changes".
 const SECTION_ORDER_FORM_ID = 'sectionOrder';
+const SECTION_TITLES_FORM_ID = 'sectionTitles';
 
 const ordersEqual = (a: SectionTypes[], b: SectionTypes[]): boolean =>
   a.length === b.length && a.every((value, index) => value === b[index]);
 
+const titlesEqual = (a?: SectionTitles, b?: SectionTitles): boolean => {
+  const na = normalizeSectionTitles(a);
+  const nb = normalizeSectionTitles(b);
+  const keys = Object.keys(na) as SectionTypes[];
+  return (
+    keys.length === Object.keys(nb).length &&
+    keys.every((key) => na[key] === nb[key])
+  );
+};
+
 const EditorContent: FC = () => {
-  const { resume, updateSectionData, updateSectionOrder } = useResume();
+  const { resume, updateSectionData, updateSectionOrder, updateSectionTitles } =
+    useResume();
   const { registerSection, unregisterSection } = useGlobalForm();
 
   const onSectionUpdate = useCallback(
@@ -119,6 +135,42 @@ const EditorContent: FC = () => {
     unregisterSection,
   ]);
 
+  // Per-section title overrides are staged the same way as the order: edited
+  // locally and only written back on "Save All Changes".
+  const committedTitles = resume.sectionTitles;
+  const [pendingTitles, setPendingTitles] = useState<SectionTitles>(
+    () => committedTitles ?? {}
+  );
+
+  useEffect(() => {
+    setPendingTitles(committedTitles ?? {});
+  }, [committedTitles]);
+
+  const areTitlesDirty = !titlesEqual(pendingTitles, committedTitles);
+
+  const handleTitlesSubmit = useCallback(() => {
+    const normalized = normalizeSectionTitles(pendingTitles);
+    updateSectionTitles(
+      Object.keys(normalized).length > 0 ? normalized : undefined
+    );
+  }, [pendingTitles, updateSectionTitles]);
+
+  useEffect(() => {
+    registerSection(SECTION_TITLES_FORM_ID, {
+      isDirty: areTitlesDirty,
+      handleSubmit: handleTitlesSubmit,
+      reset: () => setPendingTitles(committedTitles ?? {}),
+    });
+
+    return () => unregisterSection(SECTION_TITLES_FORM_ID);
+  }, [
+    areTitlesDirty,
+    committedTitles,
+    handleTitlesSubmit,
+    registerSection,
+    unregisterSection,
+  ]);
+
   const handleAddSection = useCallback((section: SectionTypes) => {
     setPendingOrder((prev) =>
       prev.includes(section) ? prev : [...prev, section]
@@ -127,7 +179,29 @@ const EditorContent: FC = () => {
 
   const handleRemoveSection = useCallback((section: SectionTypes) => {
     setPendingOrder((prev) => prev.filter((type) => type !== section));
+    // Remove is a permanent delete, so drop any custom title too — a re-added
+    // section comes back with its default name.
+    setPendingTitles((prev) => {
+      if (!(section in prev)) {
+        return prev;
+      }
+      const next = { ...prev };
+      delete next[section];
+      return next;
+    });
   }, []);
+
+  const handleRenameSection = useCallback(
+    (section: SectionTypes, title: string) => {
+      setPendingTitles((prev) => ({ ...prev, [section]: title }));
+    },
+    []
+  );
+
+  const getPendingTitle = useCallback(
+    (section: SectionTypes) => getSectionTitle(section, pendingTitles),
+    [pendingTitles]
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -199,7 +273,13 @@ const EditorContent: FC = () => {
   return (
     <SectionDraggingProvider value={isDraggingSection}>
       <OpenSectionProvider>
-        <SectionActionsProvider value={{ removeSection: handleRemoveSection }}>
+        <SectionActionsProvider
+          value={{
+            removeSection: handleRemoveSection,
+            getSectionTitle: getPendingTitle,
+            renameSection: handleRenameSection,
+          }}
+        >
           <Stack width="100%" position="relative" p={6} gap={8}>
             <Heading
               as="h3"

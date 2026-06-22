@@ -15,6 +15,7 @@ import {
   Award,
   Certificate,
   Education,
+  getSectionTitle,
   Interest,
   Language,
   Project,
@@ -22,7 +23,6 @@ import {
   Reference,
   resolveSectionOrder,
   Resume,
-  SECTION_TITLES,
   SectionTypes,
   Skill,
   Work,
@@ -391,7 +391,10 @@ const DuoTemplate = ({
   // its heading).
   const section = (type: SectionTypes, body: ReactNode): ReactNode => (
     <>
-      <SectionTitle title={SECTION_TITLES[type]} styles={styles} />
+      <SectionTitle
+        title={getSectionTitle(type, resume.sectionTitles)}
+        styles={styles}
+      />
       {body}
     </>
   );
