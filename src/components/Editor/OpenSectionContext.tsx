@@ -48,6 +48,15 @@ export const OpenSectionProvider: FC<OpenSectionProviderProps> = ({
 };
 
 /**
+ * Imperatively open a section by id (or close all with `null`). Used when a
+ * newly added section should expand so it's ready to fill in.
+ */
+export const useOpenSection = (): ((id: string | null) => void) => {
+  const context = useContext(OpenSectionContext);
+  return context?.setOpenSectionId ?? (() => undefined);
+};
+
+/**
  * Open/close state for a single section. Within an `OpenSectionProvider` the
  * state is shared (accordion); outside one it falls back to local state so the
  * section still works standalone.

@@ -1,86 +1,35 @@
-import {
-  Basics,
-  Resume,
-  Skill,
-  Work,
-  Education,
-  Project,
-  SectionTypes,
-  SectionVisibility,
-} from '../../types/resume.model';
+import { Resume, SectionTypes } from '../../types/resume.model';
 
 export enum ACTIONS {
   updateResume = 'UPDATE_RESUME',
-  updateBasics = 'UPDATE_BASICS',
-  updateSkills = 'UPDATE_SKILLS',
-  updateWork = 'UPDATE_WORK',
-  updateEducation = 'UPDATE_EDUCATION',
-  updateProjects = 'UPDATE_PROJECTS',
-  updateSectionVisibility = 'UPDATE_SECTION_VISIBILITY',
+  updateSection = 'UPDATE_SECTION',
   updateSectionOrder = 'UPDATE_SECTION_ORDER',
 }
 
-export type ACTIONTYPE = {
-  type: ACTIONS;
-  payload:
-    | Resume
-    | Basics
-    | Skill[]
-    | Work[]
-    | Education[]
-    | Project[]
-    | SectionVisibility
-    | SectionTypes[];
-};
+/** Data payload for a single section — Basics is an object, the rest arrays. */
+export type SectionData = Resume[keyof Resume];
+
+export type ACTIONTYPE =
+  | { type: ACTIONS.updateResume; payload: Resume }
+  | {
+      type: ACTIONS.updateSection;
+      payload: { section: SectionTypes; data: SectionData };
+    }
+  | { type: ACTIONS.updateSectionOrder; payload: SectionTypes[] };
 
 export const resumeReducer = (state: Resume, action: ACTIONTYPE): Resume => {
-  const { type, payload } = action;
-  let updatedPayload;
-
-  switch (type) {
+  switch (action.type) {
     case ACTIONS.updateResume:
-      return payload as Resume;
-    case ACTIONS.updateBasics:
-      updatedPayload = payload as Basics;
+      return action.payload;
+    case ACTIONS.updateSection:
       return {
         ...state,
-        basics: updatedPayload,
-      };
-    case ACTIONS.updateSkills:
-      updatedPayload = payload as Skill[];
-      return {
-        ...state,
-        skills: updatedPayload,
-      };
-    case ACTIONS.updateWork:
-      updatedPayload = payload as Work[];
-      return {
-        ...state,
-        work: updatedPayload,
-      };
-    case ACTIONS.updateEducation:
-      updatedPayload = payload as Education[];
-      return {
-        ...state,
-        education: updatedPayload,
-      };
-    case ACTIONS.updateProjects:
-      updatedPayload = payload as Project[];
-      return {
-        ...state,
-        projects: updatedPayload,
-      };
-    case ACTIONS.updateSectionVisibility:
-      updatedPayload = payload as SectionVisibility;
-      return {
-        ...state,
-        sectionVisibility: updatedPayload,
+        [action.payload.section]: action.payload.data,
       };
     case ACTIONS.updateSectionOrder:
-      updatedPayload = payload as SectionTypes[];
       return {
         ...state,
-        sectionOrder: updatedPayload,
+        sectionOrder: action.payload,
       };
     default:
       throw new Error('No action provided');

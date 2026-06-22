@@ -22,7 +22,6 @@ import {
 } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
-import { useResume } from '../../hooks/useResume';
 import { SECTION_TITLES, SectionTypes, Work } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
@@ -38,7 +37,6 @@ interface FormProps {
   work: Work[];
 }
 export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
-  const { resume, updateSectionVisibility } = useResume();
   const { control, register, formState, handleSubmit, reset } =
     useForm<FormProps>({
       mode: 'onChange',
@@ -68,10 +66,18 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
     registerSection(SectionTypes.Work, {
       isDirty,
       handleSubmit: handleSubmit(onSubmit),
+      reset: () => reset(),
     });
 
     return () => unregisterSection(SectionTypes.Work);
-  }, [isDirty, registerSection, unregisterSection, handleSubmit, onSubmit]);
+  }, [
+    isDirty,
+    registerSection,
+    unregisterSection,
+    handleSubmit,
+    onSubmit,
+    reset,
+  ]);
 
   const addWork = () => {
     const newWork = {
@@ -89,17 +95,6 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
     append(newWork);
   };
 
-  const handleHiddenChange = useCallback(
-    (isHidden: boolean) => {
-      const currentVisibility = resume.sectionVisibility || {};
-      updateSectionVisibility({
-        ...currentVisibility,
-        [SectionTypes.Work]: isHidden,
-      });
-    },
-    [resume.sectionVisibility, updateSectionVisibility]
-  );
-
   const isEndDateInputDisabled = useCallback(
     (index: number) => {
       return fields[index]?.isPresent || false;
@@ -110,8 +105,6 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
     <EditorSection
       id={SectionTypes.Work}
       title={SECTION_TITLES[SectionTypes.Work]}
-      isHidden={resume.sectionVisibility?.[SectionTypes.Work] || false}
-      onHiddenChange={handleHiddenChange}
     >
       <Box>
         {fields.map((field: any, index: number) => {

@@ -1,4 +1,9 @@
-import { resolveSectionOrder, Resume, SectionTypes } from '../types/resume.model';
+import {
+  resolveSectionOrder,
+  Resume,
+  SECTION_TITLES,
+  SectionTypes,
+} from '../types/resume.model';
 
 import { formatDate } from './date-utilities';
 import { ensureProtocol } from './url-utilities';
@@ -17,6 +22,10 @@ export const exportResumeAsText = (resume: Resume, fileName: string) => {
 
   URL.revokeObjectURL(url);
 };
+
+/** Join a list of cells with " | ", dropping the empty ones. */
+const joinCells = (...cells: (string | undefined)[]): string =>
+  cells.filter((cell) => cell && cell.trim() !== '').join(' | ');
 
 export const generateAtsCompliantText = (resume: Resume): string => {
   const sections: string[] = [];
@@ -51,114 +60,153 @@ export const generateAtsCompliantText = (resume: Resume): string => {
     sections.push(''); // Empty line
   }
 
-  // Reorderable sections follow the order chosen in the Editor.
+  const heading = (type: SectionTypes) => SECTION_TITLES[type].toUpperCase();
+
+  // One builder per reorderable section. Each returns an empty list when its
+  // section has no content, so empty (and inactive) sections are omitted.
   const sectionBuilders: Partial<Record<SectionTypes, () => string[]>> = {
     [SectionTypes.Skills]: () => {
-      if (
-        !resume.skills ||
-        resume.skills.length === 0 ||
-        resume.sectionVisibility?.skills
-      ) {
-        return [];
-      }
-
-      const lines: string[] = ['SKILLS'];
+      if (!resume.skills?.length) return [];
+      const lines = [heading(SectionTypes.Skills)];
       resume.skills.forEach((skill) => {
-        if (skill.name && skill.keywords && skill.keywords.length > 0) {
-          const keywords = skill.keywords
-            .map((keyword) => keyword.value)
-            .join(', ');
-          lines.push(`${skill.name}: ${keywords}`);
+        if (skill.name && skill.keywords?.length) {
+          lines.push(
+            `${skill.name}: ${skill.keywords.map((k) => k.value).join(', ')}`
+          );
         }
       });
-      lines.push(''); // Empty line
+      lines.push('');
       return lines;
     },
 
     [SectionTypes.Work]: () => {
-      if (
-        !resume.work ||
-        resume.work.length === 0 ||
-        resume.sectionVisibility?.work
-      ) {
-        return [];
-      }
-
-      const lines: string[] = ['WORK EXPERIENCE'];
+      if (!resume.work?.length) return [];
+      const lines = [heading(SectionTypes.Work)];
       resume.work.forEach((work) => {
-        const startDate = formatDate(work.startDate);
         const endDate = formatDate(work.endDate) || 'Present';
-
         lines.push(
-          `${work.name} | ${work.position} | ${startDate} - ${endDate}`
+          joinCells(work.name, work.position, `${formatDate(work.startDate)} - ${endDate}`)
         );
+        if (work.summary) lines.push(work.summary);
+        work.highlights?.forEach((h) => lines.push(`• ${h.value}`));
+        lines.push('');
+      });
+      return lines;
+    },
 
-        if (work.summary) {
-          lines.push(work.summary);
-        }
-
-        if (work.highlights && work.highlights.length > 0) {
-          work.highlights.forEach((highlight) => {
-            lines.push(`• ${highlight.value}`);
-          });
-        }
-
-        lines.push(''); // Empty line between work experiences
+    [SectionTypes.Volunteer]: () => {
+      if (!resume.volunteer?.length) return [];
+      const lines = [heading(SectionTypes.Volunteer)];
+      resume.volunteer.forEach((v) => {
+        const endDate = formatDate(v.endDate) || 'Present';
+        lines.push(
+          joinCells(v.organization, v.position, `${formatDate(v.startDate)} - ${endDate}`)
+        );
+        if (v.summary) lines.push(v.summary);
+        v.highlights?.forEach((h) => lines.push(`• ${h.value}`));
+        lines.push('');
       });
       return lines;
     },
 
     [SectionTypes.Education]: () => {
-      if (
-        !resume.education ||
-        resume.education.length === 0 ||
-        resume.sectionVisibility?.education
-      ) {
-        return [];
-      }
-
-      const lines: string[] = ['EDUCATION'];
+      if (!resume.education?.length) return [];
+      const lines = [heading(SectionTypes.Education)];
       resume.education.forEach((education) => {
         const startDate = formatDate(education.startDate);
         const endDate = formatDate(education.endDate);
         const dateRange =
-          startDate && endDate ? ` | ${startDate} - ${endDate}` : '';
-
-        lines.push(`${education.institution} | ${education.area}${dateRange}`);
+          startDate && endDate ? `${startDate} - ${endDate}` : '';
+        lines.push(joinCells(education.institution, education.area, dateRange));
       });
-      lines.push(''); // Empty line
+      lines.push('');
+      return lines;
+    },
+
+    [SectionTypes.Awards]: () => {
+      if (!resume.awards?.length) return [];
+      const lines = [heading(SectionTypes.Awards)];
+      resume.awards.forEach((award) => {
+        lines.push(joinCells(award.title, award.awarder, formatDate(award.date)));
+        if (award.summary) lines.push(award.summary);
+      });
+      lines.push('');
+      return lines;
+    },
+
+    [SectionTypes.Certificates]: () => {
+      if (!resume.certificates?.length) return [];
+      const lines = [heading(SectionTypes.Certificates)];
+      resume.certificates.forEach((cert) => {
+        lines.push(joinCells(cert.name, cert.issuer, formatDate(cert.date)));
+      });
+      lines.push('');
+      return lines;
+    },
+
+    [SectionTypes.Publications]: () => {
+      if (!resume.publications?.length) return [];
+      const lines = [heading(SectionTypes.Publications)];
+      resume.publications.forEach((pub) => {
+        lines.push(
+          joinCells(pub.name, pub.publisher, formatDate(pub.releaseDate))
+        );
+        if (pub.summary) lines.push(pub.summary);
+      });
+      lines.push('');
+      return lines;
+    },
+
+    [SectionTypes.Languages]: () => {
+      if (!resume.languages?.length) return [];
+      const lines = [heading(SectionTypes.Languages)];
+      resume.languages.forEach((lang) => {
+        if (lang.language) {
+          lines.push(joinCells(lang.language, lang.fluency));
+        }
+      });
+      lines.push('');
+      return lines;
+    },
+
+    [SectionTypes.Interests]: () => {
+      if (!resume.interests?.length) return [];
+      const lines = [heading(SectionTypes.Interests)];
+      resume.interests.forEach((interest) => {
+        if (interest.name) {
+          const keywords = interest.keywords?.length
+            ? `: ${interest.keywords.map((k) => k.value).join(', ')}`
+            : '';
+          lines.push(`${interest.name}${keywords}`);
+        }
+      });
+      lines.push('');
+      return lines;
+    },
+
+    [SectionTypes.References]: () => {
+      if (!resume.references?.length) return [];
+      const lines = [heading(SectionTypes.References)];
+      resume.references.forEach((ref) => {
+        if (ref.name) lines.push(ref.name);
+        if (ref.reference) lines.push(ref.reference);
+      });
+      lines.push('');
       return lines;
     },
 
     [SectionTypes.Projects]: () => {
-      if (
-        !resume.projects ||
-        resume.projects.length === 0 ||
-        resume.sectionVisibility?.projects
-      ) {
-        return [];
-      }
-
-      const lines: string[] = ['PROJECTS'];
+      if (!resume.projects?.length) return [];
+      const lines = [heading(SectionTypes.Projects)];
       resume.projects.forEach((project) => {
         const startDate = formatDate(project.startDate);
         const endDate = formatDate(project.endDate);
         const dateRange =
-          startDate && endDate ? ` | ${startDate} - ${endDate}` : '';
-
-        lines.push(`${project.name}${dateRange}`);
-
-        if (project.description) {
-          lines.push(project.description);
-        }
-
-        if (project.highlights && project.highlights.length > 0) {
-          project.highlights.forEach((highlight) => {
-            lines.push(`• ${highlight}`);
-          });
-        }
-
-        lines.push(''); // Empty line between projects
+          startDate && endDate ? `${startDate} - ${endDate}` : '';
+        lines.push(joinCells(project.name, dateRange));
+        if (project.description) lines.push(project.description);
+        project.highlights?.forEach((h) => lines.push(`• ${h}`));
+        lines.push('');
       });
       return lines;
     },

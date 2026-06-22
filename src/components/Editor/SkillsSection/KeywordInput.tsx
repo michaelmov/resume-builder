@@ -16,17 +16,15 @@ import { KeywordItem } from './SortableKeywordTag';
 import { SortableKeywordTagContainer } from './SortableKeywordTagContainer';
 
 interface KeywordInputProps {
-  skillIndex: number;
+  /** Field-array path to the keyword list, e.g. `skills.0.keywords`. */
+  name: string;
   control: any;
 }
 
-export const KeywordInput: FC<KeywordInputProps> = ({
-  skillIndex,
-  control,
-}) => {
+export const KeywordInput: FC<KeywordInputProps> = ({ name, control }) => {
   const { fields, remove, append, move } = useFieldArray({
     control,
-    name: `skills[${skillIndex}].keywords`,
+    name,
   });
 
   const sensors = useSensors(

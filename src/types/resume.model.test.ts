@@ -1,59 +1,35 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  REORDERABLE_SECTIONS,
+  DEFAULT_ACTIVE_SECTIONS,
   resolveSectionOrder,
   SectionTypes,
 } from './resume.model';
 
 describe('resolveSectionOrder', () => {
-  it('returns the default order when given no saved order', () => {
-    expect(resolveSectionOrder()).toEqual(REORDERABLE_SECTIONS);
+  it('falls back to the default active set when given no order', () => {
+    expect(resolveSectionOrder()).toEqual(DEFAULT_ACTIVE_SECTIONS);
   });
 
-  it('returns the default order when given an empty array', () => {
-    expect(resolveSectionOrder([])).toEqual(REORDERABLE_SECTIONS);
+  it('treats an explicit empty array as "no sections active"', () => {
+    expect(resolveSectionOrder([])).toEqual([]);
   });
 
-  it('preserves a complete saved order', () => {
-    const order = [
-      SectionTypes.Projects,
-      SectionTypes.Education,
-      SectionTypes.Work,
-      SectionTypes.Skills,
-    ];
+  it('takes an explicit order as the active set (no appending)', () => {
+    const order = [SectionTypes.Projects, SectionTypes.Skills];
     expect(resolveSectionOrder(order)).toEqual(order);
   });
 
-  it('appends missing sections in their default order after the saved ones', () => {
-    expect(resolveSectionOrder([SectionTypes.Work])).toEqual([
-      SectionTypes.Work,
-      SectionTypes.Skills,
-      SectionTypes.Education,
-      SectionTypes.Projects,
-    ]);
-  });
-
-  it('drops sections that are not reorderable (e.g. Basics)', () => {
+  it('drops Basics, which is never reorderable', () => {
     expect(
       resolveSectionOrder([SectionTypes.Basics, SectionTypes.Work])
-    ).toEqual([
-      SectionTypes.Work,
-      SectionTypes.Skills,
-      SectionTypes.Education,
-      SectionTypes.Projects,
-    ]);
+    ).toEqual([SectionTypes.Work]);
   });
 
   it('drops unknown/stale section values from a legacy save', () => {
     expect(
       resolveSectionOrder(['bogus' as SectionTypes, SectionTypes.Education])
-    ).toEqual([
-      SectionTypes.Education,
-      SectionTypes.Skills,
-      SectionTypes.Work,
-      SectionTypes.Projects,
-    ]);
+    ).toEqual([SectionTypes.Education]);
   });
 
   it('de-duplicates repeated sections', () => {
@@ -63,17 +39,19 @@ describe('resolveSectionOrder', () => {
         SectionTypes.Work,
         SectionTypes.Skills,
       ])
-    ).toEqual([
-      SectionTypes.Work,
-      SectionTypes.Skills,
-      SectionTypes.Education,
-      SectionTypes.Projects,
-    ]);
+    ).toEqual([SectionTypes.Work, SectionTypes.Skills]);
   });
 
-  it('always returns every reorderable section exactly once', () => {
-    const resolved = resolveSectionOrder([SectionTypes.Projects]);
-    expect([...resolved].sort()).toEqual([...REORDERABLE_SECTIONS].sort());
-    expect(resolved).toHaveLength(REORDERABLE_SECTIONS.length);
+  it('accepts the newly added section types', () => {
+    const order = [
+      SectionTypes.Volunteer,
+      SectionTypes.Awards,
+      SectionTypes.Certificates,
+      SectionTypes.Publications,
+      SectionTypes.Languages,
+      SectionTypes.Interests,
+      SectionTypes.References,
+    ];
+    expect(resolveSectionOrder(order)).toEqual(order);
   });
 });

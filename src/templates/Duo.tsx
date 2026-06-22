@@ -12,8 +12,14 @@ import {
 import { Fragment, ReactNode, useMemo } from 'react';
 
 import {
+  Award,
+  Certificate,
   Education,
+  Interest,
+  Language,
   Project,
+  Publication,
+  Reference,
   resolveSectionOrder,
   Resume,
   SECTION_TITLES,
@@ -325,6 +331,52 @@ const ProjectSection = ({
   );
 };
 
+const SimpleEntry = ({
+  title,
+  meta,
+  dates,
+  summary,
+  styles,
+}: {
+  title?: string;
+  meta?: string;
+  dates?: string;
+  summary?: string;
+  styles: Styles;
+}) => (
+  <View style={{ marginBottom: 14 }}>
+    <View style={styles.workExperienceHeading}>
+      <Text style={styles.workExperienceName}>{title}</Text>
+      {meta ? <Text style={styles.textLight}>{meta}</Text> : null}
+      {dates ? <Text style={styles.textLight}>{dates}</Text> : null}
+    </View>
+    {summary ? (
+      <View style={styles.workExperienceSummary}>
+        <Text>{summary}</Text>
+      </View>
+    ) : null}
+  </View>
+);
+
+const InterestGroup = ({
+  interest,
+  styles,
+}: {
+  interest: Interest;
+  styles: Styles;
+}) => (
+  <View style={{ marginBottom: 14 }}>
+    <Text style={styles.skillTitle}>{interest.name}</Text>
+    <View style={styles.skillKeywords}>
+      {interest.keywords?.map((keyword, index) => (
+        <View style={styles.skillKeyword} key={`${keyword.value}-${index}`}>
+          <Text>{keyword.value}</Text>
+        </View>
+      ))}
+    </View>
+  </View>
+);
+
 const DuoTemplate = ({
   resume,
   accent,
@@ -334,83 +386,133 @@ const DuoTemplate = ({
 }) => {
   const styles = useMemo(() => makeStyles(accent), [accent]);
 
-  // Each reorderable section is keyed so the Editor's order can drive the
-  // layout here; hidden sections are simply omitted.
-  const sectionContent: Partial<Record<SectionTypes, ReactNode>> = {};
+  // A section is rendered with its title + body; the active set + order chosen
+  // in the Editor decides which appear (an active-but-empty section still shows
+  // its heading).
+  const section = (type: SectionTypes, body: ReactNode): ReactNode => (
+    <>
+      <SectionTitle title={SECTION_TITLES[type]} styles={styles} />
+      {body}
+    </>
+  );
 
-  if (!resume.sectionVisibility?.skills) {
-    sectionContent[SectionTypes.Skills] = (
-      <>
-        <SectionTitle
-          title={SECTION_TITLES[SectionTypes.Skills]}
+  const sectionContent: Partial<Record<SectionTypes, ReactNode>> = {
+    [SectionTypes.Skills]: section(
+      SectionTypes.Skills,
+      resume.skills.map((skill, index) => (
+        <SkillsSection key={`${skill.name}-${index}`} skill={skill} styles={styles} />
+      ))
+    ),
+    [SectionTypes.Work]: section(
+      SectionTypes.Work,
+      resume.work.map((work, index) => (
+        <WorkExperience
+          key={`${work.name}-${index}`}
+          work={work}
+          styles={styles}
+          accent={accent}
+        />
+      ))
+    ),
+    [SectionTypes.Volunteer]: section(
+      SectionTypes.Volunteer,
+      resume.volunteer.map((item, index) => (
+        <WorkExperience
+          key={`${item.organization}-${index}`}
+          work={{ ...item, name: item.organization || item.name } as Work}
+          styles={styles}
+          accent={accent}
+        />
+      ))
+    ),
+    [SectionTypes.Education]: section(
+      SectionTypes.Education,
+      resume.education.map((education, index) => (
+        <EducationSection
+          key={`${education.institution}-${index}`}
+          education={education}
           styles={styles}
         />
-        {resume.skills.map((skill, index) => (
-          <SkillsSection
-            key={`${skill.name}-${index}`}
-            skill={skill}
-            styles={styles}
-          />
-        ))}
-      </>
-    );
-  }
-
-  if (!resume.sectionVisibility?.work) {
-    sectionContent[SectionTypes.Work] = (
-      <>
-        <SectionTitle
-          title={SECTION_TITLES[SectionTypes.Work]}
+      ))
+    ),
+    [SectionTypes.Awards]: section(
+      SectionTypes.Awards,
+      resume.awards.map((item: Award, index) => (
+        <SimpleEntry
+          key={`${item.title}-${index}`}
+          title={item.title}
+          meta={item.awarder}
+          dates={formatDate(item.date)}
+          summary={item.summary}
           styles={styles}
         />
-        {resume.work.map((work, index) => (
-          <WorkExperience
-            key={`${work.name}-${index}`}
-            work={work}
-            styles={styles}
-            accent={accent}
-          />
-        ))}
-      </>
-    );
-  }
-
-  if (!resume.sectionVisibility?.education) {
-    sectionContent[SectionTypes.Education] = (
-      <>
-        <SectionTitle
-          title={SECTION_TITLES[SectionTypes.Education]}
+      ))
+    ),
+    [SectionTypes.Certificates]: section(
+      SectionTypes.Certificates,
+      resume.certificates.map((item: Certificate, index) => (
+        <SimpleEntry
+          key={`${item.name}-${index}`}
+          title={item.name}
+          meta={item.issuer}
+          dates={formatDate(item.date)}
           styles={styles}
         />
-        {resume.education.map((education, index) => (
-          <EducationSection
-            key={`${education.institution}-${index}`}
-            education={education}
-            styles={styles}
-          />
-        ))}
-      </>
-    );
-  }
-
-  if (!resume.sectionVisibility?.projects) {
-    sectionContent[SectionTypes.Projects] = (
-      <>
-        <SectionTitle
-          title={SECTION_TITLES[SectionTypes.Projects]}
+      ))
+    ),
+    [SectionTypes.Publications]: section(
+      SectionTypes.Publications,
+      resume.publications.map((item: Publication, index) => (
+        <SimpleEntry
+          key={`${item.name}-${index}`}
+          title={item.name}
+          meta={item.publisher}
+          dates={formatDate(item.releaseDate)}
+          summary={item.summary}
           styles={styles}
         />
-        {resume.projects.map((project, index) => (
-          <ProjectSection
-            key={`${project.name}-${index}`}
-            project={project}
-            styles={styles}
-            accent={accent}
-          />
-        ))}
-      </>
-    );
-  }
+      ))
+    ),
+    [SectionTypes.Languages]: section(
+      SectionTypes.Languages,
+      resume.languages.map((item: Language, index) => (
+        <SimpleEntry
+          key={`${item.language}-${index}`}
+          title={item.language}
+          meta={item.fluency}
+          styles={styles}
+        />
+      ))
+    ),
+    [SectionTypes.Interests]: section(
+      SectionTypes.Interests,
+      resume.interests.map((item: Interest, index) => (
+        <InterestGroup key={`${item.name}-${index}`} interest={item} styles={styles} />
+      ))
+    ),
+    [SectionTypes.References]: section(
+      SectionTypes.References,
+      resume.references.map((item: Reference, index) => (
+        <SimpleEntry
+          key={`${item.name}-${index}`}
+          title={item.name}
+          summary={item.reference}
+          styles={styles}
+        />
+      ))
+    ),
+    [SectionTypes.Projects]: section(
+      SectionTypes.Projects,
+      resume.projects.map((project, index) => (
+        <ProjectSection
+          key={`${project.name}-${index}`}
+          project={project}
+          styles={styles}
+          accent={accent}
+        />
+      ))
+    ),
+  };
 
   const orderedSections = resolveSectionOrder(resume.sectionOrder);
 

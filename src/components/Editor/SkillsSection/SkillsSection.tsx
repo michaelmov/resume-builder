@@ -4,7 +4,6 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../../context/GlobalFormContext';
-import { useResume } from '../../../hooks/useResume';
 import { SECTION_TITLES, SectionTypes, Skill } from '../../../types/resume.model';
 import { EditorSection } from '../EditorSection';
 import { EditorSubsection } from '../EditorSubsection';
@@ -22,7 +21,6 @@ interface FormProps {
 }
 
 export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
-  const { resume, updateSectionVisibility } = useResume();
   const { control, register, formState, handleSubmit, reset } =
     useForm<FormProps>({
       mode: 'onChange',
@@ -52,10 +50,18 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
     registerSection(SectionTypes.Skills, {
       isDirty,
       handleSubmit: handleSubmit(onSubmit),
+      reset: () => reset(),
     });
 
     return () => unregisterSection(SectionTypes.Skills);
-  }, [isDirty, registerSection, unregisterSection, handleSubmit, onSubmit]);
+  }, [
+    isDirty,
+    registerSection,
+    unregisterSection,
+    handleSubmit,
+    onSubmit,
+    reset,
+  ]);
 
   const addSkill = () => {
     const newSkill = {
@@ -67,23 +73,10 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
     append(newSkill);
   };
 
-  const handleHiddenChange = useCallback(
-    (isHidden: boolean) => {
-      const currentVisibility = resume.sectionVisibility || {};
-      updateSectionVisibility({
-        ...currentVisibility,
-        [SectionTypes.Skills]: isHidden,
-      });
-    },
-    [resume.sectionVisibility, updateSectionVisibility]
-  );
-
   return (
     <EditorSection
       id={SectionTypes.Skills}
       title={SECTION_TITLES[SectionTypes.Skills]}
-      isHidden={resume.sectionVisibility?.[SectionTypes.Skills] || false}
-      onHiddenChange={handleHiddenChange}
     >
       <Box>
         {fields.map((field: any, index: number) => {
@@ -102,7 +95,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
                 <Field.Label display="inline-block">Skill name</Field.Label>
                 <Input type="text" {...register(`skills.${index}.name`)} />
               </Field.Root>
-              <KeywordInput skillIndex={index} control={control} />
+              <KeywordInput name={`skills.${index}.keywords`} control={control} />
             </EditorSubsection>
           );
         })}

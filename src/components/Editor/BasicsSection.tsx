@@ -32,10 +32,18 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
     registerSection(SectionTypes.Basics, {
       isDirty,
       handleSubmit: handleSubmit(onSubmit),
+      reset: () => reset(),
     });
 
     return () => unregisterSection(SectionTypes.Basics);
-  }, [isDirty, registerSection, unregisterSection, handleSubmit, onSubmit]);
+  }, [
+    isDirty,
+    registerSection,
+    unregisterSection,
+    handleSubmit,
+    onSubmit,
+    reset,
+  ]);
 
   return (
     <EditorSection

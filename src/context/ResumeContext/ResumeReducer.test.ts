@@ -1,13 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { emptyResume } from '../../mocks/empty-resume';
-import {
-  Education,
-  Project,
-  SectionTypes,
-  Skill,
-  Work,
-} from '../../types/resume.model';
+import { SectionTypes, Skill, Work } from '../../types/resume.model';
 
 import { ACTIONS, resumeReducer } from './ResumeReducer';
 
@@ -24,47 +18,11 @@ describe('resumeReducer', () => {
     expect(result).toBe(replacement);
   });
 
-  it('updates basics while leaving other sections untouched', () => {
+  it('updates a single section while leaving the others untouched', () => {
     const state = {
       ...emptyResume(),
       skills: [{ name: 'Lang', level: '', keywords: [] }],
     };
-
-    const result = resumeReducer(state, {
-      type: ACTIONS.updateBasics,
-      payload: { ...state.basics, name: 'Jane' },
-    });
-
-    expect(result.basics.name).toBe('Jane');
-    // Untouched sections keep their identity (no needless copies).
-    expect(result.skills).toBe(state.skills);
-  });
-
-  it('does not mutate the previous state', () => {
-    const state = emptyResume();
-
-    resumeReducer(state, {
-      type: ACTIONS.updateBasics,
-      payload: { ...state.basics, name: 'Jane' },
-    });
-
-    expect(state.basics.name).toBe('');
-  });
-
-  it('updates the skills array', () => {
-    const skills: Skill[] = [
-      { name: 'Lang', level: '', keywords: [{ value: 'TS' }] },
-    ];
-
-    const result = resumeReducer(emptyResume(), {
-      type: ACTIONS.updateSkills,
-      payload: skills,
-    });
-
-    expect(result.skills).toBe(skills);
-  });
-
-  it('updates the work array', () => {
     const work: Work[] = [
       {
         name: 'Acme',
@@ -78,69 +36,38 @@ describe('resumeReducer', () => {
       },
     ];
 
-    const result = resumeReducer(emptyResume(), {
-      type: ACTIONS.updateWork,
-      payload: work,
+    const result = resumeReducer(state, {
+      type: ACTIONS.updateSection,
+      payload: { section: SectionTypes.Work, data: work },
     });
 
     expect(result.work).toBe(work);
+    // Untouched sections keep their identity (no needless copies).
+    expect(result.skills).toBe(state.skills);
   });
 
-  it('updates the education array', () => {
-    const education: Education[] = [
-      {
-        institution: 'Uni',
-        url: '',
-        area: 'CS',
-        studyType: 'BS',
-        startDate: '',
-        endDate: '',
-        score: '',
-        courses: [],
-      },
-    ];
+  it('updates the basics object via updateSection', () => {
+    const state = emptyResume();
+    const basics = { ...state.basics, name: 'Jane' };
 
-    const result = resumeReducer(emptyResume(), {
-      type: ACTIONS.updateEducation,
-      payload: education,
+    const result = resumeReducer(state, {
+      type: ACTIONS.updateSection,
+      payload: { section: SectionTypes.Basics, data: basics },
     });
 
-    expect(result.education).toBe(education);
+    expect(result.basics.name).toBe('Jane');
   });
 
-  it('updates the projects array', () => {
-    const projects: Project[] = [
-      {
-        name: 'P',
-        description: '',
-        highlights: [],
-        keywords: [],
-        startDate: '',
-        endDate: '',
-        url: '',
-        roles: [],
-        entity: '',
-        type: '',
-      },
-    ];
+  it('does not mutate the previous state', () => {
+    const state = emptyResume();
+    const skills: Skill[] = [{ name: 'Lang', level: '', keywords: [] }];
 
-    const result = resumeReducer(emptyResume(), {
-      type: ACTIONS.updateProjects,
-      payload: projects,
+    resumeReducer(state, {
+      type: ACTIONS.updateSection,
+      payload: { section: SectionTypes.Skills, data: skills },
     });
 
-    expect(result.projects).toBe(projects);
-  });
-
-  it('updates section visibility', () => {
-    const visibility = { [SectionTypes.Skills]: true };
-
-    const result = resumeReducer(emptyResume(), {
-      type: ACTIONS.updateSectionVisibility,
-      payload: visibility,
-    });
-
-    expect(result.sectionVisibility).toBe(visibility);
+    expect(state.skills).toEqual([]);
   });
 
   it('updates section order', () => {
@@ -157,7 +84,8 @@ describe('resumeReducer', () => {
   it('throws on an unknown action type', () => {
     expect(() =>
       resumeReducer(emptyResume(), {
-        type: 'UNKNOWN_ACTION' as ACTIONS,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        type: 'UNKNOWN_ACTION' as any,
         payload: emptyResume(),
       })
     ).toThrow('No action provided');

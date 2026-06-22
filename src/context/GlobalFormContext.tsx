@@ -9,6 +9,8 @@ import React, {
 interface SectionFormState {
   isDirty: boolean;
   handleSubmit: () => void;
+  /** Revert this section's staged edits back to the last committed state. */
+  reset?: () => void;
 }
 
 interface GlobalFormContextType {
@@ -17,6 +19,7 @@ interface GlobalFormContextType {
   unregisterSection: (sectionId: string) => void;
   hasAnyDirtySection: boolean;
   saveAllSections: () => void;
+  discardAllSections: () => void;
   getDirtySections: () => string[];
 }
 
@@ -65,6 +68,16 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   }, [sections]);
 
+  // Revert every section to its last committed state, discarding staged adds,
+  // removes, reorders, and field edits in one action.
+  const discardAllSections = useCallback(() => {
+    Object.values(sections).forEach((section) => {
+      if (section?.isDirty) {
+        section.reset?.();
+      }
+    });
+  }, [sections]);
+
   return (
     <GlobalFormContext.Provider
       value={{
@@ -73,6 +86,7 @@ export const GlobalFormProvider: React.FC<{ children: React.ReactNode }> = ({
         unregisterSection,
         hasAnyDirtySection,
         saveAllSections,
+        discardAllSections,
         getDirtySections,
       }}
     >

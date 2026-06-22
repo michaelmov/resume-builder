@@ -145,9 +145,9 @@ describe('toJsonResume (export → JSON Resume schema)', () => {
     expect(json.meta).toHaveProperty('lastModified');
   });
 
-  it('keeps projects/interests keywords as plain strings', () => {
+  it('unwraps interests keywords to plain strings', () => {
     const resume = emptyResume();
-    resume.interests = [{ name: 'Wildlife', keywords: ['Ferrets'] }];
+    resume.interests = [{ name: 'Wildlife', keywords: [{ value: 'Ferrets' }] }];
 
     expect(toJsonResume(resume).interests?.[0].keywords).toEqual(['Ferrets']);
   });

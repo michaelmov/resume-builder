@@ -21,7 +21,6 @@ import {
 } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
-import { useResume } from '../../hooks/useResume';
 import { SECTION_TITLES, SectionTypes, Project } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
@@ -41,7 +40,6 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
   value,
   onUpdate,
 }) => {
-  const { resume, updateSectionVisibility } = useResume();
   const { control, register, formState, handleSubmit, reset } =
     useForm<FormProps>({
       mode: 'onChange',
@@ -70,10 +68,18 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
     registerSection(SectionTypes.Projects, {
       isDirty,
       handleSubmit: handleSubmit(onSubmit),
+      reset: () => reset(),
     });
 
     return () => unregisterSection(SectionTypes.Projects);
-  }, [isDirty, registerSection, unregisterSection, handleSubmit, onSubmit]);
+  }, [
+    isDirty,
+    registerSection,
+    unregisterSection,
+    handleSubmit,
+    onSubmit,
+    reset,
+  ]);
 
   const addProject = () => {
     const newProject = {
@@ -92,23 +98,10 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
     append(newProject);
   };
 
-  const handleHiddenChange = useCallback(
-    (isHidden: boolean) => {
-      const currentVisibility = resume.sectionVisibility || {};
-      updateSectionVisibility({
-        ...currentVisibility,
-        [SectionTypes.Projects]: isHidden,
-      });
-    },
-    [resume.sectionVisibility, updateSectionVisibility]
-  );
-
   return (
     <EditorSection
       id={SectionTypes.Projects}
       title={SECTION_TITLES[SectionTypes.Projects]}
-      isHidden={resume.sectionVisibility?.[SectionTypes.Projects] || false}
-      onHiddenChange={handleHiddenChange}
     >
       <Box>
         {fields.map((field: any, index: number) => {

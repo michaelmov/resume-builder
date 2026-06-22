@@ -1,4 +1,4 @@
-import { Resume } from '../types/resume.model';
+import { Resume, SectionTypes } from '../types/resume.model';
 
 export const resumeMock: Resume = {
   basics: {
@@ -102,7 +102,7 @@ export const resumeMock: Resume = {
   interests: [
     {
       name: 'Wildlife',
-      keywords: ['Ferrets', 'Unicorns'],
+      keywords: [{ value: 'Ferrets' }, { value: 'Unicorns' }],
     },
   ],
   references: [
@@ -125,11 +125,17 @@ export const resumeMock: Resume = {
       type: 'application',
     },
   ],
-  sectionVisibility: {
-    basics: false,
-    skills: false,
-    work: false,
-    education: false,
-    projects: false,
-  },
+  sectionOrder: [
+    SectionTypes.Work,
+    SectionTypes.Education,
+    SectionTypes.Skills,
+    SectionTypes.Projects,
+    SectionTypes.Volunteer,
+    SectionTypes.Awards,
+    SectionTypes.Certificates,
+    SectionTypes.Publications,
+    SectionTypes.Languages,
+    SectionTypes.Interests,
+    SectionTypes.References,
+  ],
 };

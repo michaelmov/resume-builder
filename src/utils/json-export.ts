@@ -1,24 +1,23 @@
-import { Resume } from '../types/resume.model';
+import {
+  REORDERABLE_SECTIONS,
+  resolveSectionOrder,
+  Resume,
+} from '../types/resume.model';
 
 import { toJsonResume } from './jsonresume';
 
 export const exportResumeAsJson = (resume: Resume, exportFileName: string) => {
   try {
-    // Create a filtered resume based on section visibility
-    const filteredResume = { ...resume };
-
-    if (resume.sectionVisibility?.skills) {
-      filteredResume.skills = [];
-    }
-    if (resume.sectionVisibility?.work) {
-      filteredResume.work = [];
-    }
-    if (resume.sectionVisibility?.education) {
-      filteredResume.education = [];
-    }
-    if (resume.sectionVisibility?.projects) {
-      filteredResume.projects = [];
-    }
+    // Only sections currently on the resume are exported; any section type not
+    // in the active set is emptied so removed/never-added sections don't leak.
+    const activeSections = new Set(resolveSectionOrder(resume.sectionOrder));
+    const filteredResume: Resume = { ...resume };
+    const mutable = filteredResume as unknown as Record<string, unknown>;
+    REORDERABLE_SECTIONS.forEach((type) => {
+      if (!activeSections.has(type)) {
+        mutable[type] = [];
+      }
+    });
 
     // Convert to the standard JSON Resume schema so the file interoperates
     // with other JSON Resume tooling.

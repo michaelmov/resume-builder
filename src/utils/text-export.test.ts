@@ -147,15 +147,19 @@ describe('generateAtsCompliantText', () => {
     });
   });
 
-  describe('visibility & ordering', () => {
-    it('omits a section flagged hidden in sectionVisibility', () => {
+  describe('active set & ordering', () => {
+    it('omits a section that is not in the active set (sectionOrder)', () => {
       const resume = {
         ...emptyResume(),
         skills: [skillEntry()],
-        sectionVisibility: { [SectionTypes.Skills]: true },
+        work: [workEntry()],
+        // Skills has data but is not active, so it must not appear.
+        sectionOrder: [SectionTypes.Work],
       };
 
-      expect(generateAtsCompliantText(resume)).not.toContain('SKILLS');
+      const text = generateAtsCompliantText(resume);
+      expect(text).toContain('WORK EXPERIENCE');
+      expect(text).not.toContain('SKILLS');
     });
 
     it('omits empty sections entirely', () => {
@@ -167,25 +171,22 @@ describe('generateAtsCompliantText', () => {
       expect(text).not.toContain('PROJECTS');
     });
 
-    it('honors a custom sectionOrder and appends the unlisted sections', () => {
+    it('renders only active sections, in the sectionOrder given', () => {
       const resume = {
         ...emptyResume(),
         skills: [skillEntry()],
         work: [workEntry()],
         education: [educationEntry()],
         projects: [projectEntry()],
+        // Only Projects and Skills are active; Work and Education are removed.
         sectionOrder: [SectionTypes.Projects, SectionTypes.Skills],
       };
 
       const text = generateAtsCompliantText(resume);
 
       expect(text.indexOf('PROJECTS')).toBeLessThan(text.indexOf('SKILLS'));
-      expect(text.indexOf('SKILLS')).toBeLessThan(
-        text.indexOf('WORK EXPERIENCE')
-      );
-      expect(text.indexOf('WORK EXPERIENCE')).toBeLessThan(
-        text.indexOf('EDUCATION')
-      );
+      expect(text).not.toContain('WORK EXPERIENCE');
+      expect(text).not.toContain('EDUCATION');
     });
   });
 });

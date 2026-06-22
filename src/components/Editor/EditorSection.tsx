@@ -4,15 +4,16 @@ import {
   Flex,
   Heading,
   IconButton,
-  Icon,
 } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
-import { HiChevronDown, HiEyeOff, HiEye } from 'react-icons/hi';
+import { HiChevronDown, HiOutlineTrash } from 'react-icons/hi';
 import { MdDragIndicator } from 'react-icons/md';
 
+import { SectionTypes } from '../../types/resume.model';
 import { Tooltip } from '../ui/Tooltip';
 
 import { useSectionOpenState } from './OpenSectionContext';
+import { useSectionActions } from './SectionActionsContext';
 import { useDragHandle, useIsSectionDragging } from './SortableSection';
 
 interface EditorSectionProps {
@@ -20,13 +21,10 @@ interface EditorSectionProps {
   id: string;
   title: string;
   children: React.ReactNode;
-  isHidden?: boolean;
-  onHiddenChange?: (isHidden: boolean) => void;
-  enableShowHideToggle?: boolean;
   /**
    * Render the section as a permanent, always-expanded card with no collapse,
-   * reorder, or hide affordances. Used for Basics, whose name and contact
-   * details head every resume and so can't be hidden or collapsed away.
+   * reorder, or remove affordances. Used for Basics, whose name and contact
+   * details head every resume and so can't be removed or collapsed away.
    */
   alwaysOpen?: boolean;
 }
@@ -34,14 +32,12 @@ export const EditorSection: FC<EditorSectionProps> = ({
   id,
   title,
   children,
-  isHidden = false,
-  onHiddenChange,
-  enableShowHideToggle = true,
   alwaysOpen = false,
 }) => {
   const [isOpen, setIsOpen] = useSectionOpenState(id);
   const dragHandle = useDragHandle();
   const isSectionDragging = useIsSectionDragging();
+  const sectionActions = useSectionActions();
 
   // Collapse every section once a drag begins so reorder targets stay compact,
   // and keep them collapsed after the drop (the user re-opens as needed).
@@ -52,8 +48,8 @@ export const EditorSection: FC<EditorSectionProps> = ({
   }, [isSectionDragging, setIsOpen]);
 
   // A pinned section (Basics) is a permanent fixture: it always shows its
-  // content, has no chevron/hide controls, and pulls the title inside the card
-  // so it reads as one grounded block rather than a collapsible panel.
+  // content, has no chevron/remove controls, and pulls the title inside the
+  // card so it reads as one grounded block rather than a collapsible panel.
   if (alwaysOpen) {
     return (
       <Box
@@ -138,21 +134,18 @@ export const EditorSection: FC<EditorSectionProps> = ({
               {title}
             </Heading>
           </Collapsible.Trigger>
-          {enableShowHideToggle && (
-            <Tooltip content={isHidden ? 'Show section' : 'Hide section'}>
+          {sectionActions && (
+            <Tooltip content="Remove section">
               <IconButton
+                aria-label="Remove section"
                 variant="ghost"
-                onClick={() => onHiddenChange?.(!isHidden)}
+                size="sm"
+                mb={2}
+                color="gray.400"
+                _hover={{ color: 'red.500', bg: 'red.50' }}
+                onClick={() => sectionActions.removeSection(id as SectionTypes)}
               >
-                {isHidden ? (
-                  <Icon color="gray.400">
-                    <HiEyeOff />
-                  </Icon>
-                ) : (
-                  <Icon color="gray.400">
-                    <HiEye />
-                  </Icon>
-                )}
+                <HiOutlineTrash />
               </IconButton>
             </Tooltip>
           )}

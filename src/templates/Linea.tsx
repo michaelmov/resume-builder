@@ -10,8 +10,14 @@ import {
 import { ReactNode, useMemo } from 'react';
 
 import {
+  Award,
+  Certificate,
   Education,
+  Interest,
+  Language,
   Project,
+  Publication,
+  Reference,
   resolveSectionOrder,
   Resume,
   SECTION_TITLES,
@@ -389,6 +395,50 @@ const ProjectSection = ({
   );
 };
 
+// A generic title/dates/role/summary entry shared by awards, certificates,
+// publications, references, and languages.
+const SimpleEntry = ({
+  title,
+  dates,
+  role,
+  summary,
+  styles,
+}: {
+  title?: string;
+  dates?: string;
+  role?: string;
+  summary?: string;
+  styles: Styles;
+}) => (
+  <View style={styles.entry} wrap={false}>
+    <View style={styles.entryHead}>
+      <Text style={styles.entryTitle}>{title}</Text>
+      {dates ? <Text style={styles.entryDates}>{dates}</Text> : null}
+    </View>
+    {role ? <Text style={styles.entryRole}>{role}</Text> : null}
+    {summary ? <Text style={styles.entrySummary}>{summary}</Text> : null}
+  </View>
+);
+
+const InterestGroup = ({
+  interest,
+  styles,
+}: {
+  interest: Interest;
+  styles: Styles;
+}) => (
+  <View style={styles.skillRow} wrap={false}>
+    <Text style={styles.skillName}>{interest.name}</Text>
+    <View style={styles.skillKeywords}>
+      {interest.keywords?.map((keyword, index) => (
+        <Text key={`${keyword.value}-${index}`} style={styles.keyword}>
+          {keyword.value}
+        </Text>
+      ))}
+    </View>
+  </View>
+);
+
 const LineaTemplate = ({
   resume,
   accent,
@@ -397,8 +447,20 @@ const LineaTemplate = ({
   accent: AccentPalette;
 }) => {
   const styles = useMemo(() => makeStyles(accent), [accent]);
-  const { basics, skills, work, education, projects, sectionVisibility } =
-    resume;
+  const {
+    basics,
+    skills,
+    work,
+    volunteer,
+    education,
+    awards,
+    certificates,
+    publications,
+    languages,
+    interests,
+    references,
+    projects,
+  } = resume;
 
   const contactNodes = [
     basics?.location?.city && (
@@ -413,70 +475,88 @@ const LineaTemplate = ({
     ),
   ].filter(Boolean);
 
-  // Each reorderable section is keyed so the Editor's order can drive the
-  // numbered layout here.
-  const sectionContent: Partial<
-    Record<SectionTypes, { title: string; body: ReactNode }>
-  > = {};
-
-  if (!sectionVisibility?.skills) {
-    sectionContent[SectionTypes.Skills] = {
-      title: SECTION_TITLES[SectionTypes.Skills],
-      body: skills.map((skill, index) => (
-        <SkillsSection
-          key={`${skill.name}-${index}`}
-          skill={skill}
-          styles={styles}
-        />
-      )),
-    };
-  }
-
-  if (!sectionVisibility?.work) {
-    sectionContent[SectionTypes.Work] = {
-      title: SECTION_TITLES[SectionTypes.Work],
-      body: work.map((item, index) => (
-        <WorkExperience
-          key={`${item.name}-${index}`}
-          work={item}
-          styles={styles}
-        />
-      )),
-    };
-  }
-
-  if (!sectionVisibility?.education) {
-    sectionContent[SectionTypes.Education] = {
-      title: SECTION_TITLES[SectionTypes.Education],
-      body: education.map((item, index) => (
-        <EducationSection
-          key={`${item.institution}-${index}`}
-          education={item}
-          styles={styles}
-        />
-      )),
-    };
-  }
-
-  if (!sectionVisibility?.projects) {
-    sectionContent[SectionTypes.Projects] = {
-      title: SECTION_TITLES[SectionTypes.Projects],
-      body: projects.map((item, index) => (
-        <ProjectSection
-          key={`${item.name}-${index}`}
-          project={item}
-          styles={styles}
-        />
-      )),
-    };
-  }
+  // Build the body for every section type; the active set + order chosen in the
+  // Editor decides which appear (an active-but-empty section still shows its
+  // numbered heading).
+  const sectionContent: Partial<Record<SectionTypes, ReactNode>> = {
+    [SectionTypes.Skills]: skills.map((skill, index) => (
+      <SkillsSection key={`${skill.name}-${index}`} skill={skill} styles={styles} />
+    )),
+    [SectionTypes.Work]: work.map((item, index) => (
+      <WorkExperience key={`${item.name}-${index}`} work={item} styles={styles} />
+    )),
+    [SectionTypes.Volunteer]: volunteer.map((item, index) => (
+      <WorkExperience
+        key={`${item.organization}-${index}`}
+        work={{ ...item, name: item.organization || item.name } as Work}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.Education]: education.map((item, index) => (
+      <EducationSection
+        key={`${item.institution}-${index}`}
+        education={item}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.Awards]: awards.map((item: Award, index) => (
+      <SimpleEntry
+        key={`${item.title}-${index}`}
+        title={item.title}
+        dates={formatDate(item.date)}
+        role={item.awarder}
+        summary={item.summary}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.Certificates]: certificates.map((item: Certificate, index) => (
+      <SimpleEntry
+        key={`${item.name}-${index}`}
+        title={item.name}
+        dates={formatDate(item.date)}
+        role={item.issuer}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.Publications]: publications.map((item: Publication, index) => (
+      <SimpleEntry
+        key={`${item.name}-${index}`}
+        title={item.name}
+        dates={formatDate(item.releaseDate)}
+        role={item.publisher}
+        summary={item.summary}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.Languages]: languages.map((item: Language, index) => (
+      <SimpleEntry
+        key={`${item.language}-${index}`}
+        title={item.language}
+        role={item.fluency}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.Interests]: interests.map((item: Interest, index) => (
+      <InterestGroup key={`${item.name}-${index}`} interest={item} styles={styles} />
+    )),
+    [SectionTypes.References]: references.map((item: Reference, index) => (
+      <SimpleEntry
+        key={`${item.name}-${index}`}
+        title={item.name}
+        summary={item.reference}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.Projects]: projects.map((item, index) => (
+      <ProjectSection key={`${item.name}-${index}`} project={item} styles={styles} />
+    )),
+  };
 
   const sectionOrder = resolveSectionOrder(resume.sectionOrder);
-  const sections = sectionOrder
-    .map((type) => sectionContent[type])
-    .filter((section): section is { title: string; body: ReactNode } =>
-      Boolean(section)
-    );
+  const sections = sectionOrder.map((type) => ({
+    title: SECTION_TITLES[type],
+    body: sectionContent[type],
+  }));
 
   return (
     <Document>

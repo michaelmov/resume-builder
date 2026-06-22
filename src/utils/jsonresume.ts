@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  REORDERABLE_SECTIONS,
   Resume,
   SectionTypes,
   SectionVisibility,
@@ -314,7 +315,10 @@ export const toJsonResume = (resume: Resume): JsonResume => {
       omitEmpty({ language: l.language, fluency: l.fluency })
     ),
     interests: resume.interests.map((i) =>
-      omitEmpty({ name: i.name, keywords: i.keywords })
+      omitEmpty({
+        name: i.name,
+        keywords: i.keywords.map((k) => k.value).filter(nonEmpty),
+      })
     ),
     references: resume.references.map((r) =>
       omitEmpty({ name: r.name, reference: r.reference })
@@ -381,7 +385,7 @@ export const fromJsonResume = (input: unknown): Resume => {
     sectionOrder?: SectionTypes[];
   };
 
-  return {
+  const resume: Resume = {
     basics: {
       name: r.basics?.name ?? '',
       label: r.basics?.label ?? '',
@@ -457,7 +461,7 @@ export const fromJsonResume = (input: unknown): Resume => {
     })),
     interests: (r.interests ?? []).map((i) => ({
       name: i.name ?? '',
-      keywords: toStringArray(i.keywords),
+      keywords: toValueArray(i.keywords),
     })),
     references: (r.references ?? []).map((ref) => ({
       name: ref.name ?? '',
@@ -477,6 +481,25 @@ export const fromJsonResume = (input: unknown): Resume => {
     })),
     sectionVisibility:
       appMeta.sectionVisibility ?? (r.sectionVisibility as SectionVisibility),
-    sectionOrder: appMeta.sectionOrder ?? (r.sectionOrder as SectionTypes[]),
   };
+
+  // Decide which sections are active (on the resume). Prefer an explicit order
+  // from this app's own export; otherwise activate every section that carries
+  // data so a standard JSON Resume file "just works" on import. Left undefined
+  // only when there's nothing to show, so the app falls back to its defaults.
+  const explicitOrder =
+    appMeta.sectionOrder ?? (r.sectionOrder as SectionTypes[] | undefined);
+  const sections = resume as unknown as Record<string, unknown>;
+  const dataSections = REORDERABLE_SECTIONS.filter((type) => {
+    const value = sections[type];
+    return Array.isArray(value) && value.length > 0;
+  });
+  resume.sectionOrder =
+    explicitOrder && explicitOrder.length > 0
+      ? explicitOrder
+      : dataSections.length > 0
+        ? dataSections
+        : undefined;
+
+  return resume;
 };
