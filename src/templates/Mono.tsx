@@ -84,7 +84,8 @@ const styles = StyleSheet.create({
     fontWeight: 300,
     fontSize: 29,
     lineHeight: 1.1,
-    letterSpacing: -0.2,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
     color: colors.ink,
   },
   label: {
