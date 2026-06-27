@@ -6,6 +6,7 @@ import { AccentPalette } from './accents';
 import AriaTemplate from './Aria';
 import DuoTemplate from './Duo';
 import LineaTemplate from './Linea';
+import MonoTemplate from './Mono';
 
 export interface TemplateProps {
   resume: Resume;
@@ -38,6 +39,13 @@ export const templates: TemplateDefinition[] = [
     name: 'Aria',
     defaultAccentId: 'sage',
     Component: AriaTemplate,
+  },
+  {
+    // Monochrome by design — the accent picker stays visible but has no effect.
+    id: 'mono',
+    name: 'Mono',
+    defaultAccentId: 'sky',
+    Component: MonoTemplate,
   },
 ];
 
