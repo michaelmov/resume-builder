@@ -9,6 +9,8 @@ interface AccentMenuProps {
   /** The accent actually in effect (resolves "Auto" to a concrete palette). */
   resolvedAccentId: string;
   onAccentChange: (accentId: string | null) => void;
+  /** Disabled for monochrome templates that have no secondary color. */
+  disabled?: boolean;
 }
 
 const Dot = ({ color }: { color: string }) => (
@@ -27,15 +29,26 @@ const AccentMenu = ({
   selectedAccentId,
   resolvedAccentId,
   onAccentChange,
+  disabled = false,
 }: AccentMenuProps) => {
   const resolved = getAccent(resolvedAccentId);
 
   return (
     <Menu.Root>
       <Menu.Trigger asChild>
-        <Button size="sm" colorPalette="gray" variant="subtle">
-          <Dot color={resolved.swatch} />
-          {selectedAccentId === null ? 'Auto' : resolved.name}
+        <Button
+          size="sm"
+          colorPalette="gray"
+          variant="subtle"
+          disabled={disabled}
+          title={
+            disabled
+              ? 'This template is monochrome — no accent color'
+              : undefined
+          }
+        >
+          <Dot color={disabled ? 'gray.400' : resolved.swatch} />
+          {disabled || selectedAccentId === null ? 'Auto' : resolved.name}
           <HiChevronDown size={18} />
         </Button>
       </Menu.Trigger>

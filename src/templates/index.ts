@@ -18,6 +18,12 @@ export interface TemplateDefinition {
   name: string;
   /** Accent used when the user has not picked one explicitly ("Auto"). */
   defaultAccentId: string;
+  /**
+   * Whether the template renders a secondary accent color. Monochrome
+   * templates set this to `false` so the accent picker is disabled while they
+   * are active. Defaults to `true` when omitted.
+   */
+  supportsAccent?: boolean;
   Component: ComponentType<TemplateProps>;
 }
 
@@ -41,10 +47,12 @@ export const templates: TemplateDefinition[] = [
     Component: AriaTemplate,
   },
   {
-    // Monochrome by design — the accent picker stays visible but has no effect.
+    // Monochrome by design — it has no secondary color, so the accent picker is
+    // disabled while this template is active.
     id: 'mono',
     name: 'Mono',
     defaultAccentId: 'sky',
+    supportsAccent: false,
     Component: MonoTemplate,
   },
 ];

@@ -52,6 +52,10 @@ export const Preview: FC<{
     [accentId, activeTemplate]
   );
 
+  // Monochrome templates have no secondary color, so the accent picker is
+  // disabled while they're active.
+  const supportsAccent = activeTemplate.supportsAccent !== false;
+
   const SelectedTemplate = activeTemplate.Component;
 
   const template = useMemo(
@@ -111,6 +115,7 @@ export const Preview: FC<{
         selectedAccentId={accentId}
         resolvedAccentId={accent.id}
         onAccentChange={setAccentId}
+        accentDisabled={!supportsAccent}
         isEditorCollapsed={isEditorCollapsed}
         onEditorCollapseChange={onEditorCollapseChange}
       />

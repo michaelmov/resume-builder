@@ -52,7 +52,7 @@ Font.register({
 Font.registerHyphenationCallback((word) => [word]);
 
 // A single monochrome ramp — no hue anywhere. Mono deliberately ignores the
-// accent palette (see below), so the color picker stays visible but inert.
+// accent palette (see below); the accent picker is disabled while it's active.
 const colors = {
   paper: '#ffffff',
   ink: '#18181b', // name, entry titles, section labels
@@ -254,7 +254,13 @@ const Section = ({
   </View>
 );
 
-const SkillsSection = ({ skill, isLast }: { skill: Skill; isLast: boolean }) => (
+const SkillsSection = ({
+  skill,
+  isLast,
+}: {
+  skill: Skill;
+  isLast: boolean;
+}) => (
   <View style={isLast ? styles.skillRowLast : styles.skillRow} wrap={false}>
     <Text style={styles.skillName}>{skill.name}</Text>
     <Text style={styles.skillKeywords}>
@@ -379,8 +385,8 @@ const InterestGroup = ({
   </View>
 );
 
-// Mono is monochrome by design and intentionally ignores `accent` — the picker
-// stays visible app-wide but has no effect on this template.
+// Mono is monochrome by design and intentionally ignores `accent` — the accent
+// picker is disabled (see templates/index.ts `supportsAccent`) while it's active.
 const MonoTemplate = ({
   resume,
 }: {

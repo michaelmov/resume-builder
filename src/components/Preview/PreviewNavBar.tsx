@@ -14,6 +14,8 @@ interface PreviewNavBarProps {
   selectedAccentId: string | null;
   resolvedAccentId: string;
   onAccentChange: (accentId: string | null) => void;
+  /** Disable the accent picker for monochrome templates (no secondary color). */
+  accentDisabled: boolean;
   isEditorCollapsed: boolean;
   onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
 }
@@ -25,6 +27,7 @@ export const PreviewNavBar = ({
   selectedAccentId,
   resolvedAccentId,
   onAccentChange,
+  accentDisabled,
   isEditorCollapsed,
   onEditorCollapseChange,
 }: PreviewNavBarProps) => {
@@ -65,6 +68,7 @@ export const PreviewNavBar = ({
             selectedAccentId={selectedAccentId}
             resolvedAccentId={resolvedAccentId}
             onAccentChange={onAccentChange}
+            disabled={accentDisabled}
           />
         </GridItem>
         <GridItem display="flex" justifyContent="end">
