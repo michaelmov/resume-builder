@@ -27,6 +27,7 @@ import {
 import { useGlobalForm } from '../../context/GlobalFormContext';
 import { SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
+import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
 
@@ -140,21 +141,30 @@ export function GenericListSection<T>({
             <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
               {fieldConfigs.map((config) => (
                 <GridItem key={config.name} colSpan={config.colSpan ?? 1}>
-                  <Field.Root id={`${field.id}-${config.name}`}>
-                    <Field.Label>{config.label}</Field.Label>
-                    {config.type === 'textarea' ? (
-                      <Textarea
-                        placeholder={config.placeholder}
-                        {...register(`entries.${index}.${config.name}`)}
-                      />
-                    ) : (
-                      <Input
-                        type={config.type ?? 'text'}
-                        placeholder={config.placeholder}
-                        {...register(`entries.${index}.${config.name}`)}
-                      />
-                    )}
-                  </Field.Root>
+                  {config.type === 'date' ? (
+                    <DateField
+                      control={control}
+                      name={`entries.${index}.${config.name}`}
+                      label={config.label}
+                      id={`${field.id}-${config.name}`}
+                    />
+                  ) : (
+                    <Field.Root id={`${field.id}-${config.name}`}>
+                      <Field.Label>{config.label}</Field.Label>
+                      {config.type === 'textarea' ? (
+                        <Textarea
+                          placeholder={config.placeholder}
+                          {...register(`entries.${index}.${config.name}`)}
+                        />
+                      ) : (
+                        <Input
+                          type={config.type ?? 'text'}
+                          placeholder={config.placeholder}
+                          {...register(`entries.${index}.${config.name}`)}
+                        />
+                      )}
+                    </Field.Root>
+                  )}
                 </GridItem>
               ))}
               {bullet && (
