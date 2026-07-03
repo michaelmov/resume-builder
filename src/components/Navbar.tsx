@@ -22,7 +22,7 @@ export const Navbar: FC = () => {
       as="nav"
       height="100dvh"
       width={50}
-      background="purple.500"
+      background="brand.500"
       display="flex"
       flexDirection="column"
       alignItems="center"
@@ -37,7 +37,7 @@ export const Navbar: FC = () => {
           aria-label="Import Resume"
           colorPalette="bg"
           _hover={{
-            backgroundColor: 'purple.600',
+            backgroundColor: 'brand.600',
           }}
           onClick={triggerFileInput}
         >
@@ -57,7 +57,7 @@ export const Navbar: FC = () => {
           variant="ghost"
           aria-label="Open Github repo"
           _hover={{
-            backgroundColor: 'purple.600',
+            backgroundColor: 'brand.600',
           }}
         >
           <LinkOverlay

@@ -48,7 +48,7 @@ export const AddSectionMenu: FC<AddSectionMenuProps> = ({
           width="100%"
           size="sm"
           variant="outline"
-          colorPalette="purple"
+          colorPalette="brand"
           disabled={allAdded}
           borderStyle="dashed"
         >

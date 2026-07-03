@@ -55,7 +55,7 @@ export function DateField<T extends FieldValues>({
           <Field.Label>{label}</Field.Label>
           <DatePicker.Root
             width="full"
-            colorPalette="purple"
+            colorPalette="brand"
             disabled={disabled}
             value={toDateValue(field.value)}
             onValueChange={(details) =>
@@ -74,7 +74,13 @@ export function DateField<T extends FieldValues>({
               </DatePicker.IndicatorGroup>
             </DatePicker.Control>
             <Portal>
-              <DatePicker.Positioner>
+              {/*
+                The calendar is portaled to `document.body`, i.e. outside the
+                `DatePicker.Root` node where `colorPalette="brand"` sets its CSS
+                vars — so the palette must be reapplied here or the selected day
+                falls back to the default gray (renders near-black).
+              */}
+              <DatePicker.Positioner colorPalette="brand">
                 <DatePicker.Content>
                   <DatePicker.View view="day">
                     <DatePicker.Header />
