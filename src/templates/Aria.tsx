@@ -58,12 +58,12 @@ const colors = {
   rule: '#ececee',
 };
 
-const makeStyles = (accent: AccentPalette) =>
+const makeStyles = (accent: AccentPalette, marginScale: number) =>
   StyleSheet.create({
     page: {
-      paddingHorizontal: 56,
-      paddingTop: 54,
-      paddingBottom: 54,
+      paddingHorizontal: 56 * marginScale,
+      paddingTop: 54 * marginScale,
+      paddingBottom: 54 * marginScale,
       backgroundColor: colors.paper,
       color: colors.body,
       fontSize: 10,
@@ -421,11 +421,16 @@ const InterestGroup = ({
 const AriaTemplate = ({
   resume,
   accent,
+  marginScale,
 }: {
   resume: Resume;
   accent: AccentPalette;
+  marginScale: number;
 }) => {
-  const styles = useMemo(() => makeStyles(accent), [accent]);
+  const styles = useMemo(
+    () => makeStyles(accent, marginScale),
+    [accent, marginScale]
+  );
   const {
     basics,
     skills,

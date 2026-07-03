@@ -7,10 +7,12 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 
 import { useAccentLocalStorage } from '../../hooks/useAccentLocalStorage';
+import { useMarginLocalStorage } from '../../hooks/useMarginLocalStorage';
 import { useResume } from '../../hooks/useResume';
 import { useTemplateLocalStorage } from '../../hooks/useTemplateLocalStorage';
 import { DEFAULT_TEMPLATE_ID, templates } from '../../templates';
 import { getAccent } from '../../templates/accents';
+import { DEFAULT_MARGIN_ID, getMarginScale } from '../../templates/margins';
 
 import { PreviewNavBar } from './PreviewNavBar';
 
@@ -26,11 +28,15 @@ export const Preview: FC<{
   const { resume } = useResume();
   const { getTemplateId, saveTemplateId } = useTemplateLocalStorage();
   const { getAccentId, saveAccentId } = useAccentLocalStorage();
+  const { getMarginId, saveMarginId } = useMarginLocalStorage();
 
   const [templateId, setTemplateId] = useState<string>(
     () => getTemplateId() ?? DEFAULT_TEMPLATE_ID
   );
   const [accentId, setAccentId] = useState<string | null>(() => getAccentId());
+  const [marginId, setMarginId] = useState<string>(
+    () => getMarginId() ?? DEFAULT_MARGIN_ID
+  );
 
   useEffect(() => {
     saveTemplateId(templateId);
@@ -39,6 +45,10 @@ export const Preview: FC<{
   useEffect(() => {
     saveAccentId(accentId);
   }, [accentId, saveAccentId]);
+
+  useEffect(() => {
+    saveMarginId(marginId);
+  }, [marginId, saveMarginId]);
 
   const activeTemplate = useMemo(
     () =>
@@ -58,9 +68,17 @@ export const Preview: FC<{
 
   const SelectedTemplate = activeTemplate.Component;
 
+  const marginScale = getMarginScale(marginId);
+
   const template = useMemo(
-    () => <SelectedTemplate resume={resume} accent={accent} />,
-    [SelectedTemplate, resume, accent]
+    () => (
+      <SelectedTemplate
+        resume={resume}
+        accent={accent}
+        marginScale={marginScale}
+      />
+    ),
+    [SelectedTemplate, resume, accent, marginScale]
   );
   const [instance, update] = usePDF({ document: template });
   const [numPages, setNumPages] = useState<number>();
@@ -116,6 +134,8 @@ export const Preview: FC<{
         resolvedAccentId={accent.id}
         onAccentChange={setAccentId}
         accentDisabled={!supportsAccent}
+        selectedMarginId={marginId}
+        onMarginChange={setMarginId}
         isEditorCollapsed={isEditorCollapsed}
         onEditorCollapseChange={onEditorCollapseChange}
       />
