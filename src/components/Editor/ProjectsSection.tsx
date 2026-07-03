@@ -23,6 +23,7 @@ import {
 import { useGlobalForm } from '../../context/GlobalFormContext';
 import { SECTION_TITLES, SectionTypes, Project } from '../../types/resume.model';
 
+import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
 
@@ -137,22 +138,20 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
                   </Field.Root>
                 </GridItem>
                 <GridItem colSpan={1}>
-                  <Field.Root id={`project-start-${field.id}`}>
-                    <Field.Label>Start date</Field.Label>
-                    <Input
-                      type="date"
-                      {...register(`projects.${index}.startDate`)}
-                    />
-                  </Field.Root>
+                  <DateField
+                    control={control}
+                    name={`projects.${index}.startDate`}
+                    label="Start date"
+                    id={`project-start-${field.id}`}
+                  />
                 </GridItem>
                 <GridItem colSpan={1}>
-                  <Field.Root id={`project-end-${field.id}`}>
-                    <Field.Label>End date</Field.Label>
-                    <Input
-                      type="date"
-                      {...register(`projects.${index}.endDate`)}
-                    />
-                  </Field.Root>
+                  <DateField
+                    control={control}
+                    name={`projects.${index}.endDate`}
+                    label="End date"
+                    id={`project-end-${field.id}`}
+                  />
                 </GridItem>
                 <GridItem colSpan={2}>
                   <Field.Root id={`project-url-${field.id}`}>

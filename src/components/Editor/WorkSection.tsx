@@ -24,6 +24,7 @@ import {
 import { useGlobalForm } from '../../context/GlobalFormContext';
 import { SECTION_TITLES, SectionTypes, Work } from '../../types/resume.model';
 
+import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
 
@@ -37,7 +38,7 @@ interface FormProps {
   work: Work[];
 }
 export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
-  const { control, register, formState, handleSubmit, reset } =
+  const { control, register, formState, handleSubmit, reset, watch } =
     useForm<FormProps>({
       mode: 'onChange',
       defaultValues: {
@@ -95,12 +96,6 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
     append(newWork);
   };
 
-  const isEndDateInputDisabled = useCallback(
-    (index: number) => {
-      return fields[index]?.isPresent || false;
-    },
-    [fields]
-  );
   return (
     <EditorSection
       id={SectionTypes.Work}
@@ -137,23 +132,21 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                   </Field.Root>
                 </GridItem>
                 <GridItem colSpan={1}>
-                  <Field.Root id={`start-${field.id}`}>
-                    <Field.Label>Start date</Field.Label>
-                    <Input
-                      type="date"
-                      {...register(`work.${index}.startDate`)}
-                    />
-                  </Field.Root>
+                  <DateField
+                    control={control}
+                    name={`work.${index}.startDate`}
+                    label="Start date"
+                    id={`start-${field.id}`}
+                  />
                 </GridItem>
                 <GridItem colSpan={1}>
-                  <Field.Root id={`end-${field.id}`}>
-                    <Field.Label>End date</Field.Label>
-                    <Input
-                      type="date"
-                      {...register(`work.${index}.endDate`)}
-                      disabled={isEndDateInputDisabled(index)}
-                    />
-                  </Field.Root>
+                  <DateField
+                    control={control}
+                    name={`work.${index}.endDate`}
+                    label="End date"
+                    id={`end-${field.id}`}
+                    disabled={!!watch(`work.${index}.isPresent`)}
+                  />
                   <Flex justifyContent="flex-end" mt={2}>
                     <Controller
                       name={`work.${index}.isPresent`}

@@ -6,6 +6,7 @@ import { HiPlus } from 'react-icons/hi';
 import { useGlobalForm } from '../../context/GlobalFormContext';
 import { SECTION_TITLES, SectionTypes, Education } from '../../types/resume.model';
 
+import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
 
@@ -140,22 +141,20 @@ export const EducationSection: FC<EducationSectionProps> = ({
                     </Field.Root>
                   </GridItem>
                   <GridItem colSpan={1}>
-                    <Field.Root id={`${field.id}-startDate`}>
-                      <Field.Label>Start Date</Field.Label>
-                      <Input
-                        type="date"
-                        {...register(`education.${index}.startDate`)}
-                      />
-                    </Field.Root>
+                    <DateField
+                      control={control}
+                      name={`education.${index}.startDate`}
+                      label="Start Date"
+                      id={`${field.id}-startDate`}
+                    />
                   </GridItem>
                   <GridItem colSpan={1}>
-                    <Field.Root id={`${field.id}-endDate`}>
-                      <Field.Label>End Date</Field.Label>
-                      <Input
-                        type="date"
-                        {...register(`education.${index}.endDate`)}
-                      />
-                    </Field.Root>
+                    <DateField
+                      control={control}
+                      name={`education.${index}.endDate`}
+                      label="End Date"
+                      id={`${field.id}-endDate`}
+                    />
                   </GridItem>
                   <GridItem colSpan={2}>
                     <Field.Root id={`${field.id}-url`}>
