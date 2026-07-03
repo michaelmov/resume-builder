@@ -4,10 +4,15 @@ import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
-import { SECTION_TITLES, SectionTypes, Education } from '../../types/resume.model';
+import {
+  SECTION_TITLES,
+  SectionTypes,
+  Education,
+} from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { OpenSubsectionProvider } from './OpenSubsectionContext';
 
 interface EducationSectionProps {
   value: Education[];
@@ -85,106 +90,116 @@ export const EducationSection: FC<EducationSectionProps> = ({
       id={SectionTypes.Education}
       title={SECTION_TITLES[SectionTypes.Education]}
     >
-      <Box>
-        {fields.map(
-          (field: FieldArrayWithId<FormProps, 'education'>, index: number) => {
-            return (
-              <EditorSubsection
-                title={field.institution}
-                subtitle={field.area}
-                onDeleteClick={() => remove(index)}
-                mb={6}
-                key={field.id}
-                onMoveUpClick={() => move(index, index - 1)}
-                onMoveDownClick={() => move(index, index + 1)}
-                moveUpDisabled={index === 0}
-                moveDownDisabled={index >= fields.length - 1}
-              >
-                <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
-                  <GridItem colSpan={1}>
-                    <Field.Root id={`${field.id}-institution`}>
-                      <Field.Label>Institution</Field.Label>
-                      <Input
-                        type="text"
-                        {...register(`education.${index}.institution`)}
-                      />
-                    </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={1}>
-                    <Field.Root id={`${field.id}-area`}>
-                      <Field.Label>Area of Study</Field.Label>
-                      <Input
-                        type="text"
-                        {...register(`education.${index}.area`)}
-                      />
-                    </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={1}>
-                    <Field.Root id={`${field.id}-studyType`}>
-                      <Field.Label>Study Type</Field.Label>
-                      <Input
-                        type="text"
-                        placeholder="e.g. Bachelor's, Master's, PhD"
-                        {...register(`education.${index}.studyType`)}
-                      />
-                    </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={1}>
-                    <Field.Root id={`${field.id}-score`}>
-                      <Field.Label>GPA/Score</Field.Label>
-                      <Input
-                        type="text"
-                        placeholder="e.g. 3.8/4.0, 85%"
-                        {...register(`education.${index}.score`)}
-                      />
-                    </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={1}>
-                    <Field.Root id={`${field.id}-startDate`}>
-                      <Field.Label>Start Date</Field.Label>
-                      <Input
-                        type="date"
-                        {...register(`education.${index}.startDate`)}
-                      />
-                    </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={1}>
-                    <Field.Root id={`${field.id}-endDate`}>
-                      <Field.Label>End Date</Field.Label>
-                      <Input
-                        type="date"
-                        {...register(`education.${index}.endDate`)}
-                      />
-                    </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={2}>
-                    <Field.Root id={`${field.id}-url`}>
-                      <Field.Label>Institution URL</Field.Label>
-                      <Input
-                        type="url"
-                        placeholder="https://example.edu"
-                        {...register(`education.${index}.url`)}
-                      />
-                    </Field.Root>
-                  </GridItem>
-                </Grid>
-              </EditorSubsection>
-            );
-          }
-        )}
-        <Box display="flex" justifyContent="center">
-          <Button
-            onClick={addEducation}
-            width="100%"
-            size="sm"
-            variant="subtle"
-            colorPalette="gray"
-          >
-            <HiPlus />
-            Add Education
-          </Button>
+      <OpenSubsectionProvider>
+        <Box>
+          {fields.map(
+            (
+              field: FieldArrayWithId<FormProps, 'education'>,
+              index: number
+            ) => {
+              return (
+                <EditorSubsection
+                  id={field.id}
+                  title={field.institution}
+                  subtitle={field.area}
+                  onDeleteClick={() => remove(index)}
+                  mb={6}
+                  key={field.id}
+                  onMoveUpClick={() => move(index, index - 1)}
+                  onMoveDownClick={() => move(index, index + 1)}
+                  moveUpDisabled={index === 0}
+                  moveDownDisabled={index >= fields.length - 1}
+                >
+                  <Grid
+                    templateColumns="repeat(2, 1fr)"
+                    rowGap={4}
+                    columnGap={2}
+                  >
+                    <GridItem colSpan={1}>
+                      <Field.Root id={`${field.id}-institution`}>
+                        <Field.Label>Institution</Field.Label>
+                        <Input
+                          type="text"
+                          {...register(`education.${index}.institution`)}
+                        />
+                      </Field.Root>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                      <Field.Root id={`${field.id}-area`}>
+                        <Field.Label>Area of Study</Field.Label>
+                        <Input
+                          type="text"
+                          {...register(`education.${index}.area`)}
+                        />
+                      </Field.Root>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                      <Field.Root id={`${field.id}-studyType`}>
+                        <Field.Label>Study Type</Field.Label>
+                        <Input
+                          type="text"
+                          placeholder="e.g. Bachelor's, Master's, PhD"
+                          {...register(`education.${index}.studyType`)}
+                        />
+                      </Field.Root>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                      <Field.Root id={`${field.id}-score`}>
+                        <Field.Label>GPA/Score</Field.Label>
+                        <Input
+                          type="text"
+                          placeholder="e.g. 3.8/4.0, 85%"
+                          {...register(`education.${index}.score`)}
+                        />
+                      </Field.Root>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                      <Field.Root id={`${field.id}-startDate`}>
+                        <Field.Label>Start Date</Field.Label>
+                        <Input
+                          type="date"
+                          {...register(`education.${index}.startDate`)}
+                        />
+                      </Field.Root>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                      <Field.Root id={`${field.id}-endDate`}>
+                        <Field.Label>End Date</Field.Label>
+                        <Input
+                          type="date"
+                          {...register(`education.${index}.endDate`)}
+                        />
+                      </Field.Root>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                      <Field.Root id={`${field.id}-url`}>
+                        <Field.Label>Institution URL</Field.Label>
+                        <Input
+                          type="url"
+                          placeholder="https://example.edu"
+                          {...register(`education.${index}.url`)}
+                        />
+                      </Field.Root>
+                    </GridItem>
+                  </Grid>
+                </EditorSubsection>
+              );
+            }
+          )}
+          <Box display="flex" justifyContent="center">
+            <Button
+              onClick={addEducation}
+              width="100%"
+              size="sm"
+              variant="subtle"
+              colorPalette="gray"
+            >
+              <HiPlus />
+              Add Education
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      </OpenSubsectionProvider>
     </EditorSection>
   );
 };

@@ -10,7 +10,11 @@ import {
 import { FC, useState } from 'react';
 import { HiOutlineTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
 
+import { useSubsectionOpenState } from './OpenSubsectionContext';
+
 interface EditorSubsectionProps extends BoxProps {
+  /** Unique id used to coordinate the single-open accordion behavior. */
+  id: string;
   title: string;
   subtitle?: string;
   onDeleteClick: () => void;
@@ -21,6 +25,7 @@ interface EditorSubsectionProps extends BoxProps {
 }
 
 export const EditorSubsection: FC<EditorSubsectionProps> = ({
+  id,
   children,
   onDeleteClick,
   onMoveUpClick,
@@ -32,7 +37,7 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
   ...rest
 }) => {
   const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useSubsectionOpenState(id);
   return (
     <Collapsible.Root
       open={isOpen}

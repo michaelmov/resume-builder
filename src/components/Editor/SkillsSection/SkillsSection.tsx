@@ -4,9 +4,14 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../../context/GlobalFormContext';
-import { SECTION_TITLES, SectionTypes, Skill } from '../../../types/resume.model';
+import {
+  SECTION_TITLES,
+  SectionTypes,
+  Skill,
+} from '../../../types/resume.model';
 import { EditorSection } from '../EditorSection';
 import { EditorSubsection } from '../EditorSubsection';
+import { OpenSubsectionProvider } from '../OpenSubsectionContext';
 
 import { KeywordInput } from './KeywordInput';
 
@@ -78,40 +83,46 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
       id={SectionTypes.Skills}
       title={SECTION_TITLES[SectionTypes.Skills]}
     >
-      <Box>
-        {fields.map((field: any, index: number) => {
-          return (
-            <EditorSubsection
-              title={field.name}
-              onDeleteClick={() => remove(index)}
-              mb={6}
-              key={field.id}
-              onMoveUpClick={() => move(index, index - 1)}
-              onMoveDownClick={() => move(index, index + 1)}
-              moveUpDisabled={index === 0}
-              moveDownDisabled={index >= fields.length - 1}
+      <OpenSubsectionProvider>
+        <Box>
+          {fields.map((field: any, index: number) => {
+            return (
+              <EditorSubsection
+                id={field.id}
+                title={field.name}
+                onDeleteClick={() => remove(index)}
+                mb={6}
+                key={field.id}
+                onMoveUpClick={() => move(index, index - 1)}
+                onMoveDownClick={() => move(index, index + 1)}
+                moveUpDisabled={index === 0}
+                moveDownDisabled={index >= fields.length - 1}
+              >
+                <Field.Root id={field.id} mb={4}>
+                  <Field.Label display="inline-block">Skill name</Field.Label>
+                  <Input type="text" {...register(`skills.${index}.name`)} />
+                </Field.Root>
+                <KeywordInput
+                  name={`skills.${index}.keywords`}
+                  control={control}
+                />
+              </EditorSubsection>
+            );
+          })}
+          <Box display="flex" justifyContent="center">
+            <Button
+              onClick={addSkill}
+              width="100%"
+              size="sm"
+              variant="subtle"
+              colorPalette="gray"
             >
-              <Field.Root id={field.id} mb={4}>
-                <Field.Label display="inline-block">Skill name</Field.Label>
-                <Input type="text" {...register(`skills.${index}.name`)} />
-              </Field.Root>
-              <KeywordInput name={`skills.${index}.keywords`} control={control} />
-            </EditorSubsection>
-          );
-        })}
-        <Box display="flex" justifyContent="center">
-          <Button
-            onClick={addSkill}
-            width="100%"
-            size="sm"
-            variant="subtle"
-            colorPalette="gray"
-          >
-            <HiPlus />
-            Add Skill
-          </Button>
+              <HiPlus />
+              Add Skill
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      </OpenSubsectionProvider>
     </EditorSection>
   );
 };

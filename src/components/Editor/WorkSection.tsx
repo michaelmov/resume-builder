@@ -26,6 +26,7 @@ import { SECTION_TITLES, SectionTypes, Work } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { OpenSubsectionProvider } from './OpenSubsectionContext';
 
 interface WorkSectionProps {
   value: Work[];
@@ -106,107 +107,113 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
       id={SectionTypes.Work}
       title={SECTION_TITLES[SectionTypes.Work]}
     >
-      <Box>
-        {fields.map((field: any, index: number) => {
-          return (
-            <EditorSubsection
-              title={field.name}
-              subtitle={field.position}
-              key={field.id}
-              onDeleteClick={() => remove(index)}
-              onMoveUpClick={() => move(index, index - 1)}
-              onMoveDownClick={() => move(index, index + 1)}
-              moveUpDisabled={index === 0}
-              moveDownDisabled={index >= fields.length - 1}
-              mb={10}
-            >
-              <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
-                <GridItem colSpan={1}>
-                  <Field.Root id={`company-${field.id}`}>
-                    <Field.Label>Company name</Field.Label>
-                    <Input type="text" {...register(`work.${index}.name`)} />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={1}>
-                  <Field.Root id={`title-${field.id}`}>
-                    <Field.Label>Title</Field.Label>
-                    <Input
-                      type="text"
-                      {...register(`work.${index}.position`)}
-                    />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={1}>
-                  <Field.Root id={`start-${field.id}`}>
-                    <Field.Label>Start date</Field.Label>
-                    <Input
-                      type="date"
-                      {...register(`work.${index}.startDate`)}
-                    />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={1}>
-                  <Field.Root id={`end-${field.id}`}>
-                    <Field.Label>End date</Field.Label>
-                    <Input
-                      type="date"
-                      {...register(`work.${index}.endDate`)}
-                      disabled={isEndDateInputDisabled(index)}
-                    />
-                  </Field.Root>
-                  <Flex justifyContent="flex-end" mt={2}>
-                    <Controller
-                      name={`work.${index}.isPresent`}
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <Checkbox.Root
-                          variant="outline"
-                          colorPalette="purple"
-                          checked={value}
-                          onCheckedChange={(details) =>
-                            onChange(details.checked)
-                          }
-                        >
-                          <Checkbox.HiddenInput />
-                          <Checkbox.Control cursor="pointer" />
-                          <Checkbox.Label fontWeight="normal" cursor="pointer">
-                            I still work here
-                          </Checkbox.Label>
-                        </Checkbox.Root>
-                      )}
-                    />
-                  </Flex>
-                </GridItem>
-                <GridItem colSpan={2}>
-                  <Field.Root id={`summary-${field.id}`}>
-                    <Field.Label>Summary</Field.Label>
-                    <Textarea {...register(`work.${index}.summary`)} />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={2}>
-                  <HighlightsList
-                    workIndex={index}
-                    control={control}
-                    register={register}
-                  />
-                </GridItem>
-              </Grid>
-            </EditorSubsection>
-          );
-        })}
+      <OpenSubsectionProvider>
         <Box>
-          <Button
-            onClick={addWork}
-            width="100%"
-            size="sm"
-            variant="subtle"
-            colorPalette="gray"
-          >
-            <HiPlus />
-            Add Work
-          </Button>
+          {fields.map((field: any, index: number) => {
+            return (
+              <EditorSubsection
+                id={field.id}
+                title={field.name}
+                subtitle={field.position}
+                key={field.id}
+                onDeleteClick={() => remove(index)}
+                onMoveUpClick={() => move(index, index - 1)}
+                onMoveDownClick={() => move(index, index + 1)}
+                moveUpDisabled={index === 0}
+                moveDownDisabled={index >= fields.length - 1}
+                mb={10}
+              >
+                <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
+                  <GridItem colSpan={1}>
+                    <Field.Root id={`company-${field.id}`}>
+                      <Field.Label>Company name</Field.Label>
+                      <Input type="text" {...register(`work.${index}.name`)} />
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={1}>
+                    <Field.Root id={`title-${field.id}`}>
+                      <Field.Label>Title</Field.Label>
+                      <Input
+                        type="text"
+                        {...register(`work.${index}.position`)}
+                      />
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={1}>
+                    <Field.Root id={`start-${field.id}`}>
+                      <Field.Label>Start date</Field.Label>
+                      <Input
+                        type="date"
+                        {...register(`work.${index}.startDate`)}
+                      />
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={1}>
+                    <Field.Root id={`end-${field.id}`}>
+                      <Field.Label>End date</Field.Label>
+                      <Input
+                        type="date"
+                        {...register(`work.${index}.endDate`)}
+                        disabled={isEndDateInputDisabled(index)}
+                      />
+                    </Field.Root>
+                    <Flex justifyContent="flex-end" mt={2}>
+                      <Controller
+                        name={`work.${index}.isPresent`}
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <Checkbox.Root
+                            variant="outline"
+                            colorPalette="purple"
+                            checked={value}
+                            onCheckedChange={(details) =>
+                              onChange(details.checked)
+                            }
+                          >
+                            <Checkbox.HiddenInput />
+                            <Checkbox.Control cursor="pointer" />
+                            <Checkbox.Label
+                              fontWeight="normal"
+                              cursor="pointer"
+                            >
+                              I still work here
+                            </Checkbox.Label>
+                          </Checkbox.Root>
+                        )}
+                      />
+                    </Flex>
+                  </GridItem>
+                  <GridItem colSpan={2}>
+                    <Field.Root id={`summary-${field.id}`}>
+                      <Field.Label>Summary</Field.Label>
+                      <Textarea {...register(`work.${index}.summary`)} />
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={2}>
+                    <HighlightsList
+                      workIndex={index}
+                      control={control}
+                      register={register}
+                    />
+                  </GridItem>
+                </Grid>
+              </EditorSubsection>
+            );
+          })}
+          <Box>
+            <Button
+              onClick={addWork}
+              width="100%"
+              size="sm"
+              variant="subtle"
+              colorPalette="gray"
+            >
+              <HiPlus />
+              Add Work
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      </OpenSubsectionProvider>
     </EditorSection>
   );
 };

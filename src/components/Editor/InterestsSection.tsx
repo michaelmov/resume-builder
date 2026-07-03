@@ -4,10 +4,15 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
-import { Interest, SECTION_TITLES, SectionTypes } from '../../types/resume.model';
+import {
+  Interest,
+  SECTION_TITLES,
+  SectionTypes,
+} from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { OpenSubsectionProvider } from './OpenSubsectionContext';
 import { KeywordInput } from './SkillsSection/KeywordInput';
 
 interface InterestsSectionProps {
@@ -70,39 +75,45 @@ export const InterestsSection: FC<InterestsSectionProps> = ({
       id={SectionTypes.Interests}
       title={SECTION_TITLES[SectionTypes.Interests]}
     >
-      <Box>
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {fields.map((field: any, index: number) => (
-          <EditorSubsection
-            title={field.name}
-            onDeleteClick={() => remove(index)}
-            mb={6}
-            key={field.id}
-            onMoveUpClick={() => move(index, index - 1)}
-            onMoveDownClick={() => move(index, index + 1)}
-            moveUpDisabled={index === 0}
-            moveDownDisabled={index >= fields.length - 1}
-          >
-            <Field.Root id={field.id} mb={4}>
-              <Field.Label display="inline-block">Interest name</Field.Label>
-              <Input type="text" {...register(`interests.${index}.name`)} />
-            </Field.Root>
-            <KeywordInput name={`interests.${index}.keywords`} control={control} />
-          </EditorSubsection>
-        ))}
-        <Box display="flex" justifyContent="center">
-          <Button
-            onClick={addInterest}
-            width="100%"
-            size="sm"
-            variant="subtle"
-            colorPalette="gray"
-          >
-            <HiPlus />
-            Add Interest
-          </Button>
+      <OpenSubsectionProvider>
+        <Box>
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {fields.map((field: any, index: number) => (
+            <EditorSubsection
+              id={field.id}
+              title={field.name}
+              onDeleteClick={() => remove(index)}
+              mb={6}
+              key={field.id}
+              onMoveUpClick={() => move(index, index - 1)}
+              onMoveDownClick={() => move(index, index + 1)}
+              moveUpDisabled={index === 0}
+              moveDownDisabled={index >= fields.length - 1}
+            >
+              <Field.Root id={field.id} mb={4}>
+                <Field.Label display="inline-block">Interest name</Field.Label>
+                <Input type="text" {...register(`interests.${index}.name`)} />
+              </Field.Root>
+              <KeywordInput
+                name={`interests.${index}.keywords`}
+                control={control}
+              />
+            </EditorSubsection>
+          ))}
+          <Box display="flex" justifyContent="center">
+            <Button
+              onClick={addInterest}
+              width="100%"
+              size="sm"
+              variant="subtle"
+              colorPalette="gray"
+            >
+              <HiPlus />
+              Add Interest
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      </OpenSubsectionProvider>
     </EditorSection>
   );
 };

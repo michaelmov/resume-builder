@@ -21,10 +21,15 @@ import {
 } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
-import { SECTION_TITLES, SectionTypes, Project } from '../../types/resume.model';
+import {
+  SECTION_TITLES,
+  SectionTypes,
+  Project,
+} from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { OpenSubsectionProvider } from './OpenSubsectionContext';
 
 interface ProjectsSectionProps {
   value: Project[];
@@ -103,93 +108,101 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
       id={SectionTypes.Projects}
       title={SECTION_TITLES[SectionTypes.Projects]}
     >
-      <Box>
-        {fields.map((field: any, index: number) => {
-          return (
-            <EditorSubsection
-              title={field.name}
-              subtitle={field.type}
-              key={field.id}
-              onDeleteClick={() => remove(index)}
-              onMoveUpClick={() => move(index, index - 1)}
-              onMoveDownClick={() => move(index, index + 1)}
-              moveUpDisabled={index === 0}
-              moveDownDisabled={index >= fields.length - 1}
-              mb={10}
-            >
-              <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
-                <GridItem colSpan={1}>
-                  <Field.Root id={`project-name-${field.id}`}>
-                    <Field.Label>Project name</Field.Label>
-                    <Input
-                      type="text"
-                      {...register(`projects.${index}.name`)}
-                    />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={1}>
-                  <Field.Root id={`project-type-${field.id}`}>
-                    <Field.Label>Type</Field.Label>
-                    <Input
-                      type="text"
-                      {...register(`projects.${index}.type`)}
-                    />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={1}>
-                  <Field.Root id={`project-start-${field.id}`}>
-                    <Field.Label>Start date</Field.Label>
-                    <Input
-                      type="date"
-                      {...register(`projects.${index}.startDate`)}
-                    />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={1}>
-                  <Field.Root id={`project-end-${field.id}`}>
-                    <Field.Label>End date</Field.Label>
-                    <Input
-                      type="date"
-                      {...register(`projects.${index}.endDate`)}
-                    />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={2}>
-                  <Field.Root id={`project-url-${field.id}`}>
-                    <Field.Label>URL</Field.Label>
-                    <Input type="url" {...register(`projects.${index}.url`)} />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={2}>
-                  <Field.Root id={`project-description-${field.id}`}>
-                    <Field.Label>Description</Field.Label>
-                    <Textarea {...register(`projects.${index}.description`)} />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={2}>
-                  <HighlightsList
-                    projectIndex={index}
-                    control={control}
-                    register={register}
-                  />
-                </GridItem>
-              </Grid>
-            </EditorSubsection>
-          );
-        })}
+      <OpenSubsectionProvider>
         <Box>
-          <Button
-            onClick={addProject}
-            width="100%"
-            size="sm"
-            variant="subtle"
-            colorPalette="gray"
-          >
-            <HiPlus />
-            Add Project
-          </Button>
+          {fields.map((field: any, index: number) => {
+            return (
+              <EditorSubsection
+                id={field.id}
+                title={field.name}
+                subtitle={field.type}
+                key={field.id}
+                onDeleteClick={() => remove(index)}
+                onMoveUpClick={() => move(index, index - 1)}
+                onMoveDownClick={() => move(index, index + 1)}
+                moveUpDisabled={index === 0}
+                moveDownDisabled={index >= fields.length - 1}
+                mb={10}
+              >
+                <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
+                  <GridItem colSpan={1}>
+                    <Field.Root id={`project-name-${field.id}`}>
+                      <Field.Label>Project name</Field.Label>
+                      <Input
+                        type="text"
+                        {...register(`projects.${index}.name`)}
+                      />
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={1}>
+                    <Field.Root id={`project-type-${field.id}`}>
+                      <Field.Label>Type</Field.Label>
+                      <Input
+                        type="text"
+                        {...register(`projects.${index}.type`)}
+                      />
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={1}>
+                    <Field.Root id={`project-start-${field.id}`}>
+                      <Field.Label>Start date</Field.Label>
+                      <Input
+                        type="date"
+                        {...register(`projects.${index}.startDate`)}
+                      />
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={1}>
+                    <Field.Root id={`project-end-${field.id}`}>
+                      <Field.Label>End date</Field.Label>
+                      <Input
+                        type="date"
+                        {...register(`projects.${index}.endDate`)}
+                      />
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={2}>
+                    <Field.Root id={`project-url-${field.id}`}>
+                      <Field.Label>URL</Field.Label>
+                      <Input
+                        type="url"
+                        {...register(`projects.${index}.url`)}
+                      />
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={2}>
+                    <Field.Root id={`project-description-${field.id}`}>
+                      <Field.Label>Description</Field.Label>
+                      <Textarea
+                        {...register(`projects.${index}.description`)}
+                      />
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={2}>
+                    <HighlightsList
+                      projectIndex={index}
+                      control={control}
+                      register={register}
+                    />
+                  </GridItem>
+                </Grid>
+              </EditorSubsection>
+            );
+          })}
+          <Box>
+            <Button
+              onClick={addProject}
+              width="100%"
+              size="sm"
+              variant="subtle"
+              colorPalette="gray"
+            >
+              <HiPlus />
+              Add Project
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      </OpenSubsectionProvider>
     </EditorSection>
   );
 };

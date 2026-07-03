@@ -29,6 +29,7 @@ import { SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { OpenSubsectionProvider } from './OpenSubsectionContext';
 
 /** A single flat input within an entry. */
 export interface FieldConfig {
@@ -119,70 +120,72 @@ export function GenericListSection<T>({
   ]);
 
   return (
-    <EditorSection
-      id={sectionType}
-      title={SECTION_TITLES[sectionType]}
-    >
-      <Box>
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {fields.map((field: any, index: number) => (
-          <EditorSubsection
-            key={field.id}
-            title={field[titleField] || ''}
-            subtitle={subtitleField ? field[subtitleField] || '' : ''}
-            onDeleteClick={() => remove(index)}
-            onMoveUpClick={() => move(index, index - 1)}
-            onMoveDownClick={() => move(index, index + 1)}
-            moveUpDisabled={index === 0}
-            moveDownDisabled={index >= fields.length - 1}
-            mb={6}
-          >
-            <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
-              {fieldConfigs.map((config) => (
-                <GridItem key={config.name} colSpan={config.colSpan ?? 1}>
-                  <Field.Root id={`${field.id}-${config.name}`}>
-                    <Field.Label>{config.label}</Field.Label>
-                    {config.type === 'textarea' ? (
-                      <Textarea
-                        placeholder={config.placeholder}
-                        {...register(`entries.${index}.${config.name}`)}
-                      />
-                    ) : (
-                      <Input
-                        type={config.type ?? 'text'}
-                        placeholder={config.placeholder}
-                        {...register(`entries.${index}.${config.name}`)}
-                      />
-                    )}
-                  </Field.Root>
-                </GridItem>
-              ))}
-              {bullet && (
-                <GridItem colSpan={2}>
-                  <BulletListField
-                    entryIndex={index}
-                    control={control}
-                    register={register}
-                    bullet={bullet}
-                  />
-                </GridItem>
-              )}
-            </Grid>
-          </EditorSubsection>
-        ))}
+    <EditorSection id={sectionType} title={SECTION_TITLES[sectionType]}>
+      <OpenSubsectionProvider>
         <Box>
-          <Button
-            onClick={() => append(emptyEntry() as FormShape['entries'][number])}
-            width="100%"
-            size="sm"
-            variant="subtle"
-            colorPalette="gray"
-          >
-            <HiPlus />
-            {addLabel}
-          </Button>
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {fields.map((field: any, index: number) => (
+            <EditorSubsection
+              key={field.id}
+              id={field.id}
+              title={field[titleField] || ''}
+              subtitle={subtitleField ? field[subtitleField] || '' : ''}
+              onDeleteClick={() => remove(index)}
+              onMoveUpClick={() => move(index, index - 1)}
+              onMoveDownClick={() => move(index, index + 1)}
+              moveUpDisabled={index === 0}
+              moveDownDisabled={index >= fields.length - 1}
+              mb={6}
+            >
+              <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
+                {fieldConfigs.map((config) => (
+                  <GridItem key={config.name} colSpan={config.colSpan ?? 1}>
+                    <Field.Root id={`${field.id}-${config.name}`}>
+                      <Field.Label>{config.label}</Field.Label>
+                      {config.type === 'textarea' ? (
+                        <Textarea
+                          placeholder={config.placeholder}
+                          {...register(`entries.${index}.${config.name}`)}
+                        />
+                      ) : (
+                        <Input
+                          type={config.type ?? 'text'}
+                          placeholder={config.placeholder}
+                          {...register(`entries.${index}.${config.name}`)}
+                        />
+                      )}
+                    </Field.Root>
+                  </GridItem>
+                ))}
+                {bullet && (
+                  <GridItem colSpan={2}>
+                    <BulletListField
+                      entryIndex={index}
+                      control={control}
+                      register={register}
+                      bullet={bullet}
+                    />
+                  </GridItem>
+                )}
+              </Grid>
+            </EditorSubsection>
+          ))}
+          <Box>
+            <Button
+              onClick={() =>
+                append(emptyEntry() as FormShape['entries'][number])
+              }
+              width="100%"
+              size="sm"
+              variant="subtle"
+              colorPalette="gray"
+            >
+              <HiPlus />
+              {addLabel}
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      </OpenSubsectionProvider>
     </EditorSection>
   );
 }
