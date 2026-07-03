@@ -52,10 +52,10 @@ const colors = {
   secondaryLight: '#a1a1aa',
 };
 
-const makeStyles = (accent: AccentPalette) =>
+const makeStyles = (accent: AccentPalette, marginScale: number) =>
   StyleSheet.create({
     page: {
-      padding: 40,
+      padding: 40 * marginScale,
       color: colors.secondaryDark,
       fontSize: 10,
       fontFamily: 'Poppins',
@@ -380,11 +380,16 @@ const InterestGroup = ({
 const DuoTemplate = ({
   resume,
   accent,
+  marginScale,
 }: {
   resume: Resume;
   accent: AccentPalette;
+  marginScale: number;
 }) => {
-  const styles = useMemo(() => makeStyles(accent), [accent]);
+  const styles = useMemo(
+    () => makeStyles(accent, marginScale),
+    [accent, marginScale]
+  );
 
   // A section is rendered with its title + body; the active set + order chosen
   // in the Editor decides which appear (an active-but-empty section still shows

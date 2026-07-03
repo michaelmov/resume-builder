@@ -6,6 +6,7 @@ import { useResume } from '../../hooks/useResume';
 
 import AccentMenu from './AccentMenu';
 import ExportMenu from './ExportMenu';
+import MarginMenu from './MarginMenu';
 import TemplateMenu from './TemplateMenu';
 interface PreviewNavBarProps {
   resumeTemplate: JSX.Element;
@@ -16,6 +17,8 @@ interface PreviewNavBarProps {
   onAccentChange: (accentId: string | null) => void;
   /** Disable the accent picker for monochrome templates (no secondary color). */
   accentDisabled: boolean;
+  selectedMarginId: string;
+  onMarginChange: (marginId: string) => void;
   isEditorCollapsed: boolean;
   onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
 }
@@ -28,6 +31,8 @@ export const PreviewNavBar = ({
   resolvedAccentId,
   onAccentChange,
   accentDisabled,
+  selectedMarginId,
+  onMarginChange,
   isEditorCollapsed,
   onEditorCollapseChange,
 }: PreviewNavBarProps) => {
@@ -69,6 +74,10 @@ export const PreviewNavBar = ({
             resolvedAccentId={resolvedAccentId}
             onAccentChange={onAccentChange}
             disabled={accentDisabled}
+          />
+          <MarginMenu
+            selectedMarginId={selectedMarginId}
+            onMarginChange={onMarginChange}
           />
         </GridItem>
         <GridItem display="flex" justifyContent="end">

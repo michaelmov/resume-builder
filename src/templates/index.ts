@@ -11,6 +11,11 @@ import MonoTemplate from './Mono';
 export interface TemplateProps {
   resume: Resume;
   accent: AccentPalette;
+  /**
+   * Multiplier applied to the template's own base page padding (see
+   * `margins.ts`). ×1 keeps the template's original spacing.
+   */
+  marginScale: number;
 }
 
 export interface TemplateDefinition {

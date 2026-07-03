@@ -76,12 +76,12 @@ const colors = {
   rule: '#e4ded3',
 };
 
-const makeStyles = (accent: AccentPalette) =>
+const makeStyles = (accent: AccentPalette, marginScale: number) =>
   StyleSheet.create({
     page: {
-      paddingHorizontal: 50,
-      paddingTop: 46,
-      paddingBottom: 46,
+      paddingHorizontal: 50 * marginScale,
+      paddingTop: 46 * marginScale,
+      paddingBottom: 46 * marginScale,
       backgroundColor: colors.paper,
       color: colors.ink,
       fontSize: 10,
@@ -442,11 +442,16 @@ const InterestGroup = ({
 const LineaTemplate = ({
   resume,
   accent,
+  marginScale,
 }: {
   resume: Resume;
   accent: AccentPalette;
+  marginScale: number;
 }) => {
-  const styles = useMemo(() => makeStyles(accent), [accent]);
+  const styles = useMemo(
+    () => makeStyles(accent, marginScale),
+    [accent, marginScale]
+  );
   const {
     basics,
     skills,

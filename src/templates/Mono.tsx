@@ -7,7 +7,7 @@ import {
   Font,
   Link,
 } from '@react-pdf/renderer';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 import {
   Award,
@@ -62,13 +62,16 @@ const colors = {
   faint: '#a1a1aa', // separators and bullet marks
 };
 
+// Base page padding; the active margin preset scales this at render time.
+const PAGE_PADDING = 58;
+
 // No accent argument: the design is monochrome by definition, so styles are a
 // plain module constant rather than a function of the accent.
 const styles = StyleSheet.create({
   page: {
-    paddingHorizontal: 58,
-    paddingTop: 58,
-    paddingBottom: 58,
+    paddingHorizontal: PAGE_PADDING,
+    paddingTop: PAGE_PADDING,
+    paddingBottom: PAGE_PADDING,
     backgroundColor: colors.paper,
     color: colors.body,
     fontSize: 10,
@@ -390,10 +393,26 @@ const InterestGroup = ({
 // picker is disabled (see templates/index.ts `supportsAccent`) while it's active.
 const MonoTemplate = ({
   resume,
+  marginScale,
 }: {
   resume: Resume;
   accent: AccentPalette;
+  marginScale: number;
 }) => {
+  // Mono has no makeStyles(accent) factory, so scale only the page padding here
+  // and leave the rest of the (accent-independent) module styles untouched.
+  const pageStyle = useMemo(
+    () => [
+      styles.page,
+      {
+        paddingHorizontal: PAGE_PADDING * marginScale,
+        paddingTop: PAGE_PADDING * marginScale,
+        paddingBottom: PAGE_PADDING * marginScale,
+      },
+    ],
+    [marginScale]
+  );
+
   const {
     basics,
     skills,
@@ -531,7 +550,7 @@ const MonoTemplate = ({
       {/* Key the page by the section order so react-pdf fully re-lays-out the
           page when sections are reordered (otherwise it reuses cached layout
           for the unchanged section blocks and the order appears stale). */}
-      <Page size="A4" style={styles.page} key={sectionOrder.join('-')}>
+      <Page size="A4" style={pageStyle} key={sectionOrder.join('-')}>
         <View>
           <Text style={styles.name}>{basics?.name}</Text>
           {basics?.label && (
