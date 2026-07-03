@@ -113,7 +113,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
         borderRadius={8}
         boxShadow="sm"
         borderLeftWidth="3px"
-        borderLeftColor="purple.400"
+        borderLeftColor="brand.400"
         overflow="hidden"
       >
         <Flex align="center" px={8} pt={6} pb={4}>
@@ -231,7 +231,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
                 size="sm"
                 mb={2}
                 color="gray.400"
-                _hover={{ color: 'purple.500', bg: 'purple.50' }}
+                _hover={{ color: 'brand.500', bg: 'brand.50' }}
                 onClick={startRename}
               >
                 <HiOutlinePencil />

@@ -39,7 +39,7 @@ export const GlobalActionBar: FC = () => {
             </Button>
             <Button
               variant="solid"
-              colorPalette="purple"
+              colorPalette="brand"
               size="sm"
               onClick={saveAllSections}
             >

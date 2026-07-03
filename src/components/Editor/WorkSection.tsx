@@ -154,7 +154,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                       render={({ field: { onChange, value } }) => (
                         <Checkbox.Root
                           variant="outline"
-                          colorPalette="purple"
+                          colorPalette="brand"
                           checked={value}
                           onCheckedChange={(details) =>
                             onChange(details.checked)
