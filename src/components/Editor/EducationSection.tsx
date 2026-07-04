@@ -4,6 +4,7 @@ import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
+import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
 import { SECTION_TITLES, SectionTypes, Education } from '../../types/resume.model';
 
 import { DateField } from './DateField';
@@ -65,6 +66,11 @@ export const EducationSection: FC<EducationSectionProps> = ({
     onSubmit,
     reset,
   ]);
+
+  useReseedFormOnValueChange(reset, value, (education) => ({
+    name: 'education',
+    education,
+  }));
 
   const addEducation = () => {
     const newEducation = {

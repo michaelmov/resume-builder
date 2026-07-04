@@ -25,6 +25,7 @@ import {
 } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
+import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
 import { SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
 import { DateField } from './DateField';
@@ -118,6 +119,10 @@ export function GenericListSection<T>({
     reset,
     sectionType,
   ]);
+
+  useReseedFormOnValueChange(reset, value, (entries) => ({
+    entries: entries as FormShape['entries'],
+  }));
 
   return (
     <EditorSection
