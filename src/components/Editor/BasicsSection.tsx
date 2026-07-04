@@ -3,6 +3,7 @@ import { FC, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
+import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
 import { Basics, SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
@@ -44,6 +45,8 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
     onSubmit,
     reset,
   ]);
+
+  useReseedFormOnValueChange(reset, value, (basics) => basics);
 
   return (
     <EditorSection

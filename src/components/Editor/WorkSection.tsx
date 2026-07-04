@@ -22,6 +22,7 @@ import {
 } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
+import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
 import { SECTION_TITLES, SectionTypes, Work } from '../../types/resume.model';
 
 import { DateField } from './DateField';
@@ -79,6 +80,8 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
     onSubmit,
     reset,
   ]);
+
+  useReseedFormOnValueChange(reset, value, (work) => ({ name: 'work', work }));
 
   const addWork = () => {
     const newWork = {

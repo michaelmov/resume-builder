@@ -4,6 +4,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
+import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
 import { Interest, SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
@@ -60,6 +61,8 @@ export const InterestsSection: FC<InterestsSectionProps> = ({
     onSubmit,
     reset,
   ]);
+
+  useReseedFormOnValueChange(reset, value, (interests) => ({ interests }));
 
   const addInterest = () => {
     append({ name: '', keywords: [] } as Interest);

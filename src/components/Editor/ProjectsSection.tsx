@@ -21,6 +21,7 @@ import {
 } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../context/GlobalFormContext';
+import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
 import { SECTION_TITLES, SectionTypes, Project } from '../../types/resume.model';
 
 import { DateField } from './DateField';
@@ -81,6 +82,11 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
     onSubmit,
     reset,
   ]);
+
+  useReseedFormOnValueChange(reset, value, (projects) => ({
+    name: 'projects',
+    projects,
+  }));
 
   const addProject = () => {
     const newProject = {

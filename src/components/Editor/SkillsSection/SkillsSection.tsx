@@ -4,6 +4,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useGlobalForm } from '../../../context/GlobalFormContext';
+import { useReseedFormOnValueChange } from '../../../hooks/useReseedFormOnValueChange';
 import { SECTION_TITLES, SectionTypes, Skill } from '../../../types/resume.model';
 import { EditorSection } from '../EditorSection';
 import { EditorSubsection } from '../EditorSubsection';
@@ -62,6 +63,11 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
     onSubmit,
     reset,
   ]);
+
+  useReseedFormOnValueChange(reset, value, (skills) => ({
+    name: 'skills',
+    skills,
+  }));
 
   const addSkill = () => {
     const newSkill = {
