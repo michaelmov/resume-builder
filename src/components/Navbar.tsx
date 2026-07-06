@@ -12,10 +12,17 @@ import { VscGithub } from 'react-icons/vsc';
 
 import { useJsonImport } from '../hooks/useJsonImport';
 
+import { ImportErrorDialog } from './ImportErrorDialog';
 import { Tooltip } from './ui/Tooltip';
 
 export const Navbar: FC = () => {
-  const { fileInputRef, triggerFileInput, handleFileChange } = useJsonImport();
+  const {
+    fileInputRef,
+    triggerFileInput,
+    handleFileChange,
+    importError,
+    clearImportError,
+  } = useJsonImport();
 
   return (
     <Box
@@ -51,6 +58,7 @@ export const Navbar: FC = () => {
         style={{ display: 'none' }}
         onChange={handleFileChange}
       />
+      <ImportErrorDialog error={importError} onClose={clearImportError} />
       <Spacer />
       <LinkBox>
         <IconButton
