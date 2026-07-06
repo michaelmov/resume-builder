@@ -1,5 +1,7 @@
-import { Button, Text } from '@chakra-ui/react';
+import { Box, Button, Text } from '@chakra-ui/react';
 import { FC } from 'react';
+
+import { ImportError } from '../hooks/useJsonImport';
 
 import {
   DialogBody,
@@ -12,7 +14,7 @@ import {
 } from './ui/Dialog';
 
 interface ImportErrorDialogProps {
-  error: string | null;
+  error: ImportError | null;
   onClose: () => void;
 }
 
@@ -35,7 +37,29 @@ export const ImportErrorDialog: FC<ImportErrorDialogProps> = ({
           <DialogTitle>Couldn&apos;t import resume</DialogTitle>
         </DialogHeader>
         <DialogBody>
-          <Text color="fg.muted">{error}</Text>
+          <Text color="fg.muted">{error?.message}</Text>
+          {error?.detail && (
+            <Box
+              as="pre"
+              mt={3}
+              px={3}
+              py={2}
+              colorPalette="red"
+              bg="colorPalette.subtle"
+              color="colorPalette.fg"
+              borderWidth="1px"
+              borderColor="colorPalette.muted"
+              rounded="md"
+              fontFamily="mono"
+              fontSize="xs"
+              whiteSpace="pre-wrap"
+              wordBreak="break-word"
+              maxH="40"
+              overflowY="auto"
+            >
+              {error.detail}
+            </Box>
+          )}
         </DialogBody>
         <DialogFooter>
           <Button colorPalette="brand" onClick={onClose}>

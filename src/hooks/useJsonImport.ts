@@ -4,10 +4,27 @@ import { fromJsonResume } from '../utils/jsonresume';
 
 import { useResume } from './useResume';
 
+export interface ImportError {
+  /** Short, human-readable explanation of what went wrong. */
+  message: string;
+  /** Raw parser/validation detail, shown separately for troubleshooting. */
+  detail?: string;
+}
+
+/**
+ * `fromJsonResume` throws messages shaped "summary — detail" (see
+ * jsonresume.ts). Split them so the dialog can show the human-readable part
+ * and the raw validation detail separately.
+ */
+const splitErrorMessage = (message: string): ImportError => {
+  const [summary, detail] = message.split(' — ');
+  return detail ? { message: summary, detail } : { message: summary };
+};
+
 export const useJsonImport = () => {
   const { updateResume } = useResume();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [importError, setImportError] = useState<string | null>(null);
+  const [importError, setImportError] = useState<ImportError | null>(null);
 
   const triggerFileInput = useCallback(() => {
     fileInputRef.current?.click();
@@ -31,11 +48,10 @@ export const useJsonImport = () => {
             parsedJson = JSON.parse(jsonContent);
           } catch (error) {
             console.error('Error parsing JSON resume file:', error);
-            setImportError(
-              `This file isn't valid JSON, so it couldn't be imported. ${
-                error instanceof Error ? error.message : ''
-              }`.trim()
-            );
+            setImportError({
+              message: "This file isn't valid JSON, so it couldn't be imported.",
+              detail: error instanceof Error ? error.message : undefined,
+            });
             return;
           }
 
@@ -49,8 +65,8 @@ export const useJsonImport = () => {
             console.error('Error importing JSON resume:', error);
             setImportError(
               error instanceof Error
-                ? error.message
-                : 'This file could not be read as a JSON Resume file.'
+                ? splitErrorMessage(error.message)
+                : { message: 'This file could not be read as a JSON Resume file.' }
             );
           }
         };
