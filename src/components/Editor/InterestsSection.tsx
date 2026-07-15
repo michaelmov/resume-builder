@@ -1,10 +1,9 @@
 import { Box, Button, Input, Field } from '@chakra-ui/react';
-import { FC, useEffect, useCallback } from 'react';
+import { FC } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
-import { useGlobalForm } from '../../context/GlobalFormContext';
-import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
+import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
 import { Interest, SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
@@ -24,45 +23,23 @@ export const InterestsSection: FC<InterestsSectionProps> = ({
   value,
   onUpdate,
 }) => {
-  const { control, register, formState, handleSubmit, reset } =
-    useForm<FormProps>({
-      mode: 'onChange',
-      defaultValues: { interests: value },
-    });
+  const { control, register, reset, watch, getValues } = useForm<FormProps>({
+    defaultValues: { interests: value },
+  });
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: 'interests',
   });
-  const { registerSection, unregisterSection } = useGlobalForm();
 
-  const { isDirty } = formState;
-
-  const onSubmit = useCallback(
-    (data: FormProps) => {
-      onUpdate(SectionTypes.Interests, data.interests);
-      reset(data);
-    },
-    [onUpdate, reset]
-  );
-
-  useEffect(() => {
-    registerSection(SectionTypes.Interests, {
-      isDirty,
-      handleSubmit: handleSubmit(onSubmit),
-      reset: () => reset(),
-    });
-
-    return () => unregisterSection(SectionTypes.Interests);
-  }, [
-    isDirty,
-    registerSection,
-    unregisterSection,
-    handleSubmit,
-    onSubmit,
+  const { onBlur } = useAutoCommitSection({
+    watch,
     reset,
-  ]);
-
-  useReseedFormOnValueChange(reset, value, (interests) => ({ interests }));
+    getValues,
+    value,
+    toFormValues: (interests) => ({ interests }),
+    fromFormValues: (formValues) => formValues.interests,
+    commit: (interests) => onUpdate(SectionTypes.Interests, interests),
+  });
 
   const addInterest = () => {
     append({ name: '', keywords: [] } as Interest);
@@ -72,6 +49,7 @@ export const InterestsSection: FC<InterestsSectionProps> = ({
     <EditorSection
       id={SectionTypes.Interests}
       title={SECTION_TITLES[SectionTypes.Interests]}
+      onBlur={onBlur}
     >
       <Box>
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}

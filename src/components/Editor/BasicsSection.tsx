@@ -1,9 +1,8 @@
 import { Box, Grid, GridItem, Input, Textarea, Field } from '@chakra-ui/react';
-import { FC, useEffect, useCallback } from 'react';
+import { FC } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useGlobalForm } from '../../context/GlobalFormContext';
-import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
+import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
 import { Basics, SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
@@ -13,46 +12,26 @@ interface BasicsSectionProps {
   onUpdate: (sectionType: SectionTypes, section: Basics) => void;
 }
 export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
-  const { register, handleSubmit, formState, reset } = useForm({
+  const { register, reset, watch, getValues } = useForm<Basics>({
     defaultValues: value,
   });
-  const { registerSection, unregisterSection } = useGlobalForm();
 
-  const { isDirty } = formState;
-
-  const onSubmit = useCallback(
-    (data: Basics) => {
-      onUpdate(SectionTypes.Basics, data);
-      reset(data);
-    },
-    [onUpdate, reset]
-  );
-
-  // Register this section with the global form context
-  useEffect(() => {
-    registerSection(SectionTypes.Basics, {
-      isDirty,
-      handleSubmit: handleSubmit(onSubmit),
-      reset: () => reset(),
-    });
-
-    return () => unregisterSection(SectionTypes.Basics);
-  }, [
-    isDirty,
-    registerSection,
-    unregisterSection,
-    handleSubmit,
-    onSubmit,
+  const { onBlur } = useAutoCommitSection({
+    watch,
     reset,
-  ]);
-
-  useReseedFormOnValueChange(reset, value, (basics) => basics);
+    getValues,
+    value,
+    toFormValues: (basics) => basics,
+    fromFormValues: (formValues) => formValues,
+    commit: (basics) => onUpdate(SectionTypes.Basics, basics),
+  });
 
   return (
     <EditorSection
       id={SectionTypes.Basics}
       title={SECTION_TITLES[SectionTypes.Basics]}
       alwaysOpen
+      onBlur={onBlur}
     >
       <Box>
         <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>

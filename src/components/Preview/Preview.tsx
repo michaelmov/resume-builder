@@ -21,6 +21,11 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 const MAX_SCALE = 2;
 const MIN_SCALE = 0.8;
 
+// Coalesce bursts of edits (auto-save now fires on blur / after a typing pause,
+// and several sections can commit in quick succession) into one PDF
+// regeneration instead of thrashing the renderer on every keystroke's commit.
+const RENDER_DEBOUNCE_MS = 200;
+
 export const Preview: FC<{
   isEditorCollapsed: boolean;
   onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
@@ -110,9 +115,13 @@ export const Preview: FC<{
     }
   }, [numPages]);
 
+  // `template` is memoized on `resume` (plus accent/margin/template choice), so
+  // it already changes whenever any of those do; debouncing the regeneration
+  // keeps rapid auto-saves from re-rendering the PDF on every commit.
   useEffect(() => {
-    update(template);
-  }, [resume, template, update]);
+    const handle = setTimeout(() => update(template), RENDER_DEBOUNCE_MS);
+    return () => clearTimeout(handle);
+  }, [template, update]);
 
   return (
     <Box

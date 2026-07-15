@@ -12,7 +12,7 @@ import {
   Field,
   Checkbox,
 } from '@chakra-ui/react';
-import { FC, useState, useEffect, useCallback } from 'react';
+import { FC, useState } from 'react';
 import { useFieldArray, useForm, Controller } from 'react-hook-form';
 import {
   HiChevronDown,
@@ -21,8 +21,7 @@ import {
   HiPlus,
 } from 'react-icons/hi';
 
-import { useGlobalForm } from '../../context/GlobalFormContext';
-import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
+import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
 import { SECTION_TITLES, SectionTypes, Work } from '../../types/resume.model';
 
 import { DateField } from './DateField';
@@ -39,49 +38,26 @@ interface FormProps {
   work: Work[];
 }
 export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
-  const { control, register, formState, handleSubmit, reset, watch } =
-    useForm<FormProps>({
-      mode: 'onChange',
-      defaultValues: {
-        name: 'work',
-        work: value,
-      },
-    });
+  const { control, register, reset, watch, getValues } = useForm<FormProps>({
+    defaultValues: {
+      name: 'work',
+      work: value,
+    },
+  });
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: 'work',
   });
-  const { registerSection, unregisterSection } = useGlobalForm();
 
-  const { isDirty } = formState;
-
-  const onSubmit = useCallback(
-    (data: FormProps) => {
-      onUpdate(SectionTypes.Work, data.work);
-      reset(data);
-    },
-    [onUpdate, reset]
-  );
-
-  // Register this section with the global form context
-  useEffect(() => {
-    registerSection(SectionTypes.Work, {
-      isDirty,
-      handleSubmit: handleSubmit(onSubmit),
-      reset: () => reset(),
-    });
-
-    return () => unregisterSection(SectionTypes.Work);
-  }, [
-    isDirty,
-    registerSection,
-    unregisterSection,
-    handleSubmit,
-    onSubmit,
+  const { onBlur } = useAutoCommitSection({
+    watch,
     reset,
-  ]);
-
-  useReseedFormOnValueChange(reset, value, (work) => ({ name: 'work', work }));
+    getValues,
+    value,
+    toFormValues: (work) => ({ name: 'work', work }),
+    fromFormValues: (formValues) => formValues.work,
+    commit: (work) => onUpdate(SectionTypes.Work, work),
+  });
 
   const addWork = () => {
     const newWork = {
@@ -103,6 +79,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
     <EditorSection
       id={SectionTypes.Work}
       title={SECTION_TITLES[SectionTypes.Work]}
+      onBlur={onBlur}
     >
       <Box>
         {fields.map((field: any, index: number) => {

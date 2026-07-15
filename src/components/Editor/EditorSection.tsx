@@ -1,10 +1,14 @@
 import {
   Box,
+  Button,
   Collapsible,
   Flex,
   Heading,
   IconButton,
   Input,
+  Popover,
+  Portal,
+  Text,
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import {
@@ -33,12 +37,18 @@ interface EditorSectionProps {
    * details head every resume and so can't be removed or collapsed away.
    */
   alwaysOpen?: boolean;
+  /**
+   * Fired when focus leaves the section's content (React blur bubbles), letting
+   * auto-saving sections flush a pending edit the moment a field is left.
+   */
+  onBlur?: React.FocusEventHandler<HTMLDivElement>;
 }
 export const EditorSection: FC<EditorSectionProps> = ({
   id,
   title,
   children,
   alwaysOpen = false,
+  onBlur,
 }) => {
   const [isOpen, setIsOpen] = useSectionOpenState(id);
   const dragHandle = useDragHandle();
@@ -121,7 +131,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
             {title}
           </Heading>
         </Flex>
-        <Box px={8} pb={8}>
+        <Box px={8} pb={8} onBlur={onBlur}>
           {children}
         </Box>
       </Box>
@@ -239,19 +249,10 @@ export const EditorSection: FC<EditorSectionProps> = ({
             </Tooltip>
           )}
           {sectionActions && !isRenaming && (
-            <Tooltip content="Remove section">
-              <IconButton
-                aria-label="Remove section"
-                variant="ghost"
-                size="sm"
-                mb={2}
-                color="gray.400"
-                _hover={{ color: 'red.500', bg: 'red.50' }}
-                onClick={() => sectionActions.removeSection(id as SectionTypes)}
-              >
-                <HiOutlineTrash />
-              </IconButton>
-            </Tooltip>
+            <RemoveSectionButton
+              title={displayTitle}
+              onConfirm={() => sectionActions.removeSection(id as SectionTypes)}
+            />
           )}
         </Flex>
         <Collapsible.Content
@@ -260,10 +261,79 @@ export const EditorSection: FC<EditorSectionProps> = ({
           borderRadius={8}
           p={8}
           boxShadow="sm"
+          onBlur={onBlur}
         >
           {children}
         </Collapsible.Content>
       </Box>
     </Collapsible.Root>
+  );
+};
+
+/**
+ * Trash button that requires a confirmation before removing a section. Removal
+ * is a permanent delete (it also wipes the section's content), so an anchored
+ * popover asks the user to confirm rather than deleting on the first click.
+ */
+const RemoveSectionButton: FC<{ title: string; onConfirm: () => void }> = ({
+  title,
+  onConfirm,
+}) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover.Root
+      open={open}
+      onOpenChange={(details) => setOpen(details.open)}
+      positioning={{ placement: 'bottom-end' }}
+    >
+      <Popover.Trigger asChild>
+        <IconButton
+          aria-label="Remove section"
+          variant="ghost"
+          size="sm"
+          mb={2}
+          color="gray.400"
+          _hover={{ color: 'red.500', bg: 'red.50' }}
+        >
+          <HiOutlineTrash />
+        </IconButton>
+      </Popover.Trigger>
+      <Portal>
+        <Popover.Positioner>
+          <Popover.Content width="auto" maxW="16rem">
+            <Popover.Arrow />
+            <Popover.Body>
+              <Popover.Title fontWeight="medium">
+                Delete “{title}”?
+              </Popover.Title>
+              <Text fontSize="sm" color="gray.600" mt={1}>
+                This permanently removes the section and everything in it.
+              </Text>
+              <Flex justify="flex-end" gap={2} mt={4}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  colorPalette="gray"
+                  onClick={() => setOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  colorPalette="red"
+                  onClick={() => {
+                    setOpen(false);
+                    onConfirm();
+                  }}
+                >
+                  Delete
+                </Button>
+              </Flex>
+            </Popover.Body>
+          </Popover.Content>
+        </Popover.Positioner>
+      </Portal>
+    </Popover.Root>
   );
 };
