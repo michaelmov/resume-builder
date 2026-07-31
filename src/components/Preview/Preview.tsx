@@ -1,7 +1,11 @@
 import { Box, IconButton, Flex } from '@chakra-ui/react';
 import { usePDF } from '@react-pdf/renderer';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { HiOutlineZoomIn, HiOutlineZoomOut } from 'react-icons/hi';
+import {
+  HiOutlineRefresh,
+  HiOutlineZoomIn,
+  HiOutlineZoomOut,
+} from 'react-icons/hi';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -18,8 +22,16 @@ import { PreviewNavBar } from './PreviewNavBar';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
+const DEFAULT_SCALE = 1.4;
 const MAX_SCALE = 2;
 const MIN_SCALE = 0.8;
+const SCALE_STEP = 0.1;
+
+// Stepping by 0.1 accumulates float error (1.4 + 0.1 - 0.1 !== 1.4), which
+// would leave the reset button on screen at what looks like the default zoom,
+// so snap every step back to one decimal.
+const clampScale = (value: number) =>
+  Math.min(Math.max(Math.round(value * 10) / 10, MIN_SCALE), MAX_SCALE);
 
 // Coalesce bursts of edits (auto-save now fires on blur / after a typing pause,
 // and several sections can commit in quick succession) into one PDF
@@ -87,7 +99,7 @@ export const Preview: FC<{
   );
   const [instance, update] = usePDF({ document: template });
   const [numPages, setNumPages] = useState<number>();
-  const [scale, setScale] = useState<number>(1.4);
+  const [scale, setScale] = useState<number>(DEFAULT_SCALE);
 
   // Holding the rendered document height while the next PDF regenerates keeps
   // the scroll container from collapsing (and resetting the scroll position)
@@ -157,8 +169,23 @@ export const Preview: FC<{
         margin={4}
         zIndex="overlay"
       >
+        {/* The stack is anchored to the bottom, so the reset button sits on top
+            to keep the zoom buttons from shifting as it appears/disappears. */}
+        {scale !== DEFAULT_SCALE && (
+          <IconButton
+            aria-label="Reset zoom"
+            title="Reset zoom"
+            onClick={() => setScale(DEFAULT_SCALE)}
+            variant="subtle"
+            rounded="full"
+          >
+            <HiOutlineRefresh />
+          </IconButton>
+        )}
         <IconButton
-          onClick={() => setScale(Math.min(scale + 0.1, MAX_SCALE))}
+          aria-label="Zoom in"
+          title="Zoom in"
+          onClick={() => setScale(clampScale(scale + SCALE_STEP))}
           variant="subtle"
           rounded="full"
           disabled={scale === MAX_SCALE}
@@ -166,7 +193,9 @@ export const Preview: FC<{
           <HiOutlineZoomIn />
         </IconButton>
         <IconButton
-          onClick={() => setScale(Math.max(scale - 0.1, MIN_SCALE))}
+          aria-label="Zoom out"
+          title="Zoom out"
+          onClick={() => setScale(clampScale(scale - SCALE_STEP))}
           variant="subtle"
           rounded="full"
           disabled={scale === MIN_SCALE}
