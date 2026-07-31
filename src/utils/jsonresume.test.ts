@@ -218,9 +218,38 @@ describe('fromJsonResume (import → internal model)', () => {
       phone: '',
       url: '',
       summary: '',
-      location: undefined,
+      // Every editable key is present: leaving `location.city` undefined makes
+      // react-hook-form keep the previous resume's value in that input on
+      // re-seed instead of clearing it.
+      location: {
+        address: '',
+        postalCode: '',
+        city: '',
+        countryCode: '',
+        region: '',
+      },
       profiles: undefined,
     });
+  });
+
+  it('keeps the location fields an imported resume does provide', () => {
+    const imported = fromJsonResume({
+      basics: { name: 'Ada', location: { city: 'London' } },
+    });
+
+    expect(imported.basics.location).toEqual({
+      address: '',
+      postalCode: '',
+      city: 'London',
+      countryCode: '',
+      region: '',
+    });
+  });
+
+  it('omits an all-empty location on export rather than emitting {}', () => {
+    const imported = fromJsonResume({ basics: { name: 'Ada' } });
+
+    expect(toJsonResume(imported).basics?.location).toBeUndefined();
   });
 
   it('defaults every missing section to an empty array', () => {
