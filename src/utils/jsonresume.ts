@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  Location,
   normalizeSectionTitles,
   REORDERABLE_SECTIONS,
   Resume,
@@ -212,6 +213,13 @@ const omitEmpty = <T extends object>(obj: T): Partial<T> => {
   return out as Partial<T>;
 };
 
+/** Like `omitEmpty`, but drops the object itself once nothing is left. */
+const omitIfEmpty = <T extends object>(obj?: T): Partial<T> | undefined => {
+  if (!obj) return undefined;
+  const out = omitEmpty(obj);
+  return Object.keys(out).length > 0 ? out : undefined;
+};
+
 type ListItem = string | { value: string };
 
 /** Coerce a schema list (strings or `{ value }`) to internal `{ value }[]`. */
@@ -227,6 +235,25 @@ const toStringArray = (items?: ListItem[]): string[] =>
 const nonEmpty = (value: unknown): value is string =>
   typeof value === 'string' && value.trim() !== '';
 
+/**
+ * Fill in every `Location` key, like the sibling `basics` fields do with `?? ''`.
+ *
+ * An imported resume must not leave an editable field `undefined`: the Basics
+ * editor registers `location.city`, and when react-hook-form re-seeds a form
+ * with `undefined` for a registered field it does not clear that input — it
+ * adopts whatever text the input still holds back into the form state (see
+ * `updateValidAndValue` in react-hook-form). Auto-commit then writes the
+ * previous resume's location onto the freshly imported one.
+ */
+const withLocationDefaults = (location?: Location): Location => ({
+  address: '',
+  postalCode: '',
+  city: '',
+  countryCode: '',
+  region: '',
+  ...location,
+});
+
 // ---------------------------------------------------------------------------
 // Export: internal Resume -> JSON Resume
 // ---------------------------------------------------------------------------
@@ -241,9 +268,9 @@ export const toJsonResume = (resume: Resume): JsonResume => {
       phone: resume.basics.phone,
       url: resume.basics.url,
       summary: resume.basics.summary,
-      location: resume.basics.location
-        ? omitEmpty(resume.basics.location)
-        : undefined,
+      // Drop the key entirely when no part of the location is filled in, so a
+      // resume imported without one doesn't start exporting `location: {}`.
+      location: omitIfEmpty(resume.basics.location),
       profiles: resume.basics.profiles,
     }),
     work: resume.work.map((w) =>
@@ -398,7 +425,7 @@ export const fromJsonResume = (input: unknown): Resume => {
       phone: r.basics?.phone ?? '',
       url: r.basics?.url ?? '',
       summary: r.basics?.summary ?? '',
-      location: r.basics?.location,
+      location: withLocationDefaults(r.basics?.location),
       profiles: r.basics?.profiles?.map((p) => ({
         network: p.network ?? '',
         username: p.username ?? '',
