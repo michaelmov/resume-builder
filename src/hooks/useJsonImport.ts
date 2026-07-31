@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { fromJsonResume } from '../utils/jsonresume';
 
@@ -21,66 +21,92 @@ const splitErrorMessage = (message: string): ImportError => {
   return detail ? { message: summary, detail } : { message: summary };
 };
 
+const readFileAsText = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(file);
+  });
+
+/**
+ * Reads a JSON Resume file and replaces the whole store with it. Errors are
+ * surfaced as state (rather than thrown) so the import dialog can render them
+ * next to the dropzone that produced them.
+ */
 export const useJsonImport = () => {
   const { updateResume } = useResume();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [importError, setImportError] = useState<ImportError | null>(null);
-
-  const triggerFileInput = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
+  const [isImporting, setIsImporting] = useState(false);
 
   const clearImportError = useCallback(() => {
     setImportError(null);
   }, []);
 
-  const handleFileChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      // Reset so re-selecting the same file still fires onChange.
-      event.target.value = '';
-      if (file && file.type === 'application/json') {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const jsonContent = e.target?.result as string;
-          let parsedJson: unknown;
-          try {
-            parsedJson = JSON.parse(jsonContent);
-          } catch (error) {
-            console.error('Error parsing JSON resume file:', error);
-            setImportError({
-              message: "This file isn't valid JSON, so it couldn't be imported.",
-              detail: error instanceof Error ? error.message : undefined,
-            });
-            return;
-          }
+  const showImportError = useCallback((error: ImportError) => {
+    setImportError(error);
+  }, []);
 
-          try {
-            // Validate against the JSON Resume schema and normalize into the
-            // app's internal model (string lists -> { value }, dates kept as
-            // strings, isPresent derived from a missing endDate).
-            const resumeData = fromJsonResume(parsedJson);
-            updateResume(resumeData);
-          } catch (error) {
-            console.error('Error importing JSON resume:', error);
-            setImportError(
-              error instanceof Error
-                ? splitErrorMessage(error.message)
-                : { message: 'This file could not be read as a JSON Resume file.' }
-            );
-          }
-        };
-        reader.readAsText(file);
+  /** Resolves `true` when the resume was imported, `false` on any failure. */
+  const importFile = useCallback(
+    async (file: File): Promise<boolean> => {
+      setImportError(null);
+      setIsImporting(true);
+
+      try {
+        let contents: string;
+        try {
+          contents = await readFileAsText(file);
+        } catch (error) {
+          console.error('Error reading resume file:', error);
+          setImportError({
+            message: "This file couldn't be read from your device.",
+            detail: error instanceof Error ? error.message : undefined,
+          });
+          return false;
+        }
+
+        let parsedJson: unknown;
+        try {
+          parsedJson = JSON.parse(contents);
+        } catch (error) {
+          console.error('Error parsing JSON resume file:', error);
+          setImportError({
+            message: "This file isn't valid JSON, so it couldn't be imported.",
+            detail: error instanceof Error ? error.message : undefined,
+          });
+          return false;
+        }
+
+        try {
+          // Validate against the JSON Resume schema and normalize into the
+          // app's internal model (string lists -> { value }, dates kept as
+          // strings, isPresent derived from a missing endDate).
+          updateResume(fromJsonResume(parsedJson));
+          return true;
+        } catch (error) {
+          console.error('Error importing JSON resume:', error);
+          setImportError(
+            error instanceof Error
+              ? splitErrorMessage(error.message)
+              : {
+                  message: 'This file could not be read as a JSON Resume file.',
+                }
+          );
+          return false;
+        }
+      } finally {
+        setIsImporting(false);
       }
     },
     [updateResume]
   );
 
   return {
-    fileInputRef,
-    triggerFileInput,
-    handleFileChange,
+    importFile,
+    isImporting,
     importError,
+    showImportError,
     clearImportError,
   };
 };

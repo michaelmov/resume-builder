@@ -6,23 +6,15 @@ import {
   LinkOverlay,
   Spacer,
 } from '@chakra-ui/react';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { HiOutlineBriefcase, HiOutlineUpload } from 'react-icons/hi';
 import { VscGithub } from 'react-icons/vsc';
 
-import { useJsonImport } from '../hooks/useJsonImport';
-
-import { ImportErrorDialog } from './ImportErrorDialog';
+import { ImportDialog } from './ImportDialog';
 import { Tooltip } from './ui/Tooltip';
 
 export const Navbar: FC = () => {
-  const {
-    fileInputRef,
-    triggerFileInput,
-    handleFileChange,
-    importError,
-    clearImportError,
-  } = useJsonImport();
+  const [isImportOpen, setIsImportOpen] = useState(false);
 
   return (
     <Box
@@ -46,19 +38,12 @@ export const Navbar: FC = () => {
           _hover={{
             backgroundColor: 'brand.600',
           }}
-          onClick={triggerFileInput}
+          onClick={() => setIsImportOpen(true)}
         >
           <HiOutlineUpload />
         </IconButton>
       </Tooltip>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".json"
-        style={{ display: 'none' }}
-        onChange={handleFileChange}
-      />
-      <ImportErrorDialog error={importError} onClose={clearImportError} />
+      <ImportDialog open={isImportOpen} onOpenChange={setIsImportOpen} />
       <Spacer />
       <LinkBox>
         <IconButton
