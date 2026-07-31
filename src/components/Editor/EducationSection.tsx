@@ -1,10 +1,9 @@
 import { Box, Button, Grid, GridItem, Input, Field } from '@chakra-ui/react';
-import { FC, useEffect, useCallback } from 'react';
+import { FC } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
-import { useGlobalForm } from '../../context/GlobalFormContext';
-import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
+import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
 import { SECTION_TITLES, SectionTypes, Education } from '../../types/resume.model';
 
 import { DateField } from './DateField';
@@ -25,52 +24,26 @@ export const EducationSection: FC<EducationSectionProps> = ({
   value,
   onUpdate,
 }) => {
-  const { control, register, formState, handleSubmit, reset } =
-    useForm<FormProps>({
-      mode: 'onChange',
-      defaultValues: {
-        name: 'education',
-        education: value,
-      },
-    });
+  const { control, register, reset, watch, getValues } = useForm<FormProps>({
+    defaultValues: {
+      name: 'education',
+      education: value,
+    },
+  });
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: 'education',
   });
-  const { registerSection, unregisterSection } = useGlobalForm();
 
-  const { isDirty } = formState;
-
-  const onSubmit = useCallback(
-    (data: FormProps) => {
-      onUpdate(SectionTypes.Education, data.education);
-      reset(data);
-    },
-    [onUpdate, reset]
-  );
-
-  // Register this section with the global form context
-  useEffect(() => {
-    registerSection(SectionTypes.Education, {
-      isDirty,
-      handleSubmit: handleSubmit(onSubmit),
-      reset: () => reset(),
-    });
-
-    return () => unregisterSection(SectionTypes.Education);
-  }, [
-    isDirty,
-    registerSection,
-    unregisterSection,
-    handleSubmit,
-    onSubmit,
+  const { onBlur } = useAutoCommitSection({
+    watch,
     reset,
-  ]);
-
-  useReseedFormOnValueChange(reset, value, (education) => ({
-    name: 'education',
-    education,
-  }));
+    getValues,
+    value,
+    toFormValues: (education) => ({ name: 'education', education }),
+    fromFormValues: (formValues) => formValues.education,
+    commit: (education) => onUpdate(SectionTypes.Education, education),
+  });
 
   const addEducation = () => {
     const newEducation = {
@@ -91,6 +64,7 @@ export const EducationSection: FC<EducationSectionProps> = ({
     <EditorSection
       id={SectionTypes.Education}
       title={SECTION_TITLES[SectionTypes.Education]}
+      onBlur={onBlur}
     >
       <Box>
         {fields.map(

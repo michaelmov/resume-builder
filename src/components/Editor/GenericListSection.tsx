@@ -10,7 +10,7 @@ import {
   Textarea,
   Field,
 } from '@chakra-ui/react';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import {
   Control,
   useFieldArray,
@@ -24,8 +24,7 @@ import {
   HiPlus,
 } from 'react-icons/hi';
 
-import { useGlobalForm } from '../../context/GlobalFormContext';
-import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
+import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
 import { SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
 import { DateField } from './DateField';
@@ -82,52 +81,29 @@ export function GenericListSection<T>({
   addLabel,
   bullet,
 }: GenericListSectionProps<T>) {
-  const { control, register, formState, handleSubmit, reset } =
-    useForm<FormShape>({
-      mode: 'onChange',
-      defaultValues: { entries: value as FormShape['entries'] },
-    });
+  const { control, register, reset, watch, getValues } = useForm<FormShape>({
+    defaultValues: { entries: value as FormShape['entries'] },
+  });
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: 'entries',
   });
-  const { registerSection, unregisterSection } = useGlobalForm();
-  const { isDirty } = formState;
 
-  const onSubmit = useCallback(
-    (data: FormShape) => {
-      onUpdate(sectionType, data.entries as T[]);
-      reset(data);
-    },
-    [onUpdate, reset, sectionType]
-  );
-
-  useEffect(() => {
-    registerSection(sectionType, {
-      isDirty,
-      handleSubmit: handleSubmit(onSubmit),
-      reset: () => reset(),
-    });
-
-    return () => unregisterSection(sectionType);
-  }, [
-    isDirty,
-    registerSection,
-    unregisterSection,
-    handleSubmit,
-    onSubmit,
+  const { onBlur } = useAutoCommitSection({
+    watch,
     reset,
-    sectionType,
-  ]);
-
-  useReseedFormOnValueChange(reset, value, (entries) => ({
-    entries: entries as FormShape['entries'],
-  }));
+    getValues,
+    value,
+    toFormValues: (entries) => ({ entries: entries as FormShape['entries'] }),
+    fromFormValues: (formValues) => formValues.entries as T[],
+    commit: (entries) => onUpdate(sectionType, entries),
+  });
 
   return (
     <EditorSection
       id={sectionType}
       title={SECTION_TITLES[sectionType]}
+      onBlur={onBlur}
     >
       <Box>
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}

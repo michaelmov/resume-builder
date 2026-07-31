@@ -11,7 +11,7 @@ import {
   TextareaProps,
   Field,
 } from '@chakra-ui/react';
-import { FC, useState, useEffect, useCallback } from 'react';
+import { FC, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import {
   HiChevronDown,
@@ -20,8 +20,7 @@ import {
   HiPlus,
 } from 'react-icons/hi';
 
-import { useGlobalForm } from '../../context/GlobalFormContext';
-import { useReseedFormOnValueChange } from '../../hooks/useReseedFormOnValueChange';
+import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
 import { SECTION_TITLES, SectionTypes, Project } from '../../types/resume.model';
 
 import { DateField } from './DateField';
@@ -42,51 +41,26 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
   value,
   onUpdate,
 }) => {
-  const { control, register, formState, handleSubmit, reset } =
-    useForm<FormProps>({
-      mode: 'onChange',
-      defaultValues: {
-        name: 'projects',
-        projects: value,
-      },
-    });
+  const { control, register, reset, watch, getValues } = useForm<FormProps>({
+    defaultValues: {
+      name: 'projects',
+      projects: value,
+    },
+  });
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: 'projects',
   });
-  const { registerSection, unregisterSection } = useGlobalForm();
 
-  const { isDirty } = formState;
-
-  const onSubmit = useCallback(
-    (data: FormProps) => {
-      onUpdate(SectionTypes.Projects, data.projects);
-      reset(data);
-    },
-    [onUpdate, reset]
-  );
-
-  useEffect(() => {
-    registerSection(SectionTypes.Projects, {
-      isDirty,
-      handleSubmit: handleSubmit(onSubmit),
-      reset: () => reset(),
-    });
-
-    return () => unregisterSection(SectionTypes.Projects);
-  }, [
-    isDirty,
-    registerSection,
-    unregisterSection,
-    handleSubmit,
-    onSubmit,
+  const { onBlur } = useAutoCommitSection({
+    watch,
     reset,
-  ]);
-
-  useReseedFormOnValueChange(reset, value, (projects) => ({
-    name: 'projects',
-    projects,
-  }));
+    getValues,
+    value,
+    toFormValues: (projects) => ({ name: 'projects', projects }),
+    fromFormValues: (formValues) => formValues.projects,
+    commit: (projects) => onUpdate(SectionTypes.Projects, projects),
+  });
 
   const addProject = () => {
     const newProject = {
@@ -109,6 +83,7 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
     <EditorSection
       id={SectionTypes.Projects}
       title={SECTION_TITLES[SectionTypes.Projects]}
+      onBlur={onBlur}
     >
       <Box>
         {fields.map((field: any, index: number) => {

@@ -1,10 +1,9 @@
 import { Box, Button, Input, Field } from '@chakra-ui/react';
-import { FC, useEffect, useCallback } from 'react';
+import { FC } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
-import { useGlobalForm } from '../../../context/GlobalFormContext';
-import { useReseedFormOnValueChange } from '../../../hooks/useReseedFormOnValueChange';
+import { useAutoCommitSection } from '../../../hooks/useAutoCommitSection';
 import { SECTION_TITLES, SectionTypes, Skill } from '../../../types/resume.model';
 import { EditorSection } from '../EditorSection';
 import { EditorSubsection } from '../EditorSubsection';
@@ -22,52 +21,26 @@ interface FormProps {
 }
 
 export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
-  const { control, register, formState, handleSubmit, reset } =
-    useForm<FormProps>({
-      mode: 'onChange',
-      defaultValues: {
-        name: 'skills',
-        skills: value,
-      },
-    });
+  const { control, register, reset, watch, getValues } = useForm<FormProps>({
+    defaultValues: {
+      name: 'skills',
+      skills: value,
+    },
+  });
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: 'skills',
   });
-  const { registerSection, unregisterSection } = useGlobalForm();
 
-  const { isDirty } = formState;
-
-  const onSubmit = useCallback(
-    (data: FormProps) => {
-      onUpdate(SectionTypes.Skills, data.skills);
-      reset(data);
-    },
-    [onUpdate, reset]
-  );
-
-  // Register this section with the global form context
-  useEffect(() => {
-    registerSection(SectionTypes.Skills, {
-      isDirty,
-      handleSubmit: handleSubmit(onSubmit),
-      reset: () => reset(),
-    });
-
-    return () => unregisterSection(SectionTypes.Skills);
-  }, [
-    isDirty,
-    registerSection,
-    unregisterSection,
-    handleSubmit,
-    onSubmit,
+  const { onBlur } = useAutoCommitSection({
+    watch,
     reset,
-  ]);
-
-  useReseedFormOnValueChange(reset, value, (skills) => ({
-    name: 'skills',
-    skills,
-  }));
+    getValues,
+    value,
+    toFormValues: (skills) => ({ name: 'skills', skills }),
+    fromFormValues: (formValues) => formValues.skills,
+    commit: (skills) => onUpdate(SectionTypes.Skills, skills),
+  });
 
   const addSkill = () => {
     const newSkill = {
@@ -83,6 +56,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
     <EditorSection
       id={SectionTypes.Skills}
       title={SECTION_TITLES[SectionTypes.Skills]}
+      onBlur={onBlur}
     >
       <Box>
         {fields.map((field: any, index: number) => {
