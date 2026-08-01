@@ -88,6 +88,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
               title={field.name}
               subtitle={field.position}
               key={field.id}
+              entryLabel="work entry"
               onDeleteClick={() => remove(index)}
               onMoveUpClick={() => move(index, index - 1)}
               onMoveDownClick={() => move(index, index + 1)}

@@ -34,6 +34,7 @@ export const VolunteerSection: FC<SectionProps<Work>> = ({
     titleField="organization"
     subtitleField="position"
     addLabel="Add Volunteer Role"
+    entryLabel="volunteer role"
     emptyEntry={() => ({
       organization: '',
       position: '',
@@ -75,6 +76,7 @@ export const AwardsSection: FC<SectionProps<Award>> = ({ value, onUpdate }) => (
     titleField="title"
     subtitleField="awarder"
     addLabel="Add Award"
+    entryLabel="award"
     emptyEntry={() => ({ title: '', date: '', awarder: '', summary: '' })}
     fields={[
       { name: 'title', label: 'Title' },
@@ -96,6 +98,7 @@ export const CertificatesSection: FC<SectionProps<Certificate>> = ({
     titleField="name"
     subtitleField="issuer"
     addLabel="Add Certificate"
+    entryLabel="certificate"
     emptyEntry={() => ({ name: '', date: '', issuer: '', url: '' })}
     fields={[
       { name: 'name', label: 'Name' },
@@ -123,6 +126,7 @@ export const PublicationsSection: FC<SectionProps<Publication>> = ({
     titleField="name"
     subtitleField="publisher"
     addLabel="Add Publication"
+    entryLabel="publication"
     emptyEntry={() => ({
       name: '',
       publisher: '',
@@ -157,6 +161,7 @@ export const LanguagesSection: FC<SectionProps<Language>> = ({
     titleField="language"
     subtitleField="fluency"
     addLabel="Add Language"
+    entryLabel="language"
     emptyEntry={() => ({ language: '', fluency: '' })}
     fields={[
       { name: 'language', label: 'Language' },
@@ -179,6 +184,7 @@ export const ReferencesSection: FC<SectionProps<Reference>> = ({
     onUpdate={onUpdate}
     titleField="name"
     addLabel="Add Reference"
+    entryLabel="reference"
     emptyEntry={() => ({ name: '', reference: '' })}
     fields={[
       { name: 'name', label: 'Name' },

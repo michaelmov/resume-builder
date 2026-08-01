@@ -56,6 +56,7 @@ export const InterestsSection: FC<InterestsSectionProps> = ({
         {fields.map((field: any, index: number) => (
           <EditorSubsection
             title={field.name}
+            entryLabel="interest"
             onDeleteClick={() => remove(index)}
             mb={6}
             key={field.id}

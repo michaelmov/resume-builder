@@ -8,11 +8,18 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { FC, useState } from 'react';
-import { HiOutlineTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
+import { HiChevronUp, HiChevronDown } from 'react-icons/hi';
+
+import { ConfirmDeleteButton } from '../ui/ConfirmDeleteButton';
 
 interface EditorSubsectionProps extends BoxProps {
   title: string;
   subtitle?: string;
+  /**
+   * Noun for this kind of entry ("work entry", "project", …), used in the
+   * delete confirmation and the trash button's label.
+   */
+  entryLabel?: string;
   onDeleteClick: () => void;
   onMoveUpClick?: () => void;
   moveUpDisabled?: boolean;
@@ -29,9 +36,11 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
   moveDownDisabled = false,
   title,
   subtitle = '',
+  entryLabel = 'entry',
   ...rest
 }) => {
   const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   return (
     <Collapsible.Root
@@ -81,11 +90,13 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
             )}
           </Flex>
         </Collapsible.Trigger>
-        {isActionButtonsVisible && (
+        {/* The controls live on hover, but a confirmation in flight has to keep
+            them mounted — its popover is the trigger's own anchor. */}
+        {(isActionButtonsVisible || isConfirmingDelete) && (
           <Box position="absolute" top={-0.5} right={0} my={0}>
             <IconButton
               onClick={onMoveUpClick}
-              aria-label="Delete skill"
+              aria-label={`Move ${entryLabel} up`}
               variant="subtle"
               size="sm"
               borderTopLeftRadius={0}
@@ -99,7 +110,7 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
             </IconButton>
             <IconButton
               onClick={onMoveDownClick}
-              aria-label="Delete skill"
+              aria-label={`Move ${entryLabel} down`}
               variant="subtle"
               size="sm"
               borderTopLeftRadius={0}
@@ -111,17 +122,22 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
             >
               <HiChevronDown />
             </IconButton>
-            <IconButton
-              onClick={onDeleteClick}
-              aria-label="Delete skill"
+            <ConfirmDeleteButton
+              aria-label={`Delete ${entryLabel}`}
               variant="subtle"
               size="sm"
               borderBottomLeftRadius={0}
               borderBottomRightRadius={0}
               borderTopLeftRadius={0}
-            >
-              <HiOutlineTrash />
-            </IconButton>
+              confirmTitle={
+                title?.trim()
+                  ? `Delete “${title}”?`
+                  : `Delete this ${entryLabel}?`
+              }
+              confirmDescription={`This permanently removes this ${entryLabel} and everything in it.`}
+              onConfirm={onDeleteClick}
+              onConfirmOpenChange={setIsConfirmingDelete}
+            />
           </Box>
         )}
         <Collapsible.Content mt={8}>{children}</Collapsible.Content>

@@ -63,6 +63,8 @@ export interface GenericListSectionProps<T> {
   subtitleField?: keyof T & string;
   /** Label for the "Add entry" button (e.g. "Add Award"). */
   addLabel: string;
+  /** Noun for one entry (e.g. "award"), used in the delete confirmation. */
+  entryLabel: string;
   /** Optional repeatable bullet list rendered below the flat fields. */
   bullet?: BulletConfig;
 }
@@ -79,6 +81,7 @@ export function GenericListSection<T>({
   titleField,
   subtitleField,
   addLabel,
+  entryLabel,
   bullet,
 }: GenericListSectionProps<T>) {
   const { control, register, reset, watch, getValues } = useForm<FormShape>({
@@ -112,6 +115,7 @@ export function GenericListSection<T>({
             key={field.id}
             title={field[titleField] || ''}
             subtitle={subtitleField ? field[subtitleField] || '' : ''}
+            entryLabel={entryLabel}
             onDeleteClick={() => remove(index)}
             onMoveUpClick={() => move(index, index - 1)}
             onMoveDownClick={() => move(index, index + 1)}

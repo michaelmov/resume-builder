@@ -92,6 +92,7 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
               title={field.name}
               subtitle={field.type}
               key={field.id}
+              entryLabel="project"
               onDeleteClick={() => remove(index)}
               onMoveUpClick={() => move(index, index - 1)}
               onMoveDownClick={() => move(index, index + 1)}
