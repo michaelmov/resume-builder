@@ -1,25 +1,17 @@
 import {
   Box,
-  Button,
   Collapsible,
   Flex,
   Heading,
   IconButton,
   Input,
-  Popover,
-  Portal,
-  Text,
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useRef, useState } from 'react';
-import {
-  HiCheck,
-  HiChevronDown,
-  HiOutlinePencil,
-  HiOutlineTrash,
-} from 'react-icons/hi';
+import { HiCheck, HiChevronDown, HiOutlinePencil } from 'react-icons/hi';
 import { MdDragIndicator } from 'react-icons/md';
 
 import { SectionTypes } from '../../types/resume.model';
+import { ConfirmDeleteButton } from '../ui/ConfirmDeleteButton';
 import { Tooltip } from '../ui/Tooltip';
 
 import { useSectionOpenState } from './OpenSectionContext';
@@ -249,8 +241,15 @@ export const EditorSection: FC<EditorSectionProps> = ({
             </Tooltip>
           )}
           {sectionActions && !isRenaming && (
-            <RemoveSectionButton
-              title={displayTitle}
+            <ConfirmDeleteButton
+              aria-label="Remove section"
+              variant="ghost"
+              size="sm"
+              mb={2}
+              color="gray.400"
+              _hover={{ color: 'red.500', bg: 'red.50' }}
+              confirmTitle={`Delete “${displayTitle}”?`}
+              confirmDescription="This permanently removes the section and everything in it."
               onConfirm={() => sectionActions.removeSection(id as SectionTypes)}
             />
           )}
@@ -267,73 +266,5 @@ export const EditorSection: FC<EditorSectionProps> = ({
         </Collapsible.Content>
       </Box>
     </Collapsible.Root>
-  );
-};
-
-/**
- * Trash button that requires a confirmation before removing a section. Removal
- * is a permanent delete (it also wipes the section's content), so an anchored
- * popover asks the user to confirm rather than deleting on the first click.
- */
-const RemoveSectionButton: FC<{ title: string; onConfirm: () => void }> = ({
-  title,
-  onConfirm,
-}) => {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Popover.Root
-      open={open}
-      onOpenChange={(details) => setOpen(details.open)}
-      positioning={{ placement: 'bottom-end' }}
-    >
-      <Popover.Trigger asChild>
-        <IconButton
-          aria-label="Remove section"
-          variant="ghost"
-          size="sm"
-          mb={2}
-          color="gray.400"
-          _hover={{ color: 'red.500', bg: 'red.50' }}
-        >
-          <HiOutlineTrash />
-        </IconButton>
-      </Popover.Trigger>
-      <Portal>
-        <Popover.Positioner>
-          <Popover.Content width="auto" maxW="16rem">
-            <Popover.Arrow />
-            <Popover.Body>
-              <Popover.Title fontWeight="medium">
-                Delete “{title}”?
-              </Popover.Title>
-              <Text fontSize="sm" color="gray.600" mt={1}>
-                This permanently removes the section and everything in it.
-              </Text>
-              <Flex justify="flex-end" gap={2} mt={4}>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  colorPalette="gray"
-                  onClick={() => setOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  colorPalette="red"
-                  onClick={() => {
-                    setOpen(false);
-                    onConfirm();
-                  }}
-                >
-                  Delete
-                </Button>
-              </Flex>
-            </Popover.Body>
-          </Popover.Content>
-        </Popover.Positioner>
-      </Portal>
-    </Popover.Root>
   );
 };

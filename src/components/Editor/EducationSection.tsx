@@ -73,6 +73,7 @@ export const EducationSection: FC<EducationSectionProps> = ({
               <EditorSubsection
                 title={field.institution}
                 subtitle={field.area}
+                entryLabel="education entry"
                 onDeleteClick={() => remove(index)}
                 mb={6}
                 key={field.id}

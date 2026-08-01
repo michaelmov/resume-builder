@@ -63,6 +63,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
           return (
             <EditorSubsection
               title={field.name}
+              entryLabel="skill"
               onDeleteClick={() => remove(index)}
               mb={6}
               key={field.id}
