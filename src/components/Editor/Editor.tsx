@@ -212,11 +212,11 @@ export const Editor: FC = () => {
             >
               Made with 💜 by{' '}
               <Link
-                href="https://michaelmovsesov.com/"
+                href="https://michaelmov.dev/"
                 target="_blank"
                 textDecoration="underline"
               >
-                Michael Movsesov
+                Michael
               </Link>
             </Heading>
             {sectionComponents[SectionTypes.Basics]}
