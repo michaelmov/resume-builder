@@ -139,7 +139,7 @@ const config = defineConfig({
         // `bg.panel` (the cards, menus and dialogs sitting on it) are both the
         // 950 step, so the two levels read as one flat sheet. This restores the
         // hierarchy the light theme has —
-        //   rail / PDF canvas (950) → editor panel (900) → panels (800)
+        //   rail (950) → editor panel / PDF canvas (900) → panels (800)
         //   → hover (700) → emphasized (600)
         // — which also keeps hovers *lighter* than what they sit on. The
         // `_light` values are Chakra's own defaults, restated because a
@@ -236,10 +236,15 @@ const config = defineConfig({
           railFg: {
             value: { _light: '{colors.gray.400}', _dark: '{colors.zinc.400}' },
           },
-          // The backdrop the rendered PDF pages float on. It is the deepest
-          // surface in dark mode so the (always white) pages read as paper.
+          // The backdrop the rendered PDF pages float on — dark enough that the
+          // (always white) pages read as paper, but deliberately one step
+          // *lighter* than the rail: collapsing the editor slides its right
+          // border away too, leaving the rail and the canvas edge to edge with
+          // nothing between them, so they must not resolve to the same value.
+          // It shares the editor panel's step instead, and those two are always
+          // separated by that border.
           canvas: {
-            value: { _light: '{colors.gray.200}', _dark: '{colors.zinc.950}' },
+            value: { _light: '{colors.gray.200}', _dark: '{colors.zinc.900}' },
           },
         },
       },
