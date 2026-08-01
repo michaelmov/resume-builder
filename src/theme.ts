@@ -5,24 +5,46 @@ const config = defineConfig({
     tokens: {
       colors: {
         // `brand` is the single source of truth for the app's accent color.
-        // These are concrete hex values (copied from Chakra's built-in `purple`
-        // ramp) so the UI is visually unchanged. NOTE: the non-semantic
-        // `tokens` layer does NOT resolve `{...}` references — only concrete
-        // values work here (references are a `semanticTokens` feature). To
-        // rebrand, replace these hexes; the semantic tokens below reference
-        // this ramp, so they follow automatically.
+        // These are concrete hex values (an indigo ramp) so the UI reads as one
+        // restrained accent rather than a saturated highlight. NOTE: the
+        // non-semantic `tokens` layer does NOT resolve `{...}` references —
+        // only concrete values work here (references are a `semanticTokens`
+        // feature). To rebrand, replace these hexes; the semantic tokens below
+        // reference this ramp, so they follow automatically.
         brand: {
-          50: { value: '#faf5ff' },
-          100: { value: '#f3e8ff' },
-          200: { value: '#e9d5ff' },
-          300: { value: '#d8b4fe' },
-          400: { value: '#c084fc' },
-          500: { value: '#a855f7' },
-          600: { value: '#9333ea' },
-          700: { value: '#641ba3' },
-          800: { value: '#4a1772' },
-          900: { value: '#2f0553' },
-          950: { value: '#1a032e' },
+          50: { value: '#eef2ff' },
+          100: { value: '#e0e7ff' },
+          200: { value: '#c7d2fe' },
+          300: { value: '#a5b4fc' },
+          400: { value: '#818cf8' },
+          500: { value: '#6366f1' },
+          600: { value: '#4f46e5' },
+          700: { value: '#4338ca' },
+          800: { value: '#3730a3' },
+          900: { value: '#312e81' },
+          950: { value: '#1e1b4b' },
+        },
+        // `gray` is the app's neutral, retuned from Chakra's default (zinc, a
+        // warm-ish neutral) to a cool slate ramp so the chrome reads crisp
+        // next to the indigo accent. This single override retunes *every*
+        // neutral surface: Chakra's own semantic tokens (`bg.subtle`,
+        // `bg.emphasized`, `fg.muted`, `border`, …) and the whole `gray`
+        // colorPalette are all defined as `{colors.gray.N}` references, so
+        // built-in component defaults follow this ramp too. Prefer the
+        // semantic names (`bg.panel`, `fg.muted`, `border`) in components over
+        // reaching for `gray.N` directly.
+        gray: {
+          50: { value: '#f8fafc' },
+          100: { value: '#f1f5f9' },
+          200: { value: '#e2e8f0' },
+          300: { value: '#cbd5e1' },
+          400: { value: '#94a3b8' },
+          500: { value: '#64748b' },
+          600: { value: '#475569' },
+          700: { value: '#334155' },
+          800: { value: '#1e293b' },
+          900: { value: '#0f172a' },
+          950: { value: '#020617' },
         },
       },
       sizes: {
@@ -31,11 +53,13 @@ const config = defineConfig({
     },
     semanticTokens: {
       colors: {
-        // Map onto the raw `brand` ramp using the exact same numeric mapping
-        // Chakra uses for `purple`, so `colorPalette="brand"` renders
-        // identically to the old `colorPalette="purple"`. These must reference
-        // the raw ramp (not other semantic tokens like `{colors.purple.solid}`)
-        // — a semantic→semantic reference won't flatten into the colorPalette
+        // Map onto the raw `brand` ramp so `colorPalette="brand"` behaves like
+        // any first-party palette. The tinted slots (`subtle`/`muted`/
+        // `emphasized`/`border`) sit one step lighter than Chakra's built-in
+        // mapping — accent-tinted fills (dropzone hover, outline-button hover)
+        // stay a wash rather than a block of color. These must reference the
+        // raw ramp (not other semantic tokens like `{colors.brand.solid}`) — a
+        // semantic→semantic reference won't flatten into the colorPalette
         // slots, which left the selected date/etc. rendering black. Retuning
         // the raw ramp above flows through all of these automatically.
         brand: {
@@ -48,26 +72,26 @@ const config = defineConfig({
           },
           subtle: {
             value: {
-              _light: '{colors.brand.100}',
+              _light: '{colors.brand.50}',
               _dark: '{colors.brand.900}',
             },
           },
           muted: {
             value: {
-              _light: '{colors.brand.200}',
+              _light: '{colors.brand.100}',
               _dark: '{colors.brand.800}',
             },
           },
           emphasized: {
             value: {
-              _light: '{colors.brand.300}',
+              _light: '{colors.brand.200}',
               _dark: '{colors.brand.700}',
             },
           },
           solid: {
             value: {
               _light: '{colors.brand.600}',
-              _dark: '{colors.brand.600}',
+              _dark: '{colors.brand.500}',
             },
           },
           focusRing: {
@@ -78,9 +102,27 @@ const config = defineConfig({
           },
           border: {
             value: {
-              _light: '{colors.brand.500}',
+              _light: '{colors.brand.400}',
               _dark: '{colors.brand.400}',
             },
+          },
+        },
+        // Surfaces specific to the app's three-pane chrome. Chakra's built-in
+        // `bg.*` tokens cover the editor panel (`bg.subtle`) and the cards
+        // inside it (`bg.panel`); these name the two roles it has no token
+        // for, so components describe the surface instead of hardcoding a step
+        // on the ramp.
+        app: {
+          // The narrow icon rail pinned to the left edge of the window.
+          rail: {
+            value: { _light: '{colors.gray.800}', _dark: '{colors.gray.950}' },
+          },
+          railHover: {
+            value: { _light: '{colors.gray.700}', _dark: '{colors.gray.800}' },
+          },
+          // The backdrop the rendered PDF pages float on.
+          canvas: {
+            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.900}' },
           },
         },
       },

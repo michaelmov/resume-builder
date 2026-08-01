@@ -20,7 +20,7 @@ const Dot = ({ color }: { color: string }) => (
     borderRadius="full"
     backgroundColor={color}
     borderWidth="1px"
-    borderColor="blackAlpha.300"
+    borderColor="border.emphasized"
     flexShrink={0}
   />
 );
@@ -47,7 +47,7 @@ const AccentMenu = ({
               : undefined
           }
         >
-          <Dot color={disabled ? 'gray.400' : resolved.swatch} />
+          <Dot color={disabled ? 'fg.subtle' : resolved.swatch} />
           {disabled || selectedAccentId === null ? 'Auto' : resolved.name}
           <HiChevronDown size={18} />
         </Button>

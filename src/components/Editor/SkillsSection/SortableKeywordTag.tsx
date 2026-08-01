@@ -52,7 +52,7 @@ export const SortableKeywordTag: FC<SortableKeywordTagProps> = ({
           position="relative"
           cursor="pointer"
           _hover={{
-            backgroundColor: 'gray.200',
+            backgroundColor: 'bg.emphasized',
           }}
         />
       </Tag.EndElement>

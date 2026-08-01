@@ -47,10 +47,11 @@ export const PreviewNavBar = ({
       top={0}
       width="100%"
       height="60px"
-      bgColor="gray.600"
+      bg="bg.panel"
+      borderBottomWidth="1px"
+      borderColor="border"
       zIndex={900}
       px={4}
-      boxShadow="md"
     >
       <Grid templateColumns="1fr 1fr 1fr" width="100%" alignItems="center">
         <GridItem display="flex" justifyContent="start">
@@ -58,8 +59,8 @@ export const PreviewNavBar = ({
             aria-label={isEditorCollapsed ? 'Expand editor' : 'Collapse editor'}
             onClick={() => onEditorCollapseChange(!isEditorCollapsed)}
             variant="ghost"
-            color="white"
-            _hover={{ backgroundColor: 'whiteAlpha.200' }}
+            color="fg.muted"
+            _hover={{ color: 'fg', backgroundColor: 'bg.muted' }}
           >
             {isEditorCollapsed ? <GoSidebarCollapse /> : <GoSidebarExpand />}
           </IconButton>

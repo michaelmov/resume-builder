@@ -38,6 +38,19 @@ const clampScale = (value: number) =>
 // regeneration instead of thrashing the renderer on every keystroke's commit.
 const RENDER_DEBOUNCE_MS = 200;
 
+// The zoom controls float over the preview canvas, which is itself a light
+// neutral — a tinted `subtle` fill would sink into it, so they get their own
+// panel surface, hairline, and lift instead.
+const floatingControlProps = {
+  variant: 'outline',
+  rounded: 'full',
+  bg: 'bg.panel',
+  color: 'fg.muted',
+  borderColor: 'border',
+  shadow: 'sm',
+  _hover: { bg: 'bg.muted', color: 'fg' },
+} as const;
+
 export const Preview: FC<{
   isEditorCollapsed: boolean;
   onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
@@ -140,7 +153,7 @@ export const Preview: FC<{
       display="flex"
       flexDirection="column"
       alignItems="center"
-      backgroundColor="gray.400"
+      backgroundColor="app.canvas"
       width="100%"
       height="100%"
       overflow="scroll"
@@ -176,8 +189,7 @@ export const Preview: FC<{
             aria-label="Reset zoom"
             title="Reset zoom"
             onClick={() => setScale(DEFAULT_SCALE)}
-            variant="subtle"
-            rounded="full"
+            {...floatingControlProps}
           >
             <HiOutlineRefresh />
           </IconButton>
@@ -186,8 +198,7 @@ export const Preview: FC<{
           aria-label="Zoom in"
           title="Zoom in"
           onClick={() => setScale(clampScale(scale + SCALE_STEP))}
-          variant="subtle"
-          rounded="full"
+          {...floatingControlProps}
           disabled={scale === MAX_SCALE}
         >
           <HiOutlineZoomIn />
@@ -196,8 +207,7 @@ export const Preview: FC<{
           aria-label="Zoom out"
           title="Zoom out"
           onClick={() => setScale(clampScale(scale - SCALE_STEP))}
-          variant="subtle"
-          rounded="full"
+          {...floatingControlProps}
           disabled={scale === MIN_SCALE}
         >
           <HiOutlineZoomOut />
@@ -212,7 +222,13 @@ export const Preview: FC<{
           className="pdf-document"
         >
           {Array.from({ length: numPages ?? 0 }).map((_, index) => (
-            <Box shadow="xl" key={`page-${index}`} margin="6">
+            <Box
+              shadow="lg"
+              borderWidth="1px"
+              borderColor="border.emphasized"
+              key={`page-${index}`}
+              margin="6"
+            >
               <Page
                 key={index}
                 pageNumber={index + 1}

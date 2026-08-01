@@ -63,7 +63,7 @@ export const ConfirmDeleteButton: FC<ConfirmDeleteButtonProps> = ({
             <Popover.Arrow />
             <Popover.Body>
               <Popover.Title fontWeight="medium">{confirmTitle}</Popover.Title>
-              <Text fontSize="sm" color="gray.600" mt={1}>
+              <Text fontSize="sm" color="fg.muted" mt={1}>
                 {confirmDescription}
               </Text>
               <Flex justify="flex-end" gap={2} mt={4}>

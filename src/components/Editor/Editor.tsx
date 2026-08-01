@@ -210,12 +210,14 @@ export const Editor: FC = () => {
               fontSize="medium"
               textAlign="center"
               fontWeight="normal"
+              color="fg.muted"
             >
-              Made with 💜 by{' '}
+              Made with ❤️ by{' '}
               <Link
                 href="https://michaelmov.dev/"
                 target="_blank"
                 textDecoration="underline"
+                color="brand.fg"
               >
                 Michael
               </Link>
