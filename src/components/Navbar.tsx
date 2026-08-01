@@ -6,14 +6,31 @@ import {
   Spacer,
 } from '@chakra-ui/react';
 import { FC, useState } from 'react';
-import { HiOutlineUpload } from 'react-icons/hi';
+import { HiOutlineMoon, HiOutlineSun, HiOutlineUpload } from 'react-icons/hi';
 import { VscGithub } from 'react-icons/vsc';
+
+import { useColorMode } from '../hooks/useColorMode';
 
 import { ImportDialog } from './ImportDialog';
 import { Tooltip } from './ui/Tooltip';
 
+// The rail is dark chrome in both color modes, so its buttons keep the same
+// light-on-dark treatment throughout rather than following `fg`/`bg` tokens.
+const railButtonProps = {
+  variant: 'ghost',
+  color: 'inherit',
+  _hover: {
+    color: 'white',
+    backgroundColor: 'app.railHover',
+  },
+} as const;
+
 export const Navbar: FC = () => {
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  const colorModeLabel =
+    colorMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
 
   return (
     <Box
@@ -24,18 +41,13 @@ export const Navbar: FC = () => {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      color="gray.400"
+      color="app.railFg"
       py={3}
     >
       <Tooltip content="Import your resume">
         <IconButton
-          variant="ghost"
+          {...railButtonProps}
           aria-label="Import Resume"
-          color="inherit"
-          _hover={{
-            color: 'white',
-            backgroundColor: 'app.railHover',
-          }}
           onClick={() => setIsImportOpen(true)}
         >
           <HiOutlineUpload />
@@ -43,16 +55,17 @@ export const Navbar: FC = () => {
       </Tooltip>
       <ImportDialog open={isImportOpen} onOpenChange={setIsImportOpen} />
       <Spacer />
-      <LinkBox>
+      <Tooltip content={colorModeLabel}>
         <IconButton
-          variant="ghost"
-          aria-label="Open Github repo"
-          color="inherit"
-          _hover={{
-            color: 'white',
-            backgroundColor: 'app.railHover',
-          }}
+          {...railButtonProps}
+          aria-label={colorModeLabel}
+          onClick={toggleColorMode}
         >
+          {colorMode === 'dark' ? <HiOutlineSun /> : <HiOutlineMoon />}
+        </IconButton>
+      </Tooltip>
+      <LinkBox>
+        <IconButton {...railButtonProps} aria-label="Open Github repo">
           <LinkOverlay
             href="https://github.com/michaelmov/resume-builder"
             target="_blank"

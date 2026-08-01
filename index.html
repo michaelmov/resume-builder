@@ -4,7 +4,30 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <title>Resume Builder</title>
+    <script>
+      // Apply the saved (or system) color mode before first paint — React
+      // mounts too late to stop a flash of the wrong theme. `dark`/`light` on
+      // <html> is what Chakra's `_dark`/`_light` conditions select on, and the
+      // storage key mirrors `hooks/useColorModeLocalStorage.ts`.
+      (function () {
+        try {
+          var stored = localStorage.getItem('color-mode');
+          var mode =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.classList.add(mode);
+          document.documentElement.style.colorScheme = mode;
+        } catch (error) {
+          // Storage blocked (private mode / disabled cookies): fall through to
+          // the light default rather than breaking the boot.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

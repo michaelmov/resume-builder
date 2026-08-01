@@ -8,14 +8,19 @@ body {
   margin: 0;
   overflow: hidden;
   overscroll-behavior: none;
-  /* Matches the editor panel surface (gray.50 in theme.ts) so the first paint,
-     before Chakra's styles land, doesn't flash white. */
-  background-color: #f8fafc;
+  /* Matches the editor panel surface (bg.subtle in theme.ts) so the first
+     paint, before Chakra's styles land, doesn't flash the wrong color. The
+     `dark` class is set on <html> by the bootstrap script in index.html. */
+  background-color: #f8fafc; /* gray.50 */
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html.dark body {
+  background-color: #18181b; /* zinc.900 */
 }
 
 code {
