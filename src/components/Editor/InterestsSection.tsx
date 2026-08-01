@@ -4,10 +4,15 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
-import { Interest, SECTION_TITLES, SectionTypes } from '../../types/resume.model';
+import {
+  Interest,
+  SECTION_TITLES,
+  SectionTypes,
+} from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 import { KeywordInput } from './SkillsSection/KeywordInput';
 
 interface InterestsSectionProps {
@@ -30,6 +35,7 @@ export const InterestsSection: FC<InterestsSectionProps> = ({
     control,
     name: 'interests',
   });
+  const openAppendedEntry = useOpenAppendedSubsection(fields);
 
   const { onBlur } = useAutoCommitSection({
     watch,
@@ -43,6 +49,7 @@ export const InterestsSection: FC<InterestsSectionProps> = ({
 
   const addInterest = () => {
     append({ name: '', keywords: [] } as Interest);
+    openAppendedEntry();
   };
 
   return (
@@ -55,11 +62,12 @@ export const InterestsSection: FC<InterestsSectionProps> = ({
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {fields.map((field: any, index: number) => (
           <EditorSubsection
-            title={field.name}
+            title={watch(`interests.${index}.name`)}
             entryLabel="interest"
             onDeleteClick={() => remove(index)}
             mb={6}
             key={field.id}
+            id={field.id}
             onMoveUpClick={() => move(index, index - 1)}
             onMoveDownClick={() => move(index, index + 1)}
             moveUpDisabled={index === 0}
@@ -69,7 +77,10 @@ export const InterestsSection: FC<InterestsSectionProps> = ({
               <Field.Label display="inline-block">Interest name</Field.Label>
               <Input type="text" {...register(`interests.${index}.name`)} />
             </Field.Root>
-            <KeywordInput name={`interests.${index}.keywords`} control={control} />
+            <KeywordInput
+              name={`interests.${index}.keywords`}
+              control={control}
+            />
           </EditorSubsection>
         ))}
         <Box display="flex" justifyContent="center">

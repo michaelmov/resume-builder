@@ -30,6 +30,7 @@ import { SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 /** A single flat input within an entry. */
 export interface FieldConfig {
@@ -91,6 +92,7 @@ export function GenericListSection<T>({
     control,
     name: 'entries',
   });
+  const openAppendedEntry = useOpenAppendedSubsection(fields);
 
   const { onBlur } = useAutoCommitSection({
     watch,
@@ -113,8 +115,13 @@ export function GenericListSection<T>({
         {fields.map((field: any, index: number) => (
           <EditorSubsection
             key={field.id}
-            title={field[titleField] || ''}
-            subtitle={subtitleField ? field[subtitleField] || '' : ''}
+            id={field.id}
+            title={watch(`entries.${index}.${titleField}`) || ''}
+            subtitle={
+              subtitleField
+                ? watch(`entries.${index}.${subtitleField}`) || ''
+                : ''
+            }
             entryLabel={entryLabel}
             onDeleteClick={() => remove(index)}
             onMoveUpClick={() => move(index, index - 1)}
@@ -167,7 +174,10 @@ export function GenericListSection<T>({
         ))}
         <Box>
           <Button
-            onClick={() => append(emptyEntry() as FormShape['entries'][number])}
+            onClick={() => {
+              append(emptyEntry() as FormShape['entries'][number]);
+              openAppendedEntry();
+            }}
             width="100%"
             size="sm"
             variant="subtle"

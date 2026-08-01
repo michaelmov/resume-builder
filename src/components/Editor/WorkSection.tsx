@@ -27,6 +27,7 @@ import { SECTION_TITLES, SectionTypes, Work } from '../../types/resume.model';
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 interface WorkSectionProps {
   value: Work[];
@@ -48,6 +49,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
     control,
     name: 'work',
   });
+  const openAppendedEntry = useOpenAppendedSubsection(fields);
 
   const { onBlur } = useAutoCommitSection({
     watch,
@@ -73,6 +75,7 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
     } as Work;
 
     append(newWork);
+    openAppendedEntry();
   };
 
   return (
@@ -85,9 +88,10 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
         {fields.map((field: any, index: number) => {
           return (
             <EditorSubsection
-              title={field.name}
-              subtitle={field.position}
+              title={watch(`work.${index}.name`) ?? ''}
+              subtitle={watch(`work.${index}.position`)}
               key={field.id}
+              id={field.id}
               entryLabel="work entry"
               onDeleteClick={() => remove(index)}
               onMoveUpClick={() => move(index, index - 1)}
