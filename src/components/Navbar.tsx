@@ -41,7 +41,7 @@ export const Navbar: FC = () => {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      color="gray.400"
+      color="app.railFg"
       py={3}
     >
       <Tooltip content="Import your resume">

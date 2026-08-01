@@ -20,7 +20,7 @@ body {
 }
 
 html.dark body {
-  background-color: #0f172a; /* gray.900 */
+  background-color: #18181b; /* zinc.900 */
 }
 
 code {

@@ -24,15 +24,15 @@ const config = defineConfig({
           900: { value: '#312e81' },
           950: { value: '#1e1b4b' },
         },
-        // `gray` is the app's neutral, retuned from Chakra's default (zinc, a
-        // warm-ish neutral) to a cool slate ramp so the chrome reads crisp
-        // next to the indigo accent. This single override retunes *every*
-        // neutral surface: Chakra's own semantic tokens (`bg.subtle`,
-        // `bg.emphasized`, `fg.muted`, `border`, …) and the whole `gray`
-        // colorPalette are all defined as `{colors.gray.N}` references, so
-        // built-in component defaults follow this ramp too. Prefer the
-        // semantic names (`bg.panel`, `fg.muted`, `border`) in components over
-        // reaching for `gray.N` directly.
+        // `gray` is the **light** mode's neutral, retuned from Chakra's default
+        // (zinc) to a cool slate ramp so the chrome reads crisp next to the
+        // indigo accent. This single override retunes every light neutral:
+        // Chakra's own semantic tokens (`bg.subtle`, `bg.emphasized`,
+        // `fg.muted`, `border`, …) and the whole `gray` colorPalette are all
+        // defined as `{colors.gray.N}` references, so built-in component
+        // defaults follow this ramp too. Prefer the semantic names
+        // (`bg.panel`, `fg.muted`, `border`) in components over reaching for
+        // `gray.N` directly.
         gray: {
           50: { value: '#f8fafc' },
           100: { value: '#f1f5f9' },
@@ -45,6 +45,29 @@ const config = defineConfig({
           800: { value: '#1e293b' },
           900: { value: '#0f172a' },
           950: { value: '#020617' },
+        },
+        // `zinc` is the **dark** mode's neutral. Slate is a blue-tinted gray:
+        // pleasantly crisp as light chrome, but across the large dark surfaces
+        // it reads as a blue cast rather than as "dark gray". So the `_dark`
+        // condition of every neutral token below points at this near-neutral
+        // ramp instead, leaving indigo as the only color in the dark UI. It is
+        // the ramp Chakra ships as its default `gray` (this app overrode that
+        // slot with slate), with a slightly deeper 950. NOTE: nothing consumes
+        // `zinc.N` directly — it exists only to feed the `_dark` side of the
+        // semantic tokens, so components keep styling by semantic name and
+        // stay mode-agnostic.
+        zinc: {
+          50: { value: '#fafafa' },
+          100: { value: '#f4f4f5' },
+          200: { value: '#e4e4e7' },
+          300: { value: '#d4d4d8' },
+          400: { value: '#a1a1aa' },
+          500: { value: '#71717a' },
+          600: { value: '#52525b' },
+          700: { value: '#3f3f46' },
+          800: { value: '#27272a' },
+          900: { value: '#18181b' },
+          950: { value: '#09090b' },
         },
       },
       sizes: {
@@ -107,11 +130,15 @@ const config = defineConfig({
             },
           },
         },
-        // Dark-mode surface ladder. Chakra's stock dark values collapse this
-        // app's chrome: `bg.subtle` (the editor panel) and `bg.panel` (the
-        // cards, menus and dialogs sitting on it) are both `gray.950`, so the
-        // two levels read as one flat sheet. Re-pitching the surface tokens
-        // restores the hierarchy the light theme has —
+        // Dark-mode surface ladder — the `_dark` half of every neutral token,
+        // pointed at `zinc` (see the ramp above) so dark chrome reads as gray
+        // rather than blue.
+        //
+        // The steps are also re-pitched, because Chakra's stock dark values
+        // collapse this app's chrome: `bg.subtle` (the editor panel) and
+        // `bg.panel` (the cards, menus and dialogs sitting on it) are both the
+        // 950 step, so the two levels read as one flat sheet. This restores the
+        // hierarchy the light theme has —
         //   rail / PDF canvas (950) → editor panel (900) → panels (800)
         //   → hover (700) → emphasized (600)
         // — which also keeps hovers *lighter* than what they sit on. The
@@ -119,45 +146,76 @@ const config = defineConfig({
         // semantic token has to define every condition it takes part in.
         bg: {
           DEFAULT: {
-            value: { _light: '{colors.white}', _dark: '{colors.gray.900}' },
+            value: { _light: '{colors.white}', _dark: '{colors.zinc.900}' },
           },
           subtle: {
-            value: { _light: '{colors.gray.50}', _dark: '{colors.gray.900}' },
+            value: { _light: '{colors.gray.50}', _dark: '{colors.zinc.900}' },
           },
           muted: {
-            value: { _light: '{colors.gray.100}', _dark: '{colors.gray.700}' },
+            value: { _light: '{colors.gray.100}', _dark: '{colors.zinc.700}' },
           },
           emphasized: {
-            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.600}' },
+            value: { _light: '{colors.gray.200}', _dark: '{colors.zinc.600}' },
           },
           panel: {
-            value: { _light: '{colors.white}', _dark: '{colors.gray.800}' },
+            value: { _light: '{colors.white}', _dark: '{colors.zinc.800}' },
+          },
+        },
+        // Text. Only the `_dark` side moves off slate; `_light` restates
+        // Chakra's defaults.
+        fg: {
+          DEFAULT: {
+            value: { _light: '{colors.black}', _dark: '{colors.zinc.50}' },
+          },
+          muted: {
+            value: { _light: '{colors.gray.600}', _dark: '{colors.zinc.400}' },
+          },
+          subtle: {
+            value: { _light: '{colors.gray.400}', _dark: '{colors.zinc.500}' },
           },
         },
         border: {
           DEFAULT: {
-            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.700}' },
+            value: { _light: '{colors.gray.200}', _dark: '{colors.zinc.700}' },
           },
           muted: {
-            value: { _light: '{colors.gray.100}', _dark: '{colors.gray.800}' },
+            value: { _light: '{colors.gray.100}', _dark: '{colors.zinc.800}' },
           },
           emphasized: {
-            value: { _light: '{colors.gray.300}', _dark: '{colors.gray.600}' },
+            value: { _light: '{colors.gray.300}', _dark: '{colors.zinc.600}' },
+          },
+          // Unused by the app today, but Chakra's own recipes reach for them —
+          // repointed so nothing can reintroduce a slate edge in dark mode.
+          subtle: {
+            value: { _light: '{colors.gray.50}', _dark: '{colors.zinc.950}' },
+          },
+          inverted: {
+            value: { _light: '{colors.gray.800}', _dark: '{colors.zinc.200}' },
           },
         },
         // The `gray` colorPalette drives the default (palette-less) component
-        // states — ghost/outline button hovers are `colorPalette.subtle`. Its
-        // dark slots are shifted to match the ladder above so a hover lifts off
-        // the `bg.panel` surface instead of sinking below it.
+        // states — ghost/outline button hovers are `colorPalette.subtle`, an
+        // unstyled button's label is `colorPalette.fg`. Its dark slots are
+        // shifted to match the ladder above so a hover lifts off the `bg.panel`
+        // surface instead of sinking below it.
         gray: {
+          fg: {
+            value: { _light: '{colors.gray.800}', _dark: '{colors.zinc.200}' },
+          },
           subtle: {
-            value: { _light: '{colors.gray.100}', _dark: '{colors.gray.700}' },
+            value: { _light: '{colors.gray.100}', _dark: '{colors.zinc.700}' },
           },
           muted: {
-            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.600}' },
+            value: { _light: '{colors.gray.200}', _dark: '{colors.zinc.600}' },
           },
           emphasized: {
-            value: { _light: '{colors.gray.300}', _dark: '{colors.gray.500}' },
+            value: { _light: '{colors.gray.300}', _dark: '{colors.zinc.500}' },
+          },
+          border: {
+            value: { _light: '{colors.gray.200}', _dark: '{colors.zinc.800}' },
+          },
+          focusRing: {
+            value: { _light: '{colors.gray.400}', _dark: '{colors.zinc.400}' },
           },
         },
         // Surfaces specific to the app's three-pane chrome. Chakra's built-in
@@ -167,17 +225,21 @@ const config = defineConfig({
         // on the ramp.
         app: {
           // The narrow icon rail pinned to the left edge of the window. It is
-          // dark chrome in both modes, so its icons stay light throughout.
+          // dark chrome in *both* modes, so its icons stay light throughout —
+          // hence `railFg`, which the light `fg.*` tokens can't express.
           rail: {
-            value: { _light: '{colors.gray.800}', _dark: '{colors.gray.950}' },
+            value: { _light: '{colors.gray.800}', _dark: '{colors.zinc.950}' },
           },
           railHover: {
-            value: { _light: '{colors.gray.700}', _dark: '{colors.gray.800}' },
+            value: { _light: '{colors.gray.700}', _dark: '{colors.zinc.800}' },
+          },
+          railFg: {
+            value: { _light: '{colors.gray.400}', _dark: '{colors.zinc.400}' },
           },
           // The backdrop the rendered PDF pages float on. It is the deepest
           // surface in dark mode so the (always white) pages read as paper.
           canvas: {
-            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.950}' },
+            value: { _light: '{colors.gray.200}', _dark: '{colors.zinc.950}' },
           },
         },
       },
