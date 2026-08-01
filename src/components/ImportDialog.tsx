@@ -1,6 +1,8 @@
 import {
   Alert,
   Box,
+  Button,
+  Clipboard,
   FileUpload,
   Icon,
   Link,
@@ -9,9 +11,14 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { FC, useCallback } from 'react';
-import { HiOutlineExternalLink, HiOutlineUpload } from 'react-icons/hi';
+import {
+  HiOutlineExternalLink,
+  HiOutlineSparkles,
+  HiOutlineUpload,
+} from 'react-icons/hi';
 
 import { useJsonImport } from '../hooks/useJsonImport';
+import { HANDOFF_PROMPT } from '../utils/handoff-prompt';
 
 import {
   DialogBody,
@@ -37,6 +44,40 @@ const ACCEPTED_FILE_TYPES = { 'application/json': ['.json'] };
  * duplicate rather than re-running the import.
  */
 const NO_ACCEPTED_FILES: File[] = [];
+
+/**
+ * The route for resumes that aren't JSON Resume files yet. Converting a PDF or
+ * Word document is left to an LLM rather than parsed here: the user runs this
+ * prompt with their resume attached, then drops the JSON it returns onto the
+ * dropzone above — the ordinary import path, unchanged.
+ */
+const HandoffSection: FC = () => (
+  <Box borderWidth="1px" borderColor="border" rounded="md" p={4}>
+    <Stack gap={3}>
+      <Stack gap={1}>
+        <Text fontWeight="medium" display="flex" alignItems="center" gap={2}>
+          <Icon as={HiOutlineSparkles} color="brand.fg" />
+          Have another format?
+        </Text>
+        <Text fontSize="sm" color="fg.muted">
+          A PDF or Word resume can be converted in one step by an LLM. Copy the
+          prompt below, paste it into the assistant of your choice, and attach
+          your resume. Download the <code>resume.json</code> it returns — or
+          save its reply as a <code>.json</code> file — then drop it above.
+        </Text>
+      </Stack>
+
+      <Clipboard.Root value={HANDOFF_PROMPT}>
+        <Clipboard.Trigger asChild>
+          <Button variant="surface" size="sm" alignSelf="flex-start">
+            <Clipboard.Indicator />
+            Copy LLM prompt
+          </Button>
+        </Clipboard.Trigger>
+      </Clipboard.Root>
+    </Stack>
+  </Box>
+);
 
 export const ImportDialog: FC<ImportDialogProps> = ({ open, onOpenChange }) => {
   const {
@@ -64,7 +105,8 @@ export const ImportDialog: FC<ImportDialogProps> = ({ open, onOpenChange }) => {
 
       showImportError({
         message: rejected.errors.includes('FILE_INVALID_TYPE')
-          ? `"${rejected.file.name}" isn't a .json file. Export your resume as JSON Resume first, then import it here.`
+          ? // Don't dead-end them — the section below is exactly the fix.
+            `"${rejected.file.name}" isn't a .json file. Convert it first using the prompt below, then import the JSON.`
           : `"${rejected.file.name}" couldn't be opened. Try picking the file again.`,
       });
     },
@@ -175,6 +217,8 @@ export const ImportDialog: FC<ImportDialogProps> = ({ open, onOpenChange }) => {
                 </Alert.Content>
               </Alert.Root>
             )}
+
+            <HandoffSection />
           </Stack>
         </DialogBody>
         <DialogCloseTrigger />
