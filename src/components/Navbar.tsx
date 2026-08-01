@@ -6,7 +6,7 @@ import {
   Spacer,
 } from '@chakra-ui/react';
 import { FC, useState } from 'react';
-import {  HiOutlineUpload } from 'react-icons/hi';
+import { HiOutlineUpload } from 'react-icons/hi';
 import { VscGithub } from 'react-icons/vsc';
 
 import { ImportDialog } from './ImportDialog';
@@ -20,21 +20,21 @@ export const Navbar: FC = () => {
       as="nav"
       height="100dvh"
       width={50}
-      background="brand.500"
+      background="app.rail"
       display="flex"
       flexDirection="column"
       alignItems="center"
-      color="white"
+      color="gray.400"
       py={3}
     >
       <Tooltip content="Import your resume">
         <IconButton
-          color="white"
           variant="ghost"
           aria-label="Import Resume"
-          colorPalette="bg"
+          color="inherit"
           _hover={{
-            backgroundColor: 'brand.600',
+            color: 'white',
+            backgroundColor: 'app.railHover',
           }}
           onClick={() => setIsImportOpen(true)}
         >
@@ -47,15 +47,18 @@ export const Navbar: FC = () => {
         <IconButton
           variant="ghost"
           aria-label="Open Github repo"
+          color="inherit"
           _hover={{
-            backgroundColor: 'brand.600',
+            color: 'white',
+            backgroundColor: 'app.railHover',
           }}
         >
           <LinkOverlay
             href="https://github.com/michaelmov/resume-builder"
             target="_blank"
+            color="inherit"
           >
-            <VscGithub color="white" />
+            <VscGithub />
           </LinkOverlay>
         </IconButton>
       </LinkBox>

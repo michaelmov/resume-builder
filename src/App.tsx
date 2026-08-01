@@ -28,7 +28,9 @@ const App: FC = () => {
                 <Box
                   width={{ base: '300px', xl: '450px', '2xl': '600px' }}
                   maxWidth="600px"
-                  bgColor="gray.100"
+                  bg="bg.subtle"
+                  borderRightWidth="1px"
+                  borderColor="border"
                   height="100%"
                   maxHeight="100%"
                   overflow="auto"

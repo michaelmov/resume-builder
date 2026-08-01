@@ -65,7 +65,7 @@ export const AddSectionMenu: FC<AddSectionMenuProps> = ({
                   fontSize="xs"
                   textTransform="uppercase"
                   letterSpacing="wider"
-                  color="gray.500"
+                  color="fg.muted"
                 >
                   {category.label}
                 </Menu.ItemGroupLabel>
@@ -81,7 +81,7 @@ export const AddSectionMenu: FC<AddSectionMenuProps> = ({
                         {SECTION_TITLES[section]}
                       </Text>
                       {SECTION_DESCRIPTIONS[section] && (
-                        <Text fontSize="xs" color="gray.500">
+                        <Text fontSize="xs" color="fg.muted">
                           {SECTION_DESCRIPTIONS[section]}
                         </Text>
                       )}

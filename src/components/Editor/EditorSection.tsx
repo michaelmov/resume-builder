@@ -111,15 +111,17 @@ export const EditorSection: FC<EditorSectionProps> = ({
       <Box
         as="section"
         width="100%"
-        bgColor="white"
+        bg="bg.panel"
         borderRadius={8}
-        boxShadow="sm"
+        boxShadow="xs"
+        borderWidth="1px"
+        borderColor="border"
         borderLeftWidth="3px"
-        borderLeftColor="brand.400"
+        borderLeftColor="brand.solid"
         overflow="hidden"
       >
         <Flex align="center" px={8} pt={6} pb={4}>
-          <Heading as="h3" fontSize="xl" fontWeight="medium" color="gray.700">
+          <Heading as="h3" fontSize="xl" fontWeight="medium" color="fg">
             {title}
           </Heading>
         </Flex>
@@ -154,7 +156,8 @@ export const EditorSection: FC<EditorSectionProps> = ({
                 aria-label="Reorder section"
                 variant="ghost"
                 size="sm"
-                color="gray.400"
+                color="fg.subtle"
+                _hover={{ color: 'fg.muted', bg: 'bg.muted' }}
                 cursor={dragHandle.isDragging ? 'grabbing' : 'grab'}
                 touchAction="none"
                 mr={1}
@@ -188,7 +191,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
                   aria-label="Confirm section name"
                   variant="ghost"
                   size="sm"
-                  color="gray.500"
+                  color="fg.muted"
                   // Commit before the input's blur fires so it isn't skipped.
                   onMouseDown={(event) => event.preventDefault()}
                   onClick={commitRename}
@@ -207,12 +210,14 @@ export const EditorSection: FC<EditorSectionProps> = ({
                 as="h3"
                 fontSize="xl"
                 mb={2}
-                color="blackAlpha.600"
+                color="fg.muted"
                 fontWeight="normal"
                 cursor="pointer"
                 display="flex"
                 alignItems="center"
                 gap={1}
+                _hover={{ color: 'fg' }}
+                transition="color 0.15s ease-in-out"
               >
                 <Box
                   as="span"
@@ -232,8 +237,8 @@ export const EditorSection: FC<EditorSectionProps> = ({
                 variant="ghost"
                 size="sm"
                 mb={2}
-                color="gray.400"
-                _hover={{ color: 'brand.500', bg: 'brand.50' }}
+                color="fg.subtle"
+                _hover={{ color: 'brand.fg', bg: 'brand.subtle' }}
                 onClick={startRename}
               >
                 <HiOutlinePencil />
@@ -246,8 +251,8 @@ export const EditorSection: FC<EditorSectionProps> = ({
               variant="ghost"
               size="sm"
               mb={2}
-              color="gray.400"
-              _hover={{ color: 'red.500', bg: 'red.50' }}
+              color="fg.subtle"
+              _hover={{ color: 'fg.error', bg: 'bg.error' }}
               confirmTitle={`Delete “${displayTitle}”?`}
               confirmDescription="This permanently removes the section and everything in it."
               onConfirm={() => sectionActions.removeSection(id as SectionTypes)}
@@ -256,10 +261,12 @@ export const EditorSection: FC<EditorSectionProps> = ({
         </Flex>
         <Collapsible.Content
           as="section"
-          bgColor="white"
+          bg="bg.panel"
           borderRadius={8}
+          borderWidth="1px"
+          borderColor="border"
           p={8}
-          boxShadow="sm"
+          boxShadow="xs"
           onBlur={onBlur}
         >
           {children}

@@ -54,12 +54,14 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
     >
       <Box
         borderWidth={1}
-        borderColor="gray.200"
+        borderColor={isOpen ? 'border.emphasized' : 'border'}
         p={4}
         pt={8}
         pb={isOpen ? 4 : 8}
         borderRadius={6}
         position="relative"
+        transition="border-color 0.15s ease-in-out"
+        _hover={{ borderColor: 'border.emphasized' }}
         onMouseOver={() => setIsActionButtonsVisible(true)}
         onMouseLeave={() => setIsActionButtonsVisible(false)}
         {...rest}
@@ -79,14 +81,14 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
               >
                 <HiChevronDown />
               </Box>
-              <Heading as="h4" fontSize="md" color="blackAlpha.700">
+              <Heading as="h4" fontSize="md" color="fg">
                 {title}
               </Heading>
             </Flex>
             {subtitle && (
               <Text
                 fontSize="sm"
-                color="blackAlpha.700"
+                color="fg.muted"
                 maxWidth="200px"
                 textAlign="right"
               >
