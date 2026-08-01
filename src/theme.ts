@@ -107,22 +107,77 @@ const config = defineConfig({
             },
           },
         },
+        // Dark-mode surface ladder. Chakra's stock dark values collapse this
+        // app's chrome: `bg.subtle` (the editor panel) and `bg.panel` (the
+        // cards, menus and dialogs sitting on it) are both `gray.950`, so the
+        // two levels read as one flat sheet. Re-pitching the surface tokens
+        // restores the hierarchy the light theme has —
+        //   rail / PDF canvas (950) → editor panel (900) → panels (800)
+        //   → hover (700) → emphasized (600)
+        // — which also keeps hovers *lighter* than what they sit on. The
+        // `_light` values are Chakra's own defaults, restated because a
+        // semantic token has to define every condition it takes part in.
+        bg: {
+          DEFAULT: {
+            value: { _light: '{colors.white}', _dark: '{colors.gray.900}' },
+          },
+          subtle: {
+            value: { _light: '{colors.gray.50}', _dark: '{colors.gray.900}' },
+          },
+          muted: {
+            value: { _light: '{colors.gray.100}', _dark: '{colors.gray.700}' },
+          },
+          emphasized: {
+            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.600}' },
+          },
+          panel: {
+            value: { _light: '{colors.white}', _dark: '{colors.gray.800}' },
+          },
+        },
+        border: {
+          DEFAULT: {
+            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.700}' },
+          },
+          muted: {
+            value: { _light: '{colors.gray.100}', _dark: '{colors.gray.800}' },
+          },
+          emphasized: {
+            value: { _light: '{colors.gray.300}', _dark: '{colors.gray.600}' },
+          },
+        },
+        // The `gray` colorPalette drives the default (palette-less) component
+        // states — ghost/outline button hovers are `colorPalette.subtle`. Its
+        // dark slots are shifted to match the ladder above so a hover lifts off
+        // the `bg.panel` surface instead of sinking below it.
+        gray: {
+          subtle: {
+            value: { _light: '{colors.gray.100}', _dark: '{colors.gray.700}' },
+          },
+          muted: {
+            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.600}' },
+          },
+          emphasized: {
+            value: { _light: '{colors.gray.300}', _dark: '{colors.gray.500}' },
+          },
+        },
         // Surfaces specific to the app's three-pane chrome. Chakra's built-in
         // `bg.*` tokens cover the editor panel (`bg.subtle`) and the cards
         // inside it (`bg.panel`); these name the two roles it has no token
         // for, so components describe the surface instead of hardcoding a step
         // on the ramp.
         app: {
-          // The narrow icon rail pinned to the left edge of the window.
+          // The narrow icon rail pinned to the left edge of the window. It is
+          // dark chrome in both modes, so its icons stay light throughout.
           rail: {
             value: { _light: '{colors.gray.800}', _dark: '{colors.gray.950}' },
           },
           railHover: {
             value: { _light: '{colors.gray.700}', _dark: '{colors.gray.800}' },
           },
-          // The backdrop the rendered PDF pages float on.
+          // The backdrop the rendered PDF pages float on. It is the deepest
+          // surface in dark mode so the (always white) pages read as paper.
           canvas: {
-            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.900}' },
+            value: { _light: '{colors.gray.200}', _dark: '{colors.gray.950}' },
           },
         },
       },
