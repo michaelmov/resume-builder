@@ -4,11 +4,16 @@ import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
-import { SECTION_TITLES, SectionTypes, Education } from '../../types/resume.model';
+import {
+  SECTION_TITLES,
+  SectionTypes,
+  Education,
+} from '../../types/resume.model';
 
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 interface EducationSectionProps {
   value: Education[];
@@ -34,6 +39,7 @@ export const EducationSection: FC<EducationSectionProps> = ({
     control,
     name: 'education',
   });
+  const openAppendedEntry = useOpenAppendedSubsection(fields);
 
   const { onBlur } = useAutoCommitSection({
     watch,
@@ -58,6 +64,7 @@ export const EducationSection: FC<EducationSectionProps> = ({
     } as Education;
 
     append(newEducation);
+    openAppendedEntry();
   };
 
   return (
@@ -71,12 +78,13 @@ export const EducationSection: FC<EducationSectionProps> = ({
           (field: FieldArrayWithId<FormProps, 'education'>, index: number) => {
             return (
               <EditorSubsection
-                title={field.institution}
-                subtitle={field.area}
+                title={watch(`education.${index}.institution`)}
+                subtitle={watch(`education.${index}.area`)}
                 entryLabel="education entry"
                 onDeleteClick={() => remove(index)}
                 mb={6}
                 key={field.id}
+                id={field.id}
                 onMoveUpClick={() => move(index, index - 1)}
                 onMoveDownClick={() => move(index, index + 1)}
                 moveUpDisabled={index === 0}

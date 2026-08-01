@@ -21,11 +21,16 @@ import {
 } from 'react-icons/hi';
 
 import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
-import { SECTION_TITLES, SectionTypes, Project } from '../../types/resume.model';
+import {
+  SECTION_TITLES,
+  SectionTypes,
+  Project,
+} from '../../types/resume.model';
 
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 interface ProjectsSectionProps {
   value: Project[];
@@ -51,6 +56,7 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
     control,
     name: 'projects',
   });
+  const openAppendedEntry = useOpenAppendedSubsection(fields);
 
   const { onBlur } = useAutoCommitSection({
     watch,
@@ -77,6 +83,7 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
     } as Project;
 
     append(newProject);
+    openAppendedEntry();
   };
 
   return (
@@ -89,9 +96,10 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
         {fields.map((field: any, index: number) => {
           return (
             <EditorSubsection
-              title={field.name}
-              subtitle={field.type}
+              title={watch(`projects.${index}.name`)}
+              subtitle={watch(`projects.${index}.type`)}
               key={field.id}
+              id={field.id}
               entryLabel="project"
               onDeleteClick={() => remove(index)}
               onMoveUpClick={() => move(index, index - 1)}

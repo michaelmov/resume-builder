@@ -12,7 +12,11 @@ import { HiChevronUp, HiChevronDown } from 'react-icons/hi';
 
 import { ConfirmDeleteButton } from '../ui/ConfirmDeleteButton';
 
+import { useSubsectionOpenState } from './OpenSubsectionContext';
+
 interface EditorSubsectionProps extends BoxProps {
+  /** Unique id used to coordinate the single-open accordion within a section. */
+  id: string;
   title: string;
   subtitle?: string;
   /**
@@ -28,6 +32,7 @@ interface EditorSubsectionProps extends BoxProps {
 }
 
 export const EditorSubsection: FC<EditorSubsectionProps> = ({
+  id,
   children,
   onDeleteClick,
   onMoveUpClick,
@@ -41,7 +46,7 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
 }) => {
   const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useSubsectionOpenState(id);
   return (
     <Collapsible.Root
       open={isOpen}

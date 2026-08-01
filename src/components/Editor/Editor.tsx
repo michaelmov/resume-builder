@@ -40,6 +40,7 @@ import {
   VolunteerSection,
 } from './NewSections';
 import { OpenSectionProvider } from './OpenSectionContext';
+import { OpenSubsectionProvider } from './OpenSubsectionContext';
 import { ProjectsSection } from './ProjectsSection';
 import { SectionActionsProvider } from './SectionActionsContext';
 import { SkillsSection } from './SkillsSection/SkillsSection';
@@ -235,7 +236,12 @@ export const Editor: FC = () => {
                 <Stack width="100%" gap={8}>
                   {order.map((sectionType) => (
                     <SortableSection key={sectionType} id={sectionType}>
-                      {sectionComponents[sectionType]}
+                      {/* One accordion scope per section: only one of its
+                          entries is expanded at a time, and each section keeps
+                          track of its own. */}
+                      <OpenSubsectionProvider>
+                        {sectionComponents[sectionType]}
+                      </OpenSubsectionProvider>
                     </SortableSection>
                   ))}
                 </Stack>

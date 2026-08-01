@@ -4,9 +4,14 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
 import { useAutoCommitSection } from '../../../hooks/useAutoCommitSection';
-import { SECTION_TITLES, SectionTypes, Skill } from '../../../types/resume.model';
+import {
+  SECTION_TITLES,
+  SectionTypes,
+  Skill,
+} from '../../../types/resume.model';
 import { EditorSection } from '../EditorSection';
 import { EditorSubsection } from '../EditorSubsection';
+import { useOpenAppendedSubsection } from '../OpenSubsectionContext';
 
 import { KeywordInput } from './KeywordInput';
 
@@ -31,6 +36,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
     control,
     name: 'skills',
   });
+  const openAppendedEntry = useOpenAppendedSubsection(fields);
 
   const { onBlur } = useAutoCommitSection({
     watch,
@@ -50,6 +56,7 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
     } as Skill;
 
     append(newSkill);
+    openAppendedEntry();
   };
 
   return (
@@ -62,11 +69,12 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
         {fields.map((field: any, index: number) => {
           return (
             <EditorSubsection
-              title={field.name}
+              title={watch(`skills.${index}.name`)}
               entryLabel="skill"
               onDeleteClick={() => remove(index)}
               mb={6}
               key={field.id}
+              id={field.id}
               onMoveUpClick={() => move(index, index - 1)}
               onMoveDownClick={() => move(index, index + 1)}
               moveUpDisabled={index === 0}
@@ -76,7 +84,10 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
                 <Field.Label display="inline-block">Skill name</Field.Label>
                 <Input type="text" {...register(`skills.${index}.name`)} />
               </Field.Root>
-              <KeywordInput name={`skills.${index}.keywords`} control={control} />
+              <KeywordInput
+                name={`skills.${index}.keywords`}
+                control={control}
+              />
             </EditorSubsection>
           );
         })}
