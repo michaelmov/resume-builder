@@ -1,13 +1,12 @@
 import {
   Box,
-  Icon,
   IconButton,
   LinkBox,
   LinkOverlay,
   Spacer,
 } from '@chakra-ui/react';
 import { FC, useState } from 'react';
-import { HiOutlineBriefcase, HiOutlineUpload } from 'react-icons/hi';
+import {  HiOutlineUpload } from 'react-icons/hi';
 import { VscGithub } from 'react-icons/vsc';
 
 import { ImportDialog } from './ImportDialog';
@@ -28,7 +27,6 @@ export const Navbar: FC = () => {
       color="white"
       py={3}
     >
-      <Icon as={HiOutlineBriefcase} boxSize={8} marginBottom={3} />
       <Tooltip content="Import your resume">
         <IconButton
           color="white"
