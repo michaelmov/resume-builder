@@ -9,7 +9,7 @@ import {
   Svg,
   Path,
 } from '@react-pdf/renderer';
-import { Fragment, ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 import {
   Award,
@@ -132,9 +132,6 @@ const makeStyles = (accent: AccentPalette, marginScale: number) =>
     workExperienceSummary: {
       marginTop: 6,
     },
-    workExperienceHighlights: {
-      marginTop: 8,
-    },
     workExperienceHighlight: {
       display: 'flex',
       flexDirection: 'row',
@@ -175,9 +172,6 @@ const makeStyles = (accent: AccentPalette, marginScale: number) =>
     },
     projectDescription: {
       marginTop: 6,
-    },
-    projectHighlights: {
-      marginTop: 8,
     },
     projectHighlight: {
       display: 'flex',
@@ -234,14 +228,17 @@ const HighlightRow = ({
   value,
   style,
   accent,
+  first,
 }: {
   value: string;
   style: Styles[keyof Styles];
   accent: AccentPalette;
+  /** Opens the gap between the entry body and the start of its bullet list. */
+  first?: boolean;
 }) => (
   // A bullet list may break across pages, but never a single bullet — without
   // this the row splits and leaves its arrow stranded at the foot of the page.
-  <View style={style} wrap={false}>
+  <View style={first ? { ...style, marginTop: 8 } : style} wrap={false}>
     <ArrowSmRight color={accent.muted} />
     <Text style={{ marginLeft: 2 }}>{value}</Text>
   </View>
@@ -300,38 +297,28 @@ const WorkExperience = ({
             {startDate} - {endDate}
           </Text>
         </View>
-        {glued.length > 0 && (
-          <View style={styles.workExperienceHighlights}>
-            {glued.map((highlight, index) => (
-              <HighlightRow
-                key={index}
-                value={highlight.value}
-                style={styles.workExperienceHighlight}
-                accent={accent}
-              />
-            ))}
-          </View>
-        )}
+        {glued.map((highlight, index) => (
+          <HighlightRow
+            key={index}
+            value={highlight.value}
+            style={styles.workExperienceHighlight}
+            accent={accent}
+            first={index === 0}
+          />
+        ))}
       </KeepTogether>
       {work.summary && (
-        <View style={styles.workExperienceSummary}>
-          <Text>{work.summary}</Text>
-        </View>
+        <Text style={styles.workExperienceSummary}>{work.summary}</Text>
       )}
-      {flowing.length > 0 && (
-        // The glued bullet already opened the gap below the heading, so the
-        // remainder must not re-apply the list's top margin.
-        <View style={glued.length > 0 ? {} : styles.workExperienceHighlights}>
-          {flowing.map((highlight, index) => (
-            <HighlightRow
-              key={index}
-              value={highlight.value}
-              style={styles.workExperienceHighlight}
-              accent={accent}
-            />
-          ))}
-        </View>
-      )}
+      {flowing.map((highlight, index) => (
+        <HighlightRow
+          key={index}
+          value={highlight.value}
+          style={styles.workExperienceHighlight}
+          accent={accent}
+          first={glued.length === 0 && index === 0}
+        />
+      ))}
     </View>
   );
 };
@@ -386,36 +373,28 @@ const ProjectSection = ({
             {startDate} - {endDate}
           </Text>
         </View>
-        {glued.length > 0 && (
-          <View style={styles.projectHighlights}>
-            {glued.map((highlight, index) => (
-              <HighlightRow
-                key={index}
-                value={highlight}
-                style={styles.projectHighlight}
-                accent={accent}
-              />
-            ))}
-          </View>
-        )}
+        {glued.map((highlight, index) => (
+          <HighlightRow
+            key={index}
+            value={highlight}
+            style={styles.projectHighlight}
+            accent={accent}
+            first={index === 0}
+          />
+        ))}
       </KeepTogether>
       {project.description && (
-        <View style={styles.projectDescription}>
-          <Text>{project.description}</Text>
-        </View>
+        <Text style={styles.projectDescription}>{project.description}</Text>
       )}
-      {flowing.length > 0 && (
-        <View style={glued.length > 0 ? {} : styles.projectHighlights}>
-          {flowing.map((highlight, index) => (
-            <HighlightRow
-              key={index}
-              value={highlight}
-              style={styles.projectHighlight}
-              accent={accent}
-            />
-          ))}
-        </View>
-      )}
+      {flowing.map((highlight, index) => (
+        <HighlightRow
+          key={index}
+          value={highlight}
+          style={styles.projectHighlight}
+          accent={accent}
+          first={glued.length === 0 && index === 0}
+        />
+      ))}
     </View>
   );
 };
@@ -444,9 +423,7 @@ const SimpleEntry = ({
       </View>
     </KeepTogether>
     {summary ? (
-      <View style={styles.workExperienceSummary}>
-        <Text>{summary}</Text>
-      </View>
+      <Text style={styles.workExperienceSummary}>{summary}</Text>
     ) : null}
   </View>
 );
@@ -619,7 +596,7 @@ const DuoTemplate = ({
           <Text>{resume.basics?.summary}</Text>
         </View>
         {orderedSections.map((sectionType) => (
-          <Fragment key={sectionType}>
+          <View key={sectionType}>
             {withSectionHeading(
               sectionContent[sectionType] ?? [],
               <SectionTitle
@@ -627,7 +604,7 @@ const DuoTemplate = ({
                 styles={styles}
               />
             )}
-          </Fragment>
+          </View>
         ))}
       </Page>
     </Document>
