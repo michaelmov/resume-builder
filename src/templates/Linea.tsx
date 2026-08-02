@@ -29,6 +29,12 @@ import { formatDate } from '../utils/date-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
 
 import { AccentPalette } from './accents';
+import {
+  KeepTogether,
+  LeadingEntryProps,
+  splitHighlights,
+  withSectionHeading,
+} from './pagination';
 
 const FONTS = 'https://raw.githubusercontent.com/google/fonts/main/ofl';
 
@@ -285,8 +291,10 @@ const makeStyles = (accent: AccentPalette, marginScale: number) =>
 
 type Styles = ReturnType<typeof makeStyles>;
 
+// A bullet list may break across pages, but never a single bullet — without
+// this the row splits and leaves its mark stranded at the foot of the page.
 const Highlight = ({ value, styles }: { value: string; styles: Styles }) => (
-  <View style={styles.bulletRow}>
+  <View style={styles.bulletRow} wrap={false}>
     <View style={styles.bulletMark} />
     <Text style={styles.bulletText}>{value}</Text>
   </View>
@@ -308,34 +316,57 @@ const SectionHeader = ({
   </View>
 );
 
-const SkillsSection = ({ skill, styles }: { skill: Skill; styles: Styles }) => (
-  <View style={styles.skillRow} wrap={false}>
-    <Text style={styles.skillName}>{skill.name}</Text>
-    <View style={styles.skillKeywords}>
-      {skill.keywords.map((keyword, index) => (
-        <Text key={`${keyword.value}-${index}`} style={styles.keyword}>
-          {keyword.value}
-        </Text>
-      ))}
+// Skill and interest rows stay atomic — they are only a line or two, and
+// splitting one mid-keyword-list reads as a mistake.
+const SkillsSection = ({
+  skill,
+  styles,
+  leading,
+}: { skill: Skill; styles: Styles } & LeadingEntryProps) => (
+  <KeepTogether>
+    {leading}
+    <View style={styles.skillRow}>
+      <Text style={styles.skillName}>{skill.name}</Text>
+      <View style={styles.skillKeywords}>
+        {skill.keywords.map((keyword, index) => (
+          <Text key={`${keyword.value}-${index}`} style={styles.keyword}>
+            {keyword.value}
+          </Text>
+        ))}
+      </View>
     </View>
-  </View>
+  </KeepTogether>
 );
 
-const WorkExperience = ({ work, styles }: { work: Work; styles: Styles }) => {
+const WorkExperience = ({
+  work,
+  styles,
+  leading,
+}: { work: Work; styles: Styles } & LeadingEntryProps) => {
   const startDate = formatDate(work.startDate);
   const endDate = (work.isPresent ? 'Present' : formatDate(work.endDate)) || '';
+  const { glued, flowing } = splitHighlights(
+    work.highlights,
+    Boolean(work.summary)
+  );
 
   return (
-    <View style={styles.entry} wrap={false}>
-      <View style={styles.entryHead}>
-        <Text style={styles.entryTitle}>{work.name}</Text>
-        <Text style={styles.entryDates}>
-          {startDate} — {endDate}
-        </Text>
-      </View>
-      {work.position && <Text style={styles.entryRole}>{work.position}</Text>}
+    <View style={styles.entry}>
+      <KeepTogether>
+        {leading}
+        <View style={styles.entryHead}>
+          <Text style={styles.entryTitle}>{work.name}</Text>
+          <Text style={styles.entryDates}>
+            {startDate} — {endDate}
+          </Text>
+        </View>
+        {work.position && <Text style={styles.entryRole}>{work.position}</Text>}
+        {glued.map((highlight, index) => (
+          <Highlight key={index} value={highlight.value} styles={styles} />
+        ))}
+      </KeepTogether>
       {work.summary && <Text style={styles.entrySummary}>{work.summary}</Text>}
-      {work?.highlights?.map((highlight, index) => (
+      {flowing.map((highlight, index) => (
         <Highlight key={index} value={highlight.value} styles={styles} />
       ))}
     </View>
@@ -345,50 +376,59 @@ const WorkExperience = ({ work, styles }: { work: Work; styles: Styles }) => {
 const EducationSection = ({
   education,
   styles,
-}: {
-  education: Education;
-  styles: Styles;
-}) => {
+  leading,
+}: { education: Education; styles: Styles } & LeadingEntryProps) => {
   const detail = [education.studyType, education.area]
     .filter(Boolean)
     .join(' · ');
 
   return (
-    <View style={styles.entry} wrap={false}>
-      <View style={styles.entryHead}>
-        <Text style={styles.entryTitle}>{education.institution}</Text>
-        <Text style={styles.entryDates}>
-          {formatDate(education.startDate)} — {formatDate(education.endDate)}
-        </Text>
+    <KeepTogether>
+      {leading}
+      <View style={styles.entry}>
+        <View style={styles.entryHead}>
+          <Text style={styles.entryTitle}>{education.institution}</Text>
+          <Text style={styles.entryDates}>
+            {formatDate(education.startDate)} — {formatDate(education.endDate)}
+          </Text>
+        </View>
+        {detail ? <Text style={styles.entryRole}>{detail}</Text> : null}
       </View>
-      {detail ? <Text style={styles.entryRole}>{detail}</Text> : null}
-    </View>
+    </KeepTogether>
   );
 };
 
 const ProjectSection = ({
   project,
   styles,
-}: {
-  project: Project;
-  styles: Styles;
-}) => {
+  leading,
+}: { project: Project; styles: Styles } & LeadingEntryProps) => {
   const startDate = formatDate(project.startDate);
   const endDate = formatDate(project.endDate) || 'Present';
+  const { glued, flowing } = splitHighlights(
+    project.highlights,
+    Boolean(project.description)
+  );
 
   return (
-    <View style={styles.entry} wrap={false}>
-      <View style={styles.entryHead}>
-        <Text style={styles.entryTitle}>{project.name}</Text>
-        <Text style={styles.entryDates}>
-          {startDate} — {endDate}
-        </Text>
-      </View>
-      {project.type && <Text style={styles.entryRole}>{project.type}</Text>}
+    <View style={styles.entry}>
+      <KeepTogether>
+        {leading}
+        <View style={styles.entryHead}>
+          <Text style={styles.entryTitle}>{project.name}</Text>
+          <Text style={styles.entryDates}>
+            {startDate} — {endDate}
+          </Text>
+        </View>
+        {project.type && <Text style={styles.entryRole}>{project.type}</Text>}
+        {glued.map((highlight, index) => (
+          <Highlight key={index} value={highlight} styles={styles} />
+        ))}
+      </KeepTogether>
       {project.description && (
         <Text style={styles.entrySummary}>{project.description}</Text>
       )}
-      {project?.highlights?.map((highlight, index) => (
+      {flowing.map((highlight, index) => (
         <Highlight key={index} value={highlight} styles={styles} />
       ))}
     </View>
@@ -403,19 +443,23 @@ const SimpleEntry = ({
   role,
   summary,
   styles,
+  leading,
 }: {
   title?: string;
   dates?: string;
   role?: string;
   summary?: string;
   styles: Styles;
-}) => (
-  <View style={styles.entry} wrap={false}>
-    <View style={styles.entryHead}>
-      <Text style={styles.entryTitle}>{title}</Text>
-      {dates ? <Text style={styles.entryDates}>{dates}</Text> : null}
-    </View>
-    {role ? <Text style={styles.entryRole}>{role}</Text> : null}
+} & LeadingEntryProps) => (
+  <View style={styles.entry}>
+    <KeepTogether>
+      {leading}
+      <View style={styles.entryHead}>
+        <Text style={styles.entryTitle}>{title}</Text>
+        {dates ? <Text style={styles.entryDates}>{dates}</Text> : null}
+      </View>
+      {role ? <Text style={styles.entryRole}>{role}</Text> : null}
+    </KeepTogether>
     {summary ? <Text style={styles.entrySummary}>{summary}</Text> : null}
   </View>
 );
@@ -423,20 +467,21 @@ const SimpleEntry = ({
 const InterestGroup = ({
   interest,
   styles,
-}: {
-  interest: Interest;
-  styles: Styles;
-}) => (
-  <View style={styles.skillRow} wrap={false}>
-    <Text style={styles.skillName}>{interest.name}</Text>
-    <View style={styles.skillKeywords}>
-      {interest.keywords?.map((keyword, index) => (
-        <Text key={`${keyword.value}-${index}`} style={styles.keyword}>
-          {keyword.value}
-        </Text>
-      ))}
+  leading,
+}: { interest: Interest; styles: Styles } & LeadingEntryProps) => (
+  <KeepTogether>
+    {leading}
+    <View style={styles.skillRow}>
+      <Text style={styles.skillName}>{interest.name}</Text>
+      <View style={styles.skillKeywords}>
+        {interest.keywords?.map((keyword, index) => (
+          <Text key={`${keyword.value}-${index}`} style={styles.keyword}>
+            {keyword.value}
+          </Text>
+        ))}
+      </View>
     </View>
-  </View>
+  </KeepTogether>
 );
 
 const LineaTemplate = ({
@@ -483,7 +528,9 @@ const LineaTemplate = ({
   // Build the body for every section type; the active set + order chosen in the
   // Editor decides which appear (an active-but-empty section still shows its
   // numbered heading).
-  const sectionContent: Partial<Record<SectionTypes, ReactNode>> = {
+  // Entries only — the section header is handed to the first entry at render
+  // time (see `withSectionHeading`) so the two cannot be split across a page.
+  const sectionContent: Partial<Record<SectionTypes, ReactNode[]>> = {
     [SectionTypes.Skills]: skills.map((skill, index) => (
       <SkillsSection key={`${skill.name}-${index}`} skill={skill} styles={styles} />
     )),
@@ -591,12 +638,14 @@ const LineaTemplate = ({
 
         {sections.map((section, index) => (
           <View key={section.title} style={styles.section}>
-            <SectionHeader
-              index={index + 1}
-              title={section.title}
-              styles={styles}
-            />
-            {section.body}
+            {withSectionHeading(
+              section.body ?? [],
+              <SectionHeader
+                index={index + 1}
+                title={section.title}
+                styles={styles}
+              />
+            )}
           </View>
         ))}
       </Page>
