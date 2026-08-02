@@ -16,6 +16,10 @@ export default [
       '*.config.js',
       '*.config.ts',
       'vite-env.d.ts',
+      // Skill assets are templates meant to be copied into src/ before running,
+      // so their relative imports don't resolve from here and linting them in
+      // place only produces noise.
+      '.agents',
     ],
   },
   {
