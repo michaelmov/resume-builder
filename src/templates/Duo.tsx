@@ -31,6 +31,12 @@ import { formatDate } from '../utils/date-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
 
 import { AccentPalette } from './accents';
+import {
+  KeepTogether,
+  LeadingEntryProps,
+  splitHighlights,
+  withSectionHeading,
+} from './pagination';
 
 Font.register({
   family: 'Roboto Mono',
@@ -222,18 +228,47 @@ const SectionTitle = ({
   );
 };
 
-const SkillsSection = ({ skill, styles }: { skill: Skill; styles: Styles }) => {
+// One bullet row. Work and projects style their rows identically, so the row
+// style is passed in rather than picked here.
+const HighlightRow = ({
+  value,
+  style,
+  accent,
+}: {
+  value: string;
+  style: Styles[keyof Styles];
+  accent: AccentPalette;
+}) => (
+  // A bullet list may break across pages, but never a single bullet — without
+  // this the row splits and leaves its arrow stranded at the foot of the page.
+  <View style={style} wrap={false}>
+    <ArrowSmRight color={accent.muted} />
+    <Text style={{ marginLeft: 2 }}>{value}</Text>
+  </View>
+);
+
+const SkillsSection = ({
+  skill,
+  styles,
+  leading,
+}: {
+  skill: Skill;
+  styles: Styles;
+} & LeadingEntryProps) => {
   return (
-    <View style={{ marginBottom: 14 }}>
-      <Text style={styles.skillTitle}>{skill.name}</Text>
-      <View style={styles.skillKeywords}>
-        {skill.keywords.map((keyword, index) => (
-          <View style={styles.skillKeyword} key={`${skill.name}-${index}`}>
-            <Text>{keyword.value}</Text>
-          </View>
-        ))}
+    <KeepTogether>
+      {leading}
+      <View style={{ marginBottom: 14 }}>
+        <Text style={styles.skillTitle}>{skill.name}</Text>
+        <View style={styles.skillKeywords}>
+          {skill.keywords.map((keyword, index) => (
+            <View style={styles.skillKeyword} key={`${skill.name}-${index}`}>
+              <Text>{keyword.value}</Text>
+            </View>
+          ))}
+        </View>
       </View>
-    </View>
+    </KeepTogether>
   );
 };
 
@@ -241,36 +276,62 @@ const WorkExperience = ({
   work,
   styles,
   accent,
+  leading,
 }: {
   work: Work;
   styles: Styles;
   accent: AccentPalette;
-}) => {
+} & LeadingEntryProps) => {
   const startDate = formatDate(work.startDate);
   const endDate = (work.isPresent ? 'Present' : formatDate(work.endDate)) || '';
+  const { glued, flowing } = splitHighlights(
+    work.highlights,
+    Boolean(work.summary)
+  );
 
   return (
     <View style={{ marginBottom: 14 }}>
-      <View style={styles.workExperienceHeading}>
-        <Text style={styles.workExperienceName}>{work.name}</Text>
-        <Text style={styles.textLight}>{work.position}</Text>
-        <Text style={styles.textLight}>
-          {startDate} - {endDate}
-        </Text>
-      </View>
+      <KeepTogether>
+        {leading}
+        <View style={styles.workExperienceHeading}>
+          <Text style={styles.workExperienceName}>{work.name}</Text>
+          <Text style={styles.textLight}>{work.position}</Text>
+          <Text style={styles.textLight}>
+            {startDate} - {endDate}
+          </Text>
+        </View>
+        {glued.length > 0 && (
+          <View style={styles.workExperienceHighlights}>
+            {glued.map((highlight, index) => (
+              <HighlightRow
+                key={index}
+                value={highlight.value}
+                style={styles.workExperienceHighlight}
+                accent={accent}
+              />
+            ))}
+          </View>
+        )}
+      </KeepTogether>
       {work.summary && (
         <View style={styles.workExperienceSummary}>
           <Text>{work.summary}</Text>
         </View>
       )}
-      <View style={styles.workExperienceHighlights}>
-        {work?.highlights?.map((highlight, index) => (
-          <View key={index} style={styles.workExperienceHighlight}>
-            <ArrowSmRight color={accent.muted} />
-            <Text style={{ marginLeft: 2 }}>{highlight.value}</Text>
-          </View>
-        ))}
-      </View>
+      {flowing.length > 0 && (
+        // The glued bullet already opened the gap below the heading, so the
+        // remainder must not re-apply the list's top margin.
+        <View style={glued.length > 0 ? {} : styles.workExperienceHighlights}>
+          {flowing.map((highlight, index) => (
+            <HighlightRow
+              key={index}
+              value={highlight.value}
+              style={styles.workExperienceHighlight}
+              accent={accent}
+            />
+          ))}
+        </View>
+      )}
     </View>
   );
 };
@@ -278,18 +339,22 @@ const WorkExperience = ({
 const EducationSection = ({
   education,
   styles,
+  leading,
 }: {
   education: Education;
   styles: Styles;
-}) => {
+} & LeadingEntryProps) => {
   return (
-    <View style={{ ...styles.educationWrap, marginBottom: 14 }}>
-      <Text style={styles.workExperienceName}>{education.institution}</Text>
-      <Text style={styles.textLight}>{education.area}</Text>
-      <Text style={styles.textLight}>
-        {formatDate(education.startDate)} - {formatDate(education.endDate)}
-      </Text>
-    </View>
+    <KeepTogether>
+      {leading}
+      <View style={{ ...styles.educationWrap, marginBottom: 14 }}>
+        <Text style={styles.workExperienceName}>{education.institution}</Text>
+        <Text style={styles.textLight}>{education.area}</Text>
+        <Text style={styles.textLight}>
+          {formatDate(education.startDate)} - {formatDate(education.endDate)}
+        </Text>
+      </View>
+    </KeepTogether>
   );
 };
 
@@ -297,36 +362,60 @@ const ProjectSection = ({
   project,
   styles,
   accent,
+  leading,
 }: {
   project: Project;
   styles: Styles;
   accent: AccentPalette;
-}) => {
+} & LeadingEntryProps) => {
   const startDate = formatDate(project.startDate);
   const endDate = formatDate(project.endDate) || 'Present';
+  const { glued, flowing } = splitHighlights(
+    project.highlights,
+    Boolean(project.description)
+  );
 
   return (
     <View style={{ marginBottom: 14 }}>
-      <View style={styles.projectHeading}>
-        <Text style={styles.projectName}>{project.name}</Text>
-        <Text style={styles.textLight}>{project.type}</Text>
-        <Text style={styles.textLight}>
-          {startDate} - {endDate}
-        </Text>
-      </View>
+      <KeepTogether>
+        {leading}
+        <View style={styles.projectHeading}>
+          <Text style={styles.projectName}>{project.name}</Text>
+          <Text style={styles.textLight}>{project.type}</Text>
+          <Text style={styles.textLight}>
+            {startDate} - {endDate}
+          </Text>
+        </View>
+        {glued.length > 0 && (
+          <View style={styles.projectHighlights}>
+            {glued.map((highlight, index) => (
+              <HighlightRow
+                key={index}
+                value={highlight}
+                style={styles.projectHighlight}
+                accent={accent}
+              />
+            ))}
+          </View>
+        )}
+      </KeepTogether>
       {project.description && (
         <View style={styles.projectDescription}>
           <Text>{project.description}</Text>
         </View>
       )}
-      <View style={styles.projectHighlights}>
-        {project?.highlights?.map((highlight, index) => (
-          <View key={index} style={styles.projectHighlight}>
-            <ArrowSmRight color={accent.muted} />
-            <Text style={{ marginLeft: 2 }}>{highlight}</Text>
-          </View>
-        ))}
-      </View>
+      {flowing.length > 0 && (
+        <View style={glued.length > 0 ? {} : styles.projectHighlights}>
+          {flowing.map((highlight, index) => (
+            <HighlightRow
+              key={index}
+              value={highlight}
+              style={styles.projectHighlight}
+              accent={accent}
+            />
+          ))}
+        </View>
+      )}
     </View>
   );
 };
@@ -337,19 +426,23 @@ const SimpleEntry = ({
   dates,
   summary,
   styles,
+  leading,
 }: {
   title?: string;
   meta?: string;
   dates?: string;
   summary?: string;
   styles: Styles;
-}) => (
+} & LeadingEntryProps) => (
   <View style={{ marginBottom: 14 }}>
-    <View style={styles.workExperienceHeading}>
-      <Text style={styles.workExperienceName}>{title}</Text>
-      {meta ? <Text style={styles.textLight}>{meta}</Text> : null}
-      {dates ? <Text style={styles.textLight}>{dates}</Text> : null}
-    </View>
+    <KeepTogether>
+      {leading}
+      <View style={styles.workExperienceHeading}>
+        <Text style={styles.workExperienceName}>{title}</Text>
+        {meta ? <Text style={styles.textLight}>{meta}</Text> : null}
+        {dates ? <Text style={styles.textLight}>{dates}</Text> : null}
+      </View>
+    </KeepTogether>
     {summary ? (
       <View style={styles.workExperienceSummary}>
         <Text>{summary}</Text>
@@ -361,20 +454,24 @@ const SimpleEntry = ({
 const InterestGroup = ({
   interest,
   styles,
+  leading,
 }: {
   interest: Interest;
   styles: Styles;
-}) => (
-  <View style={{ marginBottom: 14 }}>
-    <Text style={styles.skillTitle}>{interest.name}</Text>
-    <View style={styles.skillKeywords}>
-      {interest.keywords?.map((keyword, index) => (
-        <View style={styles.skillKeyword} key={`${keyword.value}-${index}`}>
-          <Text>{keyword.value}</Text>
-        </View>
-      ))}
+} & LeadingEntryProps) => (
+  <KeepTogether>
+    {leading}
+    <View style={{ marginBottom: 14 }}>
+      <Text style={styles.skillTitle}>{interest.name}</Text>
+      <View style={styles.skillKeywords}>
+        {interest.keywords?.map((keyword, index) => (
+          <View style={styles.skillKeyword} key={`${keyword.value}-${index}`}>
+            <Text>{keyword.value}</Text>
+          </View>
+        ))}
+      </View>
     </View>
-  </View>
+  </KeepTogether>
 );
 
 const DuoTemplate = ({
@@ -391,74 +488,51 @@ const DuoTemplate = ({
     [accent, marginScale]
   );
 
-  // A section is rendered with its title + body; the active set + order chosen
-  // in the Editor decides which appear (an active-but-empty section still shows
-  // its heading).
-  const section = (type: SectionTypes, body: ReactNode): ReactNode => (
-    <>
-      <SectionTitle
-        title={getSectionTitle(type, resume.sectionTitles)}
+  // Entries only — the section's title is handed to the first entry at render
+  // time (see `withSectionHeading`) so the two cannot be split across a page.
+  const sectionContent: Partial<Record<SectionTypes, ReactNode[]>> = {
+    [SectionTypes.Skills]: resume.skills.map((skill, index) => (
+      <SkillsSection
+        key={`${skill.name}-${index}`}
+        skill={skill}
         styles={styles}
       />
-      {body}
-    </>
-  );
-
-  const sectionContent: Partial<Record<SectionTypes, ReactNode>> = {
-    [SectionTypes.Skills]: section(
-      SectionTypes.Skills,
-      resume.skills.map((skill, index) => (
-        <SkillsSection key={`${skill.name}-${index}`} skill={skill} styles={styles} />
-      ))
-    ),
-    [SectionTypes.Work]: section(
-      SectionTypes.Work,
-      resume.work.map((work, index) => (
-        <WorkExperience
-          key={`${work.name}-${index}`}
-          work={work}
-          styles={styles}
-          accent={accent}
-        />
-      ))
-    ),
-    [SectionTypes.Volunteer]: section(
-      SectionTypes.Volunteer,
-      resume.volunteer.map((item, index) => (
-        <WorkExperience
-          key={`${item.organization}-${index}`}
-          work={{ ...item, name: item.organization || item.name } as Work}
-          styles={styles}
-          accent={accent}
-        />
-      ))
-    ),
-    [SectionTypes.Education]: section(
-      SectionTypes.Education,
-      resume.education.map((education, index) => (
-        <EducationSection
-          key={`${education.institution}-${index}`}
-          education={education}
-          styles={styles}
-        />
-      ))
-    ),
-    [SectionTypes.Awards]: section(
-      SectionTypes.Awards,
-      resume.awards.map((item: Award, index) => (
-        <SimpleEntry
-          key={`${item.title}-${index}`}
-          title={item.title}
-          meta={item.awarder}
-          dates={formatDate(item.date)}
-          summary={item.summary}
-          styles={styles}
-        />
-      ))
-    ),
-    [SectionTypes.Certificates]: section(
-      SectionTypes.Certificates,
-      resume.certificates.map((item: Certificate, index) => (
+    )),
+    [SectionTypes.Work]: resume.work.map((work, index) => (
+      <WorkExperience
+        key={`${work.name}-${index}`}
+        work={work}
+        styles={styles}
+        accent={accent}
+      />
+    )),
+    [SectionTypes.Volunteer]: resume.volunteer.map((item, index) => (
+      <WorkExperience
+        key={`${item.organization}-${index}`}
+        work={{ ...item, name: item.organization || item.name } as Work}
+        styles={styles}
+        accent={accent}
+      />
+    )),
+    [SectionTypes.Education]: resume.education.map((education, index) => (
+      <EducationSection
+        key={`${education.institution}-${index}`}
+        education={education}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.Awards]: resume.awards.map((item: Award, index) => (
+      <SimpleEntry
+        key={`${item.title}-${index}`}
+        title={item.title}
+        meta={item.awarder}
+        dates={formatDate(item.date)}
+        summary={item.summary}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.Certificates]: resume.certificates.map(
+      (item: Certificate, index) => (
         <SimpleEntry
           key={`${item.name}-${index}`}
           title={item.name}
@@ -466,11 +540,10 @@ const DuoTemplate = ({
           dates={formatDate(item.date)}
           styles={styles}
         />
-      ))
+      )
     ),
-    [SectionTypes.Publications]: section(
-      SectionTypes.Publications,
-      resume.publications.map((item: Publication, index) => (
+    [SectionTypes.Publications]: resume.publications.map(
+      (item: Publication, index) => (
         <SimpleEntry
           key={`${item.name}-${index}`}
           title={item.name}
@@ -479,47 +552,41 @@ const DuoTemplate = ({
           summary={item.summary}
           styles={styles}
         />
-      ))
+      )
     ),
-    [SectionTypes.Languages]: section(
-      SectionTypes.Languages,
-      resume.languages.map((item: Language, index) => (
-        <SimpleEntry
-          key={`${item.language}-${index}`}
-          title={item.language}
-          meta={item.fluency}
-          styles={styles}
-        />
-      ))
-    ),
-    [SectionTypes.Interests]: section(
-      SectionTypes.Interests,
-      resume.interests.map((item: Interest, index) => (
-        <InterestGroup key={`${item.name}-${index}`} interest={item} styles={styles} />
-      ))
-    ),
-    [SectionTypes.References]: section(
-      SectionTypes.References,
-      resume.references.map((item: Reference, index) => (
+    [SectionTypes.Languages]: resume.languages.map((item: Language, index) => (
+      <SimpleEntry
+        key={`${item.language}-${index}`}
+        title={item.language}
+        meta={item.fluency}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.Interests]: resume.interests.map((item: Interest, index) => (
+      <InterestGroup
+        key={`${item.name}-${index}`}
+        interest={item}
+        styles={styles}
+      />
+    )),
+    [SectionTypes.References]: resume.references.map(
+      (item: Reference, index) => (
         <SimpleEntry
           key={`${item.name}-${index}`}
           title={item.name}
           summary={item.reference}
           styles={styles}
         />
-      ))
+      )
     ),
-    [SectionTypes.Projects]: section(
-      SectionTypes.Projects,
-      resume.projects.map((project, index) => (
-        <ProjectSection
-          key={`${project.name}-${index}`}
-          project={project}
-          styles={styles}
-          accent={accent}
-        />
-      ))
-    ),
+    [SectionTypes.Projects]: resume.projects.map((project, index) => (
+      <ProjectSection
+        key={`${project.name}-${index}`}
+        project={project}
+        styles={styles}
+        accent={accent}
+      />
+    )),
   };
 
   const orderedSections = resolveSectionOrder(resume.sectionOrder);
@@ -551,13 +618,17 @@ const DuoTemplate = ({
         <View style={styles.summary}>
           <Text>{resume.basics?.summary}</Text>
         </View>
-        {orderedSections.map((sectionType) =>
-          sectionContent[sectionType] ? (
-            <Fragment key={sectionType}>
-              {sectionContent[sectionType]}
-            </Fragment>
-          ) : null
-        )}
+        {orderedSections.map((sectionType) => (
+          <Fragment key={sectionType}>
+            {withSectionHeading(
+              sectionContent[sectionType] ?? [],
+              <SectionTitle
+                title={getSectionTitle(sectionType, resume.sectionTitles)}
+                styles={styles}
+              />
+            )}
+          </Fragment>
+        ))}
       </Page>
     </Document>
   );
