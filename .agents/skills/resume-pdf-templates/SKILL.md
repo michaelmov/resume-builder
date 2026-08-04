@@ -8,7 +8,8 @@ description: >
   fonts, changing accents or page margins, or investigating anything about how
   the generated PDF paginates: headings stranded at the bottom of a page,
   entries jumping wholesale to the next page, stray bullet markers, unexpected
-  whitespace at the foot of a page, or a section splitting in the wrong place.
+  whitespace at the foot of a page, lines drawn on top of each other at the
+  foot of a page, or a section splitting in the wrong place.
   Also use it when someone reaches for `minPresenceAhead`, `wrap`, or `break`
   on a react-pdf node, asks why a PDF layout looks fine on screen but breaks
   badly across pages, or wants a two-column, sidebar, or multi-column resume
@@ -32,7 +33,7 @@ src/templates/
 ├── index.ts        registry — id, name, defaultAccentId, supportsAccent?, Component
 ├── accents.ts      AccentPalette ramps (soft / muted / strong / swatch)
 ├── margins.ts      Narrow/Normal/Wide as multipliers on each template's base padding
-├── pagination.tsx  KeepTogether, withSectionHeading, splitHighlights  ← read this first
+├── pagination.tsx  KeepTogether, withSectionHeading, splitHighlights, SectionAnchor  ← read this first
 ├── Duo.tsx  Linea.tsx  Aria.tsx  Mono.tsx
 ```
 
@@ -48,7 +49,8 @@ empirically rather than assumed. If you are about to reach for it, read
 defeats it and the measurements proving it.
 
 What works is making the heading and the start of its first entry a single
-unsplittable box. Three pieces in `pagination.tsx` do this:
+unsplittable box, and keeping it out of a page that has no room for it. Four
+pieces in `pagination.tsx` do this:
 
 - **`KeepTogether`** — a `View wrap={false}`. Nothing inside it can split.
 - **`withSectionHeading(entries, heading)`** — hands the heading *to the first
@@ -62,6 +64,14 @@ unsplittable box. Three pieces in `pagination.tsx` do this:
   always has a real line of content beneath it. When a summary comes first,
   nothing extra is glued: a long paragraph inside a `wrap={false}` box could not
   wrap, which would create the page-hogging block we are trying to avoid.
+- **`SectionAnchor`** — a zero-height `View` that `withSectionHeading` prepends
+  to every section, so the section is never laid out with an empty child list.
+  react-pdf keeps an entry whose children all moved to the next page *on the
+  current page* when its container has nothing on that page yet — which is
+  always true of a section's first entry — and Yoga then shrinks the entry into
+  whatever room is left, drawing every line on top of the next. The anchor makes
+  the section look started so the entry moves instead. Details in
+  `references/pagination-internals.md`.
 
 ### Four structural rules
 
@@ -254,9 +264,13 @@ Pagination bugs are invisible until a resume spills onto a second page, and the
 symptoms are geometric — you cannot spot them by reading JSX. Check them by
 rendering.
 
-`assets/pagination-check.test.ts` renders every template with the mock resume
-and reports, per template: page count, how far each page fills, any section
-heading that is the last line on its page, and any stranded bullet marker.
+`assets/pagination-check.test.ts` renders every template with the mock resume,
+padding the profile summary a line at a time so every break slides down the
+page, and reports per render: page count, how far each page fills, any section
+heading that is the last line on its page, any entry squashed into the bottom
+margin, and any stranded bullet marker. The sweep is the point — a single
+render of the default resume passes on builds that break as soon as a line of
+text is added.
 
 ```bash
 cp .agents/skills/resume-pdf-templates/assets/pagination-check.test.ts \

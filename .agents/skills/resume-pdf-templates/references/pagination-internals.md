@@ -11,6 +11,7 @@ from documentation.
 - [The algorithm](#the-algorithm)
 - [Why `minPresenceAhead` does not work](#why-minpresenceahead-does-not-work)
 - [Why the section wrapper matters](#why-the-section-wrapper-matters)
+- [Why every section needs an anchor](#why-every-section-needs-an-anchor)
 - [How to investigate a new pagination bug](#how-to-investigate-a-new-pagination-bug)
 
 ## The algorithm
@@ -128,6 +129,57 @@ The misleading part: with a description present the glued box is *smaller* and
 the entry moved; with the description removed the glued box is *larger* and the
 entry stayed. Anything that looks like "it doesn't fit" should be checked
 against that observation before being believed.
+
+## Why every section needs an anchor
+
+`splitNodes` has an escape hatch for a child whose own children have all moved
+to the next page:
+
+```js
+if (shouldSplit) {
+  const [currentChild, nextChild] = split(child, height, contentArea);
+  // All children are moved to the next page, it doesn't make sense to show the parent on the current page
+  if (child.children.length > 0 && currentChild.children.length === 0) {
+    // But if the current page is empty then we can just include the parent on the current page
+    if (currentChildren.length === 0) {
+      currentChildren.push(child, ...futureFixedNodes);  // ← keeps it here
+      …
+```
+
+`currentChildren` is the **enclosing container's** accumulated children, not the
+page's — but the comment reads it as "the current page is empty". `splitNodes`
+recurses per container, so inside a section wrapper that list is empty for
+exactly one node: the section's **first entry**. When that entry's glued box
+does not fit in the space left, the entry is kept on the page anyway, and
+because `flexShrink` defaults to 1 (`setFlexShrink(value || 1)`) Yoga shrinks it
+into the few points remaining. Each child collapses toward the same origin while
+its text still draws at its own line positions, so the entry renders as a knot of
+overlapping lines below the bottom margin — and the baselines come out
+interleaved rather than in document order, which is the tell.
+
+Only first entries are affected. By the second entry the section has children on
+the page, the `else` branch runs, and the entry moves to the next page correctly.
+That is why the bug hides until a section order change lands a section heading
+right at the page foot.
+
+`SectionAnchor` — an empty `View`, prepended by `withSectionHeading` — makes
+`currentChildren` non-empty, so the first entry takes the `else` branch too. It
+has no height and no margin, so the first entry's `box.top` stays 0 and keeps the
+immunity from being pushed described above. There is no infinite-loop risk: a
+glued box taller than a whole page is caught earlier by the
+`!fitsInsidePage && !canWrap` branch, which renders and clips it with a warning.
+
+Measured with the default resume, sections ordered Skills / Work / Projects /
+Education (page bottom padding y=46, so the first row is drawing ~18pt into the
+margin):
+
+| | page 1 fill | Projects entry 1 |
+|---|---|---|
+| before | y=28.5, 8 baselines within 14pt | squashed onto page 1 |
+| after | y=99.0 | whole, on page 2 |
+
+Every other template and section order rendered identical geometry before and
+after, so the anchor changes nothing except the case it fixes.
 
 ## How to investigate a new pagination bug
 
