@@ -168,13 +168,6 @@ const makeStyles = (accent: AccentPalette, marginScale: number) =>
       alignItems: 'flex-end',
       marginBottom: 13,
     },
-    sectionIndex: {
-      fontFamily: 'Spectral',
-      fontWeight: 500,
-      fontSize: 10,
-      color: accent.strong,
-      marginRight: 8,
-    },
     sectionTitle: {
       fontFamily: 'Barlow Semi Condensed',
       fontWeight: 600,
@@ -301,16 +294,13 @@ const Highlight = ({ value, styles }: { value: string; styles: Styles }) => (
 );
 
 const SectionHeader = ({
-  index,
   title,
   styles,
 }: {
-  index: number;
   title: string;
   styles: Styles;
 }) => (
   <View style={styles.sectionHeader}>
-    <Text style={styles.sectionIndex}>{String(index).padStart(2, '0')}</Text>
     <Text style={styles.sectionTitle}>{title}</Text>
     <View style={styles.sectionRule} />
   </View>
@@ -527,7 +517,7 @@ const LineaTemplate = ({
 
   // Build the body for every section type; the active set + order chosen in the
   // Editor decides which appear (an active-but-empty section still shows its
-  // numbered heading).
+  // heading).
   // Entries only — the section header is handed to the first entry at render
   // time (see `withSectionHeading`) so the two cannot be split across a page.
   const sectionContent: Partial<Record<SectionTypes, ReactNode[]>> = {
@@ -636,15 +626,11 @@ const LineaTemplate = ({
           )}
         </View>
 
-        {sections.map((section, index) => (
+        {sections.map((section) => (
           <View key={section.title} style={styles.section}>
             {withSectionHeading(
               section.body ?? [],
-              <SectionHeader
-                index={index + 1}
-                title={section.title}
-                styles={styles}
-              />
+              <SectionHeader title={section.title} styles={styles} />
             )}
           </View>
         ))}
