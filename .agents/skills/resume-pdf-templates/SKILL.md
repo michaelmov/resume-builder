@@ -2,8 +2,8 @@
 name: resume-pdf-templates
 description: >
   Build, edit, and debug the @react-pdf/renderer resume templates in
-  src/templates/ (Duo, Linea, Aria, Mono). Use this skill whenever the task
-  touches a resume template at all — adding a new template, restyling an
+  src/templates/ (Duo, Linea, Aria, Folio, Mono). Use this skill whenever the
+  task touches a resume template at all — adding a new template, restyling an
   existing one, wiring a new resume section into the templates, registering
   fonts, changing accents or page margins, or investigating anything about how
   the generated PDF paginates: headings stranded at the bottom of a page,
@@ -34,7 +34,7 @@ src/templates/
 ├── accents.ts      AccentPalette ramps (soft / muted / strong / swatch)
 ├── margins.ts      Narrow/Normal/Wide as multipliers on each template's base padding
 ├── pagination.tsx  KeepTogether, withSectionHeading, splitHighlights, SectionAnchor  ← read this first
-├── Duo.tsx  Linea.tsx  Aria.tsx  Mono.tsx
+├── Duo.tsx  Linea.tsx  Aria.tsx  Folio.tsx  Mono.tsx
 ```
 
 ## The rule that matters most
@@ -106,7 +106,7 @@ available page height`). Glue a heading, an entry head, and at most one bullet.
 **4. Build single-column templates.** Do not add a template whose page content
 flows down side-by-side columns — no sidebar-plus-main, no two-column section
 layout. Vary templates through type, spacing, rules, and color instead. That is
-how Duo, Linea, Aria, and Mono differ from each other, and it is not a
+how Duo, Linea, Aria, Folio, and Mono differ from each other, and it is not a
 stylistic preference:
 
 - **Columns break independently.** When a tall row overflows, react-pdf

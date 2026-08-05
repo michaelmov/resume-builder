@@ -5,6 +5,7 @@ import { Resume } from '../types/resume.model';
 import { AccentPalette } from './accents';
 import AriaTemplate from './Aria';
 import DuoTemplate from './Duo';
+import FolioTemplate from './Folio';
 import LineaTemplate from './Linea';
 import MonoTemplate from './Mono';
 
@@ -50,6 +51,12 @@ export const templates: TemplateDefinition[] = [
     name: 'Aria',
     defaultAccentId: 'sage',
     Component: AriaTemplate,
+  },
+  {
+    id: 'folio',
+    name: 'Folio',
+    defaultAccentId: 'blush',
+    Component: FolioTemplate,
   },
   {
     // Monochrome by design — it has no secondary color, so the accent picker is
