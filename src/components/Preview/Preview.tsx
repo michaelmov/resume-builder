@@ -6,21 +6,21 @@ import {
   HiOutlineZoomIn,
   HiOutlineZoomOut,
 } from 'react-icons/hi';
-import { Document, Page, pdfjs } from 'react-pdf';
+import { Document, Page } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 
-import { useAccentLocalStorage } from '../../hooks/useAccentLocalStorage';
-import { useMarginLocalStorage } from '../../hooks/useMarginLocalStorage';
 import { useResume } from '../../hooks/useResume';
-import { useTemplateLocalStorage } from '../../hooks/useTemplateLocalStorage';
-import { DEFAULT_TEMPLATE_ID, templates } from '../../templates';
+import { templates } from '../../templates';
 import { getAccent } from '../../templates/accents';
-import { DEFAULT_MARGIN_ID, getMarginScale } from '../../templates/margins';
+import { getMarginScale } from '../../templates/margins';
+import { ResumeSummary } from '../../types/resume-library';
+import { ensurePdfWorker } from '../../utils/pdf-worker';
+import { putThumbnail, renderPdfThumbnail } from '../../utils/thumbnails';
 
 import { PreviewNavBar } from './PreviewNavBar';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+ensurePdfWorker();
 
 const DEFAULT_SCALE = 1.4;
 const MAX_SCALE = 2;
@@ -38,6 +38,11 @@ const clampScale = (value: number) =>
 // regeneration instead of thrashing the renderer on every keystroke's commit.
 const RENDER_DEBOUNCE_MS = 200;
 
+// How long the PDF and the resume's timestamp must both stay still before the
+// list thumbnail is captured. Comfortably longer than the render debounce, so a
+// burst of typing produces one capture rather than one per pause.
+const THUMBNAIL_CAPTURE_DELAY_MS = 1200;
+
 // The zoom controls float over the preview canvas, which is itself a light
 // neutral — a tinted `subtle` fill would sink into it, so they get their own
 // panel surface, hairline, and lift instead.
@@ -51,34 +56,40 @@ const floatingControlProps = {
   _hover: { bg: 'bg.muted', color: 'fg' },
 } as const;
 
-export const Preview: FC<{
+interface PreviewProps {
+  /** Index entry for the open resume — its name and, for the thumbnail, its stamp. */
+  summary: ResumeSummary;
+  onRename: (name: string) => void;
+  /** Open the title in edit mode — a resume that was just created. */
+  focusName: boolean;
   isEditorCollapsed: boolean;
   onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
-}> = ({ isEditorCollapsed, onEditorCollapseChange }) => {
-  const { resume } = useResume();
-  const { getTemplateId, saveTemplateId } = useTemplateLocalStorage();
-  const { getAccentId, saveAccentId } = useAccentLocalStorage();
-  const { getMarginId, saveMarginId } = useMarginLocalStorage();
+}
 
-  const [templateId, setTemplateId] = useState<string>(
-    () => getTemplateId() ?? DEFAULT_TEMPLATE_ID
+export const Preview: FC<PreviewProps> = ({
+  summary,
+  onRename,
+  focusName,
+  isEditorCollapsed,
+  onEditorCollapseChange,
+}) => {
+  // Template, accent, and margin are stored on the resume itself, so switching
+  // resumes restores the look each one was last rendered with.
+  const { resume, settings, updateSettings } = useResume();
+  const { templateId, accentId, marginId } = settings;
+
+  const setTemplateId = useCallback(
+    (id: string) => updateSettings({ templateId: id }),
+    [updateSettings]
   );
-  const [accentId, setAccentId] = useState<string | null>(() => getAccentId());
-  const [marginId, setMarginId] = useState<string>(
-    () => getMarginId() ?? DEFAULT_MARGIN_ID
+  const setAccentId = useCallback(
+    (id: string | null) => updateSettings({ accentId: id }),
+    [updateSettings]
   );
-
-  useEffect(() => {
-    saveTemplateId(templateId);
-  }, [templateId, saveTemplateId]);
-
-  useEffect(() => {
-    saveAccentId(accentId);
-  }, [accentId, saveAccentId]);
-
-  useEffect(() => {
-    saveMarginId(marginId);
-  }, [marginId, saveMarginId]);
+  const setMarginId = useCallback(
+    (id: string) => updateSettings({ marginId: id }),
+    [updateSettings]
+  );
 
   const activeTemplate = useMemo(
     () =>
@@ -148,6 +159,35 @@ export const Preview: FC<{
     return () => clearTimeout(handle);
   }, [template, update]);
 
+  // Snapshot page 1 for the resume list. The editor already holds a rendered
+  // PDF, so capturing here means the list mostly displays stored images instead
+  // of re-rendering every resume on arrival.
+  //
+  // The wait is deliberately long: `updatedAt` bumps the moment an edit is
+  // saved, while the blob catches up only after the debounced regeneration, so
+  // capturing eagerly risks stamping an older image with a newer time — which
+  // would read as fresh and never be re-rendered. Waiting until both have been
+  // quiet closes that window.
+  useEffect(() => {
+    if (!blob) return;
+
+    let cancelled = false;
+    const handle = setTimeout(async () => {
+      const png = await renderPdfThumbnail(blob).catch((error) => {
+        console.error('Could not render the resume thumbnail:', error);
+        return null;
+      });
+      if (png && !cancelled) {
+        await putThumbnail(summary.id, { png, stamp: summary.updatedAt });
+      }
+    }, THUMBNAIL_CAPTURE_DELAY_MS);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(handle);
+    };
+  }, [blob, summary.id, summary.updatedAt]);
+
   return (
     <Box
       display="flex"
@@ -162,6 +202,9 @@ export const Preview: FC<{
     >
       <PreviewNavBar
         resumeTemplate={template}
+        resumeName={summary.name}
+        onRename={onRename}
+        focusName={focusName}
         selectedTemplateId={templateId}
         onTemplateChange={setTemplateId}
         selectedAccentId={accentId}

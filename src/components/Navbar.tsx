@@ -5,18 +5,17 @@ import {
   LinkOverlay,
   Spacer,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
-import { HiOutlineMoon, HiOutlineSun, HiOutlineUpload } from 'react-icons/hi';
+import { FC, ReactNode } from 'react';
+import { HiOutlineMoon, HiOutlineSun } from 'react-icons/hi';
 import { VscGithub } from 'react-icons/vsc';
 
 import { useColorMode } from '../hooks/useColorMode';
 
-import { ImportDialog } from './ImportDialog';
 import { Tooltip } from './ui/Tooltip';
 
 // The rail is dark chrome in both color modes, so its buttons keep the same
 // light-on-dark treatment throughout rather than following `fg`/`bg` tokens.
-const railButtonProps = {
+export const railButtonProps = {
   variant: 'ghost',
   color: 'inherit',
   _hover: {
@@ -25,8 +24,12 @@ const railButtonProps = {
   },
 } as const;
 
-export const Navbar: FC = () => {
-  const [isImportOpen, setIsImportOpen] = useState(false);
+/**
+ * The app's left rail. It is present on both screens so the theme toggle and
+ * repo link never move and navigating doesn't reflow the window; only the top
+ * slot is contextual — the logo on the list, back and import in the editor.
+ */
+export const Navbar: FC<{ children?: ReactNode }> = ({ children }) => {
   const { colorMode, toggleColorMode } = useColorMode();
 
   const colorModeLabel =
@@ -43,17 +46,9 @@ export const Navbar: FC = () => {
       alignItems="center"
       color="app.railFg"
       py={3}
+      gap={1}
     >
-      <Tooltip content="Import your resume">
-        <IconButton
-          {...railButtonProps}
-          aria-label="Import Resume"
-          onClick={() => setIsImportOpen(true)}
-        >
-          <HiOutlineUpload />
-        </IconButton>
-      </Tooltip>
-      <ImportDialog open={isImportOpen} onOpenChange={setIsImportOpen} />
+      {children}
       <Spacer />
       <Tooltip content={colorModeLabel}>
         <IconButton
