@@ -1,6 +1,6 @@
 import { Box, Flex, IconButton } from '@chakra-ui/react';
 import { FC, useCallback, useMemo, useState } from 'react';
-import { HiOutlineUpload, HiOutlineViewGrid } from 'react-icons/hi';
+import { HiOutlineViewGrid } from 'react-icons/hi';
 import {
   Navigate,
   useLocation,
@@ -9,14 +9,11 @@ import {
 } from 'react-router-dom';
 
 import { Editor } from '../components/Editor/Editor';
-import { ImportDialog } from '../components/ImportDialog';
 import { Navbar, railButtonProps } from '../components/Navbar';
 import { Preview } from '../components/Preview/Preview';
 import { SaveErrorBanner } from '../components/SaveErrorBanner';
 import { Tooltip } from '../components/ui/Tooltip';
 import { ResumeProvider } from '../context/ResumeContext/ResumeContext';
-import { ImportedResume } from '../hooks/useJsonImport';
-import { useResume } from '../hooks/useResume';
 import { useResumeLibrary } from '../hooks/useResumeLibrary';
 import { ResumeSummary } from '../types/resume-library';
 import { readDocument } from '../utils/resume-storage';
@@ -33,21 +30,8 @@ const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
 }) => {
   const navigate = useNavigate();
   const { renameResume } = useResumeLibrary();
-  const { updateResume, updateSettings } = useResume();
 
   const [isEditorCollapsed, setIsEditorCollapsed] = useState(false);
-  const [isImportOpen, setIsImportOpen] = useState(false);
-
-  const handleImport = useCallback(
-    (imported: ImportedResume) => {
-      updateResume(imported.resume);
-      if (imported.meta.settings) updateSettings(imported.meta.settings);
-      // The resume keeps its name deliberately. Importing here means "pull the
-      // newer content into this resume", and silently retitling the thing the
-      // user is looking at would be the surprising part.
-    },
-    [updateResume, updateSettings]
-  );
 
   const handleRename = useCallback(
     (name: string) => renameResume(summary.id, name),
@@ -68,25 +52,8 @@ const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
               <HiOutlineViewGrid />
             </IconButton>
           </Tooltip>
-          <Tooltip content="Import over this resume">
-            <IconButton
-              {...railButtonProps}
-              aria-label="Import over this resume"
-              onClick={() => setIsImportOpen(true)}
-            >
-              <HiOutlineUpload />
-            </IconButton>
-          </Tooltip>
         </Navbar>
       </Box>
-
-      <ImportDialog
-        open={isImportOpen}
-        onOpenChange={setIsImportOpen}
-        mode="replace"
-        replacingName={summary.name}
-        onImport={handleImport}
-      />
 
       {/* Editor Panel — slides out (keeping its width) when collapsed */}
       <Box
@@ -137,7 +104,7 @@ const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
  * mounting the provider, so a stale bookmark or a resume deleted in another tab
  * lands back on the list with an explanation rather than on a broken editor.
  */
-export const EditorScreen: FC = () => {
+export const EditorPage: FC = () => {
   const { id } = useParams<{ id: string }>();
   const { resumes } = useResumeLibrary();
   const { state } = useLocation() as { state: EditorLocationState | null };

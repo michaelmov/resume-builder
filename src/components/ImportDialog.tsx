@@ -4,26 +4,20 @@ import {
   Button,
   Clipboard,
   FileUpload,
-  Flex,
   Icon,
   Link,
   Spinner,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback } from 'react';
 import {
-  HiOutlineExclamation,
   HiOutlineExternalLink,
   HiOutlineSparkles,
   HiOutlineUpload,
 } from 'react-icons/hi';
 
-import {
-  ImportedResume,
-  nameForImport,
-  useJsonImport,
-} from '../hooks/useJsonImport';
+import { ImportedResume, useJsonImport } from '../hooks/useJsonImport';
 import { HANDOFF_PROMPT } from '../utils/handoff-prompt';
 
 import {
@@ -38,14 +32,6 @@ import {
 interface ImportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /**
-   * `add` puts the file in the library as a new resume — the list screen's
-   * meaning, and never destructive. `replace` overwrites the resume currently
-   * open in the editor, so it asks before committing.
-   */
-  mode: 'add' | 'replace';
-  /** Name of the resume being overwritten. Required by `replace` mode. */
-  replacingName?: string;
   onImport: (imported: ImportedResume) => void;
 }
 
@@ -95,50 +81,13 @@ const HandoffSection: FC = () => (
 );
 
 /**
- * Shown once a `replace`-mode file has parsed. Overwriting a resume can't be
- * undone and there's no server-side history to fall back on, so the confirm
- * names both sides of the trade rather than asking a generic "are you sure?".
+ * Importing only ever adds a resume to the library, so there is nothing to
+ * confirm — a file that fails to parse costs the user nothing, and one that
+ * succeeds can be deleted from its card.
  */
-const ReplaceConfirmation: FC<{
-  incoming: ImportedResume;
-  replacingName: string;
-  onCancel: () => void;
-  onConfirm: () => void;
-}> = ({ incoming, replacingName, onCancel, onConfirm }) => (
-  <Stack gap={4}>
-    <Alert.Root status="warning" alignItems="flex-start">
-      <Alert.Indicator>
-        <Icon as={HiOutlineExclamation} />
-      </Alert.Indicator>
-      <Alert.Content>
-        <Alert.Title>Replace &ldquo;{replacingName}&rdquo;?</Alert.Title>
-        <Alert.Description>
-          Everything currently in this resume is overwritten with{' '}
-          <Text as="span" fontWeight="medium">
-            {nameForImport(incoming)}
-          </Text>
-          . This can&apos;t be undone. To keep both, cancel and import from the
-          resume list instead — that adds a new resume.
-        </Alert.Description>
-      </Alert.Content>
-    </Alert.Root>
-
-    <Flex justify="flex-end" gap={2}>
-      <Button variant="ghost" colorPalette="gray" onClick={onCancel}>
-        Cancel
-      </Button>
-      <Button colorPalette="red" onClick={onConfirm}>
-        Replace resume
-      </Button>
-    </Flex>
-  </Stack>
-);
-
 export const ImportDialog: FC<ImportDialogProps> = ({
   open,
   onOpenChange,
-  mode,
-  replacingName,
   onImport,
 }) => {
   const {
@@ -149,18 +98,6 @@ export const ImportDialog: FC<ImportDialogProps> = ({
     clearImportError,
   } = useJsonImport();
 
-  // Only used by `replace` mode: a parsed file waiting on confirmation.
-  const [pending, setPending] = useState<ImportedResume | null>(null);
-
-  const finish = useCallback(
-    (imported: ImportedResume) => {
-      onImport(imported);
-      setPending(null);
-      onOpenChange(false);
-    },
-    [onImport, onOpenChange]
-  );
-
   const handleFileAccept = useCallback(
     async ({ files }: FileUpload.FileAcceptDetails) => {
       const file = files[0];
@@ -169,13 +106,10 @@ export const ImportDialog: FC<ImportDialogProps> = ({
       const imported = await readResumeFile(file);
       if (!imported) return;
 
-      if (mode === 'replace') {
-        setPending(imported);
-        return;
-      }
-      finish(imported);
+      onImport(imported);
+      onOpenChange(false);
     },
-    [finish, mode, readResumeFile]
+    [onImport, onOpenChange, readResumeFile]
   );
 
   const handleFileReject = useCallback(
@@ -198,10 +132,7 @@ export const ImportDialog: FC<ImportDialogProps> = ({
       open={open}
       onOpenChange={(details) => {
         // Reopening should always start from a clean dropzone.
-        if (!details.open) {
-          clearImportError();
-          setPending(null);
-        }
+        if (!details.open) clearImportError();
         onOpenChange(details.open);
       }}
       placement="center"
@@ -209,113 +140,100 @@ export const ImportDialog: FC<ImportDialogProps> = ({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {mode === 'replace' ? 'Import over this resume' : 'Import resume'}
-          </DialogTitle>
+          <DialogTitle>Import resume</DialogTitle>
         </DialogHeader>
         <DialogBody pb={6}>
-          {pending && replacingName ? (
-            <ReplaceConfirmation
-              incoming={pending}
-              replacingName={replacingName}
-              onCancel={() => setPending(null)}
-              onConfirm={() => finish(pending)}
-            />
-          ) : (
-            <Stack gap={4}>
-              <Text fontSize="sm" color="fg.muted">
-                Your file needs to follow the{' '}
-                <Link
-                  href="https://jsonresume.org/"
-                  target="_blank"
-                  rel="noreferrer"
-                  color="brand.fg"
-                  fontWeight="medium"
-                  textDecoration="underline"
-                >
-                  JSON Resume
-                  <Icon as={HiOutlineExternalLink} />
-                </Link>{' '}
-                schema — the open standard this builder exports to.{' '}
-                {mode === 'replace'
-                  ? 'It will overwrite the resume you have open; you’ll get a chance to confirm first.'
-                  : 'It will be added to your list as a new resume.'}
-              </Text>
-
-              {/*
-                Kept inside the dialog body so its state unmounts on close — a
-                store hoisted out here would outlive the dialog and reject an
-                already-imported file as a duplicate the next time it's opened.
-              */}
-              <FileUpload.Root
-                accept={ACCEPTED_FILE_TYPES}
-                acceptedFiles={NO_ACCEPTED_FILES}
-                maxFiles={1}
-                disabled={isImporting}
-                onFileAccept={handleFileAccept}
-                onFileReject={handleFileReject}
-                alignItems="stretch"
+          <Stack gap={4}>
+            <Text fontSize="sm" color="fg.muted">
+              Your file needs to follow the{' '}
+              <Link
+                href="https://jsonresume.org/"
+                target="_blank"
+                rel="noreferrer"
+                color="brand.fg"
+                fontWeight="medium"
+                textDecoration="underline"
               >
-                <FileUpload.HiddenInput />
-                <FileUpload.Dropzone
-                  width="full"
-                  minH={40}
-                  borderStyle="dashed"
-                  _hover={{ borderColor: 'brand.border', bg: 'brand.subtle' }}
-                >
-                  {isImporting ? (
-                    <Spinner size="lg" color="brand.fg" />
-                  ) : (
-                    <Icon as={HiOutlineUpload} boxSize={7} color="fg.muted" />
-                  )}
-                  <FileUpload.DropzoneContent>
-                    <Box fontWeight="medium">
-                      {isImporting
-                        ? 'Importing…'
-                        : 'Drag and drop your resume here'}
-                    </Box>
-                    <Box color="fg.muted" fontSize="sm">
-                      or click to browse — .json files only
-                    </Box>
-                  </FileUpload.DropzoneContent>
-                </FileUpload.Dropzone>
-              </FileUpload.Root>
+                JSON Resume
+                <Icon as={HiOutlineExternalLink} />
+              </Link>{' '}
+              schema — the open standard this builder exports to. It will be
+              added to your list as a new resume.
+            </Text>
 
-              {importError && (
-                <Alert.Root status="error" alignItems="flex-start">
-                  <Alert.Indicator />
-                  <Alert.Content>
-                    <Alert.Title>Couldn&apos;t import resume</Alert.Title>
-                    <Alert.Description>
-                      {importError.message}
-                      {importError.detail && (
-                        <Box
-                          as="pre"
-                          mt={2}
-                          px={2}
-                          py={1}
-                          bg="colorPalette.subtle"
-                          borderWidth="1px"
-                          borderColor="colorPalette.muted"
-                          rounded="md"
-                          fontFamily="mono"
-                          fontSize="xs"
-                          whiteSpace="pre-wrap"
-                          wordBreak="break-word"
-                          maxH="32"
-                          overflowY="auto"
-                        >
-                          {importError.detail}
-                        </Box>
-                      )}
-                    </Alert.Description>
-                  </Alert.Content>
-                </Alert.Root>
-              )}
+            {/*
+              Kept inside the dialog body so its state unmounts on close — a
+              store hoisted out here would outlive the dialog and reject an
+              already-imported file as a duplicate the next time it's opened.
+            */}
+            <FileUpload.Root
+              accept={ACCEPTED_FILE_TYPES}
+              acceptedFiles={NO_ACCEPTED_FILES}
+              maxFiles={1}
+              disabled={isImporting}
+              onFileAccept={handleFileAccept}
+              onFileReject={handleFileReject}
+              alignItems="stretch"
+            >
+              <FileUpload.HiddenInput />
+              <FileUpload.Dropzone
+                width="full"
+                minH={40}
+                borderStyle="dashed"
+                _hover={{ borderColor: 'brand.border', bg: 'brand.subtle' }}
+              >
+                {isImporting ? (
+                  <Spinner size="lg" color="brand.fg" />
+                ) : (
+                  <Icon as={HiOutlineUpload} boxSize={7} color="fg.muted" />
+                )}
+                <FileUpload.DropzoneContent>
+                  <Box fontWeight="medium">
+                    {isImporting
+                      ? 'Importing…'
+                      : 'Drag and drop your resume here'}
+                  </Box>
+                  <Box color="fg.muted" fontSize="sm">
+                    or click to browse — .json files only
+                  </Box>
+                </FileUpload.DropzoneContent>
+              </FileUpload.Dropzone>
+            </FileUpload.Root>
 
-              <HandoffSection />
-            </Stack>
-          )}
+            {importError && (
+              <Alert.Root status="error" alignItems="flex-start">
+                <Alert.Indicator />
+                <Alert.Content>
+                  <Alert.Title>Couldn&apos;t import resume</Alert.Title>
+                  <Alert.Description>
+                    {importError.message}
+                    {importError.detail && (
+                      <Box
+                        as="pre"
+                        mt={2}
+                        px={2}
+                        py={1}
+                        bg="colorPalette.subtle"
+                        borderWidth="1px"
+                        borderColor="colorPalette.muted"
+                        rounded="md"
+                        fontFamily="mono"
+                        fontSize="xs"
+                        whiteSpace="pre-wrap"
+                        wordBreak="break-word"
+                        maxH="32"
+                        overflowY="auto"
+                      >
+                        {importError.detail}
+                      </Box>
+                    )}
+                  </Alert.Description>
+                </Alert.Content>
+              </Alert.Root>
+            )}
+
+            <HandoffSection />
+          </Stack>
         </DialogBody>
         <DialogCloseTrigger />
       </DialogContent>

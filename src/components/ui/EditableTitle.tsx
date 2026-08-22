@@ -8,9 +8,6 @@ export interface EditableTitleProps {
   onCommit: (next: string) => void;
   /** Open in edit mode with the text selected — used by a just-created resume. */
   autoEdit?: boolean;
-  /** Drive edit mode from outside, e.g. a card's "Rename" menu item. */
-  edit?: boolean;
-  onEditChange?: (edit: boolean) => void;
   /** Accessible name for the input and the pencil trigger. */
   label?: string;
   fontSize?: string;
@@ -18,14 +15,6 @@ export interface EditableTitleProps {
   maxWidth?: string;
 }
 
-/**
- * Click-to-edit name, shared by the editor's title bar and the list card's
- * Rename action so a resume is renamed the same way wherever you are.
- *
- * Blank reverts rather than committing: a card or title bar with no name is
- * unrecoverable from the UI, and an empty field is far more often a
- * select-all-and-tab-away accident than an intention.
- */
 /**
  * Both slots take their height from the text itself, so the equal `py` is what
  * centers it. Chakra's recipe instead pads them out to a `min-height` taller
@@ -44,30 +33,29 @@ const slotHeight = {
   minHeight: 0,
 } as const;
 
+/**
+ * Click-to-edit name, shared by the editor's title bar and the list card so a
+ * resume is renamed the same way wherever you are. It owns its own edit mode —
+ * clicking the name or its pencil is the only way in.
+ *
+ * Blank reverts rather than committing: a card or title bar with no name is
+ * unrecoverable from the UI, and an empty field is far more often a
+ * select-all-and-tab-away accident than an intention.
+ */
 export const EditableTitle: FC<EditableTitleProps> = ({
   value,
   onCommit,
   autoEdit = false,
-  edit,
-  onEditChange,
   label = 'Resume name',
   fontSize = 'sm',
   fontWeight = 'medium',
   maxWidth = '20rem',
 }) => {
   const [draft, setDraft] = useState(value);
-  const [internalEdit, setInternalEdit] = useState(autoEdit);
+  const [editing, setEditing] = useState(autoEdit);
 
-  // Controlled when `edit` is supplied, self-managing otherwise — so the title
-  // bar can just be clicked while the list card also opens it from a menu.
-  const editing = edit ?? internalEdit;
-  const setEditing = (next: boolean) => {
-    setInternalEdit(next);
-    onEditChange?.(next);
-  };
-
-  // Adopt renames made elsewhere (the other screen, or an import), but never
-  // over the top of an edit in progress.
+  // Adopt renames made elsewhere (the other page, or an import), but never over
+  // the top of an edit in progress.
   useEffect(() => {
     if (!editing) setDraft(value);
   }, [value, editing]);
@@ -112,7 +100,7 @@ export const EditableTitle: FC<EditableTitleProps> = ({
         // `display: block` (Chakra's recipe makes this slot `inline-flex`) is
         // what lets `truncate` ellipsize at all — `text-overflow` has no effect
         // on a flex container, whose text is an anonymous item. It also drops
-        // the recipe's `alignItems: center`, so see `slotHeight` below.
+        // the recipe's `alignItems: center`, so see `slotHeight` above.
         display="block"
         {...slotHeight}
         minWidth={0}

@@ -7,14 +7,13 @@ import {
   Portal,
   Text,
 } from '@chakra-ui/react';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback } from 'react';
 import { BsFiletypeJson, BsFiletypePdf, BsFiletypeTxt } from 'react-icons/bs';
 import {
   HiOutlineChevronRight,
   HiOutlineDotsVertical,
   HiOutlineDownload,
   HiOutlineDuplicate,
-  HiOutlinePencil,
   HiOutlineTrash,
 } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
@@ -44,7 +43,6 @@ export const ResumeCard: FC<ResumeCardProps> = ({
   onDelete,
 }) => {
   const navigate = useNavigate();
-  const [renaming, setRenaming] = useState(false);
 
   const open = useCallback(
     () => navigate(`/editor/${summary.id}`),
@@ -108,11 +106,11 @@ export const ResumeCard: FC<ResumeCardProps> = ({
 
       <Flex align="center" justify="space-between" mt={2} gap={1}>
         <Box minWidth={0} flex={1}>
+          {/* Renaming is the title's own job — click it, or use its pencil.
+              A menu item would only be a second way into the same field. */}
           <EditableTitle
             value={summary.name}
             onCommit={onRename}
-            edit={renaming}
-            onEditChange={setRenaming}
             label={`Rename ${summary.name}`}
             maxWidth="100%"
           />
@@ -136,10 +134,6 @@ export const ResumeCard: FC<ResumeCardProps> = ({
           <Portal>
             <Menu.Positioner>
               <Menu.Content>
-                <Menu.Item value="rename" onClick={() => setRenaming(true)}>
-                  <HiOutlinePencil />
-                  Rename
-                </Menu.Item>
                 <Menu.Item value="duplicate" onClick={onDuplicate}>
                   <HiOutlineDuplicate />
                   Duplicate

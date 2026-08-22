@@ -34,14 +34,14 @@ import {
 import { useResumeLibrary } from '../hooks/useResumeLibrary';
 import { ResumeSummary } from '../types/resume-library';
 
-import { EditorLocationState } from './EditorScreen';
+import { EditorLocationState } from './EditorPage';
 
 /** Router state set when the editor bounces an id it couldn't find. */
 interface ListLocationState {
   missingResume?: boolean;
 }
 
-export const ResumeListScreen: FC = () => {
+export const ResumeListPage: FC = () => {
   const navigate = useNavigate();
   const { state } = useLocation() as { state: ListLocationState | null };
   const { resumes, createResume, duplicateResume, renameResume, deleteResume } =
@@ -273,7 +273,6 @@ export const ResumeListScreen: FC = () => {
       <ImportDialog
         open={isImportOpen}
         onOpenChange={setIsImportOpen}
-        mode="add"
         onImport={handleImport}
       />
       <DeleteResumeDialog

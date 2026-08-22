@@ -25,7 +25,7 @@ export const railButtonProps = {
 } as const;
 
 /**
- * The app's left rail. It is present on both screens so the theme toggle and
+ * The app's left rail. It is present on both pages so the theme toggle and
  * repo link never move and navigating doesn't reflow the window; only the top
  * slot is contextual — the logo on the list, back and import in the editor.
  */

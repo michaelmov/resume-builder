@@ -8,7 +8,7 @@ import { useResumeLibrary } from '../hooks/useResumeLibrary';
  * button, so a write that fails silently is invisible until the user reloads
  * and finds their work gone — this is the only thing that ever tells them.
  *
- * Floats over both screens rather than occupying layout, and stays until it is
+ * Floats over both pages rather than occupying layout, and stays until it is
  * dismissed: the next successful save clears it on its own.
  */
 export const SaveErrorBanner: FC = () => {
