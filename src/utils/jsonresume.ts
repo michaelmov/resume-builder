@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+import { templates } from '../templates';
+import { accents } from '../templates/accents';
+import { margins } from '../templates/margins';
+import { ResumeSettings } from '../types/resume-library';
 import {
   Location,
   normalizeSectionTitles,
@@ -23,9 +27,11 @@ import {
  *  2. Dates may be `Date` objects internally; the schema wants `YYYY-MM-DD`
  *     strings.
  *  3. `work.isPresent` and `sectionVisibility`/`sectionOrder` are app-only
- *     extensions. "Present" is expressed in the schema by omitting `endDate`;
- *     the app extensions are tucked under a namespaced `meta` key so our own
- *     exports round-trip losslessly without polluting standard fields.
+ *     extensions, as are a resume's user-visible name and its PDF settings
+ *     (template/accent/margin). "Present" is expressed in the schema by
+ *     omitting `endDate`; the app extensions are tucked under a namespaced
+ *     `meta` key so our own exports round-trip losslessly without polluting
+ *     standard fields.
  */
 
 const META_NAMESPACE = 'resume-builder';
@@ -36,145 +42,135 @@ const flexibleList = z
   .array(z.union([z.string(), z.object({ value: z.string() })]))
   .optional();
 
-const locationSchema = z
-  .object({
-    address: z.string().optional(),
-    postalCode: z.string().optional(),
-    city: z.string().optional(),
-    countryCode: z.string().optional(),
-    region: z.string().optional(),
-  });
+const locationSchema = z.object({
+  address: z.string().optional(),
+  postalCode: z.string().optional(),
+  city: z.string().optional(),
+  countryCode: z.string().optional(),
+  region: z.string().optional(),
+});
 
-const profileSchema = z
-  .object({
-    network: z.string().optional(),
-    username: z.string().optional(),
-    url: z.string().optional(),
-  });
+const profileSchema = z.object({
+  network: z.string().optional(),
+  username: z.string().optional(),
+  url: z.string().optional(),
+});
 
-const basicsSchema = z
-  .object({
-    name: z.string().optional(),
-    label: z.string().optional(),
-    image: z.string().optional(),
-    email: z.string().optional(),
-    phone: z.string().optional(),
-    url: z.string().optional(),
-    summary: z.string().optional(),
-    location: locationSchema.optional(),
-    profiles: z.array(profileSchema).optional(),
-  });
+const basicsSchema = z.object({
+  name: z.string().optional(),
+  label: z.string().optional(),
+  image: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  url: z.string().optional(),
+  summary: z.string().optional(),
+  location: locationSchema.optional(),
+  profiles: z.array(profileSchema).optional(),
+});
 
 // `work` and `volunteer` share a shape; `name` (company) is used by work and
 // `organization` by volunteer, so both are declared and the unused one is empty.
-const workSchema = z
-  .object({
-    name: z.string().optional(),
-    organization: z.string().optional(),
-    position: z.string().optional(),
-    url: z.string().optional(),
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
-    isPresent: z.boolean().optional(),
-    summary: z.string().optional(),
-    highlights: flexibleList,
-  });
+const workSchema = z.object({
+  name: z.string().optional(),
+  organization: z.string().optional(),
+  position: z.string().optional(),
+  url: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  isPresent: z.boolean().optional(),
+  summary: z.string().optional(),
+  highlights: flexibleList,
+});
 
-const educationSchema = z
-  .object({
-    institution: z.string().optional(),
-    url: z.string().optional(),
-    area: z.string().optional(),
-    studyType: z.string().optional(),
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
-    score: z.string().optional(),
-    courses: z.array(z.string()).optional(),
-  });
+const educationSchema = z.object({
+  institution: z.string().optional(),
+  url: z.string().optional(),
+  area: z.string().optional(),
+  studyType: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  score: z.string().optional(),
+  courses: z.array(z.string()).optional(),
+});
 
-const awardSchema = z
-  .object({
-    title: z.string().optional(),
-    date: z.string().optional(),
-    awarder: z.string().optional(),
-    summary: z.string().optional(),
-  });
+const awardSchema = z.object({
+  title: z.string().optional(),
+  date: z.string().optional(),
+  awarder: z.string().optional(),
+  summary: z.string().optional(),
+});
 
-const certificateSchema = z
-  .object({
-    name: z.string().optional(),
-    date: z.string().optional(),
-    issuer: z.string().optional(),
-    url: z.string().optional(),
-  });
+const certificateSchema = z.object({
+  name: z.string().optional(),
+  date: z.string().optional(),
+  issuer: z.string().optional(),
+  url: z.string().optional(),
+});
 
-const publicationSchema = z
-  .object({
-    name: z.string().optional(),
-    publisher: z.string().optional(),
-    releaseDate: z.string().optional(),
-    url: z.string().optional(),
-    summary: z.string().optional(),
-  });
+const publicationSchema = z.object({
+  name: z.string().optional(),
+  publisher: z.string().optional(),
+  releaseDate: z.string().optional(),
+  url: z.string().optional(),
+  summary: z.string().optional(),
+});
 
-const skillSchema = z
-  .object({
-    name: z.string().optional(),
-    level: z.string().optional(),
-    keywords: flexibleList,
-  });
+const skillSchema = z.object({
+  name: z.string().optional(),
+  level: z.string().optional(),
+  keywords: flexibleList,
+});
 
-const languageSchema = z
-  .object({
-    language: z.string().optional(),
-    fluency: z.string().optional(),
-  });
+const languageSchema = z.object({
+  language: z.string().optional(),
+  fluency: z.string().optional(),
+});
 
-const interestSchema = z
-  .object({
-    name: z.string().optional(),
-    keywords: flexibleList,
-  });
+const interestSchema = z.object({
+  name: z.string().optional(),
+  keywords: flexibleList,
+});
 
-const referenceSchema = z
-  .object({
-    name: z.string().optional(),
-    reference: z.string().optional(),
-  });
+const referenceSchema = z.object({
+  name: z.string().optional(),
+  reference: z.string().optional(),
+});
 
-const projectSchema = z
-  .object({
-    name: z.string().optional(),
-    description: z.string().optional(),
-    highlights: flexibleList,
-    keywords: flexibleList,
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
-    url: z.string().optional(),
-    roles: z.array(z.string()).optional(),
-    entity: z.string().optional(),
-    type: z.string().optional(),
-  });
+const projectSchema = z.object({
+  name: z.string().optional(),
+  description: z.string().optional(),
+  highlights: flexibleList,
+  keywords: flexibleList,
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  url: z.string().optional(),
+  roles: z.array(z.string()).optional(),
+  entity: z.string().optional(),
+  type: z.string().optional(),
+});
 
-export const jsonResumeSchema = z
-  .object({
-    basics: basicsSchema.optional(),
-    work: z.array(workSchema).optional(),
-    volunteer: z.array(workSchema).optional(),
-    education: z.array(educationSchema).optional(),
-    awards: z.array(awardSchema).optional(),
-    certificates: z.array(certificateSchema).optional(),
-    publications: z.array(publicationSchema).optional(),
-    skills: z.array(skillSchema).optional(),
-    languages: z.array(languageSchema).optional(),
-    interests: z.array(interestSchema).optional(),
-    references: z.array(referenceSchema).optional(),
-    projects: z.array(projectSchema).optional(),
-    meta: z.record(z.unknown()).optional(),
-    // Legacy app exports stored these at the root rather than under `meta`.
-    sectionVisibility: z.record(z.boolean()).optional(),
-    sectionOrder: z.array(z.string()).optional(),
-  });
+export const jsonResumeSchema = z.object({
+  basics: basicsSchema.optional(),
+  work: z.array(workSchema).optional(),
+  volunteer: z.array(workSchema).optional(),
+  education: z.array(educationSchema).optional(),
+  awards: z.array(awardSchema).optional(),
+  certificates: z.array(certificateSchema).optional(),
+  publications: z.array(publicationSchema).optional(),
+  skills: z.array(skillSchema).optional(),
+  languages: z.array(languageSchema).optional(),
+  interests: z.array(interestSchema).optional(),
+  references: z.array(referenceSchema).optional(),
+  projects: z.array(projectSchema).optional(),
+  // Deliberately loose. Other tools write whatever they like here, and this
+  // app's own `[META_NAMESPACE]` block (name, PDF settings, section state) is
+  // read defensively by `readResumeDocumentMeta` rather than validated up
+  // front — a stale or malformed block must cost the settings, not the import.
+  meta: z.record(z.unknown()).optional(),
+  // Legacy app exports stored these at the root rather than under `meta`.
+  sectionVisibility: z.record(z.boolean()).optional(),
+  sectionOrder: z.array(z.string()).optional(),
+});
 
 export type JsonResume = z.infer<typeof jsonResumeSchema>;
 
@@ -235,6 +231,10 @@ const toStringArray = (items?: ListItem[]): string[] =>
 const nonEmpty = (value: unknown): value is string =>
   typeof value === 'string' && value.trim() !== '';
 
+/** Plain-object guard for walking untrusted `meta` without validating it. */
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
 /**
  * Fill in every `Location` key, like the sibling `basics` fields do with `?? ''`.
  *
@@ -258,7 +258,19 @@ const withLocationDefaults = (location?: Location): Location => ({
 // Export: internal Resume -> JSON Resume
 // ---------------------------------------------------------------------------
 
-export const toJsonResume = (resume: Resume): JsonResume => {
+/**
+ * The parts of a stored resume that live outside the `Resume` model itself —
+ * its name and PDF settings are owned by the resume library, not the document.
+ */
+export interface ResumeDocumentMeta {
+  name?: string;
+  settings?: ResumeSettings;
+}
+
+export const toJsonResume = (
+  resume: Resume,
+  meta?: ResumeDocumentMeta
+): JsonResume => {
   const json: JsonResume = {
     basics: omitEmpty({
       name: resume.basics.name,
@@ -370,8 +382,11 @@ export const toJsonResume = (resume: Resume): JsonResume => {
       canonical: 'https://jsonresume.org/schema/',
       version: 'v1.0.0',
       lastModified: new Date().toISOString().slice(0, 19) + 'Z',
-      // App-specific state, namespaced so other tools ignore it.
+      // App-specific state, namespaced so other tools ignore it. `omitEmpty`
+      // keeps an export without document meta identical to what it always was.
       [META_NAMESPACE]: omitEmpty({
+        name: meta?.name,
+        settings: meta?.settings,
         sectionVisibility: resume.sectionVisibility,
         sectionOrder: resume.sectionOrder,
         sectionTitles: resume.sectionTitles,
@@ -537,4 +552,53 @@ export const fromJsonResume = (input: unknown): Resume => {
     Object.keys(customTitles).length > 0 ? customTitles : undefined;
 
   return resume;
+};
+
+/**
+ * Read back the PDF settings, checking every id against the live registries.
+ *
+ * A file may name a template, accent, or margin this app has since renamed or
+ * dropped. Rather than hand the editor an id nothing resolves, the whole
+ * settings block is discarded so the resume opens on the app defaults.
+ */
+const readResumeSettings = (input: unknown): ResumeSettings | undefined => {
+  if (!isRecord(input)) return undefined;
+
+  const { templateId, marginId } = input;
+  if (!nonEmpty(templateId) || !nonEmpty(marginId)) return undefined;
+  if (!templates.some((template) => template.id === templateId)) {
+    return undefined;
+  }
+  if (!margins.some((margin) => margin.id === marginId)) return undefined;
+
+  // A missing accent means "Auto", the same as an explicit null.
+  const accentId = input.accentId ?? null;
+  if (accentId !== null) {
+    if (typeof accentId !== 'string') return undefined;
+    if (!accents.some((accent) => accent.id === accentId)) return undefined;
+  }
+
+  return { templateId, accentId, marginId };
+};
+
+/**
+ * Pull this app's own name/settings out of a JSON Resume file, if present.
+ *
+ * Kept separate from `fromJsonResume` — which already validates the document —
+ * so it can be forgiving: anything unrecognized under `meta['resume-builder']`
+ * yields `{}` and the caller falls back to its own defaults.
+ */
+export const readResumeDocumentMeta = (input: unknown): ResumeDocumentMeta => {
+  if (!isRecord(input) || !isRecord(input.meta)) return {};
+
+  const appMeta = input.meta[META_NAMESPACE];
+  if (!isRecord(appMeta)) return {};
+
+  const meta: ResumeDocumentMeta = {};
+  if (nonEmpty(appMeta.name)) meta.name = appMeta.name.trim();
+
+  const settings = readResumeSettings(appMeta.settings);
+  if (settings) meta.settings = settings;
+
+  return meta;
 };

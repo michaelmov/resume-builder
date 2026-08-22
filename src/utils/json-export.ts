@@ -4,9 +4,18 @@ import {
   Resume,
 } from '../types/resume.model';
 
-import { toJsonResume } from './jsonresume';
+import { ResumeDocumentMeta, toJsonResume } from './jsonresume';
 
-export const exportResumeAsJson = (resume: Resume, exportFileName: string) => {
+/**
+ * `meta` carries the resume's name and PDF settings into the file's namespaced
+ * `meta` block, so exporting and re-importing brings back a resume that is
+ * named and styled the way it left rather than a default-looking copy.
+ */
+export const exportResumeAsJson = (
+  resume: Resume,
+  exportFileName: string,
+  meta?: ResumeDocumentMeta
+) => {
   try {
     // Only sections currently on the resume are exported; any section type not
     // in the active set is emptied so removed/never-added sections don't leak.
@@ -21,7 +30,11 @@ export const exportResumeAsJson = (resume: Resume, exportFileName: string) => {
 
     // Convert to the standard JSON Resume schema so the file interoperates
     // with other JSON Resume tooling.
-    const resumeData = JSON.stringify(toJsonResume(filteredResume), null, 2);
+    const resumeData = JSON.stringify(
+      toJsonResume(filteredResume, meta),
+      null,
+      2
+    );
     const blob = new Blob([resumeData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

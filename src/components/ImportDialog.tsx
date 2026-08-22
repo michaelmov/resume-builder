@@ -17,7 +17,7 @@ import {
   HiOutlineUpload,
 } from 'react-icons/hi';
 
-import { useJsonImport } from '../hooks/useJsonImport';
+import { ImportedResume, useJsonImport } from '../hooks/useJsonImport';
 import { HANDOFF_PROMPT } from '../utils/handoff-prompt';
 
 import {
@@ -32,6 +32,7 @@ import {
 interface ImportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onImport: (imported: ImportedResume) => void;
 }
 
 /** Matched against both the MIME type and the file extension. */
@@ -79,9 +80,18 @@ const HandoffSection: FC = () => (
   </Box>
 );
 
-export const ImportDialog: FC<ImportDialogProps> = ({ open, onOpenChange }) => {
+/**
+ * Importing only ever adds a resume to the library, so there is nothing to
+ * confirm — a file that fails to parse costs the user nothing, and one that
+ * succeeds can be deleted from its card.
+ */
+export const ImportDialog: FC<ImportDialogProps> = ({
+  open,
+  onOpenChange,
+  onImport,
+}) => {
   const {
-    importFile,
+    readResumeFile,
     isImporting,
     importError,
     showImportError,
@@ -93,9 +103,13 @@ export const ImportDialog: FC<ImportDialogProps> = ({ open, onOpenChange }) => {
       const file = files[0];
       if (!file) return;
 
-      if (await importFile(file)) onOpenChange(false);
+      const imported = await readResumeFile(file);
+      if (!imported) return;
+
+      onImport(imported);
+      onOpenChange(false);
     },
-    [importFile, onOpenChange]
+    [onImport, onOpenChange, readResumeFile]
   );
 
   const handleFileReject = useCallback(
@@ -143,8 +157,8 @@ export const ImportDialog: FC<ImportDialogProps> = ({ open, onOpenChange }) => {
                 JSON Resume
                 <Icon as={HiOutlineExternalLink} />
               </Link>{' '}
-              schema — the open standard this builder exports to. Importing
-              replaces everything currently in the editor.
+              schema — the open standard this builder exports to. It will be
+              added to your list as a new resume.
             </Text>
 
             {/*

@@ -6,27 +6,34 @@ import { BsFiletypePdf } from 'react-icons/bs';
 import { PiExportLight } from 'react-icons/pi';
 
 import { useResume } from '../../hooks/useResume';
+import { resumeExportFileName } from '../../utils/download';
 import { exportResumeAsJson } from '../../utils/json-export';
 import { exportResumeAsText } from '../../utils/text-export';
 
-const ExportMenu = ({ template }: { template: JSX.Element }) => {
-  const { resume } = useResume();
+const ExportMenu = ({
+  template,
+  resumeName,
+}: {
+  template: JSX.Element;
+  resumeName: string;
+}) => {
+  const { resume, settings } = useResume();
 
   const handleJsonExport = () => {
-    exportResumeAsJson(resume, exportFileName);
+    exportResumeAsJson(resume, exportFileName, {
+      name: resumeName,
+      settings,
+    });
   };
 
   const handleTextExport = () => {
     exportResumeAsText(resume, exportFileName);
   };
 
-  const exportFileName = useMemo(() => {
-    if (resume.basics?.name && resume.basics?.label) {
-      return `${resume.basics.name} - ${resume.basics.label}`;
-    }
-
-    return 'my-resume';
-  }, [resume]);
+  const exportFileName = useMemo(
+    () => resumeExportFileName(resumeName, resume),
+    [resume, resumeName]
+  );
   return (
     <Menu.Root>
       <Menu.Trigger asChild>

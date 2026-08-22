@@ -1,14 +1,12 @@
 import { useContext, useCallback } from 'react';
 
 import { resumeStoreContext } from '../context/ResumeContext/ResumeContext';
-import {
-  ACTIONS,
-  SectionData,
-} from '../context/ResumeContext/ResumeReducer';
+import { ACTIONS, SectionData } from '../context/ResumeContext/ResumeReducer';
 import { Resume, SectionTitles, SectionTypes } from '../types/resume.model';
 
 export const useResume = () => {
-  const { dispatch, state } = useContext(resumeStoreContext);
+  const { dispatch, state, settings, updateSettings } =
+    useContext(resumeStoreContext);
 
   const updateResume = useCallback(
     (updated: Resume) => {
@@ -41,6 +39,9 @@ export const useResume = () => {
 
   return {
     resume: state,
+    /** Template / accent / margin for this resume, persisted alongside it. */
+    settings,
+    updateSettings,
     updateResume,
     updateSectionData,
     updateSectionOrder,

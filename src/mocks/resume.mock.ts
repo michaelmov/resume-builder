@@ -1,9 +1,14 @@
 import { Resume, SectionTypes } from '../types/resume.model';
 
 /**
- * Seed resume for a brand-new visitor (no `localStorage` yet) — a sampler built
- * from Linus Torvalds' public career, kept to the four default sections so the
- * first preview looks like a finished, realistic resume rather than lorem ipsum.
+ * Seed content — a sampler built from Linus Torvalds' public career, kept to
+ * the four default sections so the preview looks like a finished, realistic
+ * resume rather than lorem ipsum. Used both for a brand-new visitor's "Sample
+ * Resume" and as the starting point for every resume created after that.
+ *
+ * Prefer `sampleResume()` over this constant anywhere the result is handed to
+ * the editor: this is one shared, mutable object graph, so two resumes seeded
+ * from it directly would alias the same nested arrays and `Date`s.
  */
 export const resumeMock: Resume = {
   basics: {
@@ -210,3 +215,10 @@ export const resumeMock: Resume = {
     SectionTypes.Education,
   ],
 };
+
+/**
+ * A fresh, independent copy of the sample. `structuredClone` rather than a
+ * JSON round-trip because the mock holds real `Date` objects, which the latter
+ * would flatten to strings.
+ */
+export const sampleResume = (): Resume => structuredClone(resumeMock);
