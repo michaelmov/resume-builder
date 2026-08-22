@@ -1,5 +1,4 @@
-import { emptyResume } from '../mocks/empty-resume';
-import { resumeMock } from '../mocks/resume.mock';
+import { sampleResume } from '../mocks/resume.mock';
 import { DEFAULT_TEMPLATE_ID, templates } from '../templates';
 import { accents } from '../templates/accents';
 import { DEFAULT_MARGIN_ID, margins } from '../templates/margins';
@@ -218,9 +217,15 @@ export const removeDocument = (id: string): void => {
   removeKey(documentKey(id));
 };
 
-/** A blank resume in the current default look, ready to be edited. */
+/**
+ * A new resume in the current default look, ready to be edited. It starts from
+ * the sample content rather than an empty form: a blank editor gives the
+ * preview nothing to render, so the first thing a new resume shows is an empty
+ * page. Seeded content makes every section visibly editable, and overwriting
+ * placeholder text is a shorter path than filling twelve empty ones.
+ */
 export const createDocument = (settings?: ResumeSettings): ResumeDocument => ({
-  resume: emptyResume(),
+  resume: sampleResume(),
   settings: settings ?? readDefaultSettings(),
 });
 
@@ -327,7 +332,7 @@ const migrateLegacyStorage = (): ResumeSummary[] => {
   const now = Date.now();
   const legacy = readJson(LEGACY_KEYS.resume) as Resume | undefined;
 
-  const resume = legacy ? migrateResumeShape(legacy) : resumeMock;
+  const resume = legacy ? migrateResumeShape(legacy) : sampleResume();
   const name = legacy ? nameForResume(resume, 'My Resume') : 'Sample Resume';
   const settings = legacy
     ? resolveSettings({

@@ -26,6 +26,24 @@ export interface EditableTitleProps {
  * unrecoverable from the UI, and an empty field is far more often a
  * select-all-and-tab-away accident than an intention.
  */
+/**
+ * Both slots take their height from the text itself, so the equal `py` is what
+ * centers it. Chakra's recipe instead pads them out to a `min-height` taller
+ * than the line — which centers the text only while the slot is a flex
+ * container. The preview can't be one (see `display: block` below), so its text
+ * sat at the top of the slot, visibly above the pencil beside it; the input,
+ * which centers its own text, then dropped it a few pixels on entering edit
+ * mode. Pinning `lineHeight` as well keeps the two exactly the same height,
+ * since an `input` doesn't inherit line-height from the root the way the
+ * preview's block box does.
+ */
+const slotHeight = {
+  px: 2,
+  py: 1,
+  lineHeight: '1.5rem',
+  minHeight: 0,
+} as const;
+
 export const EditableTitle: FC<EditableTitleProps> = ({
   value,
   onCommit,
@@ -89,15 +107,18 @@ export const EditableTitle: FC<EditableTitleProps> = ({
       fontWeight={fontWeight}
     >
       <Editable.Preview
-        px={2}
-        py={1}
         rounded="md"
         truncate
+        // `display: block` (Chakra's recipe makes this slot `inline-flex`) is
+        // what lets `truncate` ellipsize at all — `text-overflow` has no effect
+        // on a flex container, whose text is an anonymous item. It also drops
+        // the recipe's `alignItems: center`, so see `slotHeight` below.
         display="block"
+        {...slotHeight}
         minWidth={0}
         _hover={{ bg: 'bg.muted' }}
       />
-      <Editable.Input px={2} py={1} minWidth={0} aria-label={label} />
+      <Editable.Input {...slotHeight} minWidth={0} aria-label={label} />
       <Editable.Control flexShrink={0}>
         <Editable.EditTrigger asChild>
           <IconButton

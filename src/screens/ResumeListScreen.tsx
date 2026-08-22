@@ -121,13 +121,9 @@ export const ResumeListScreen: FC = () => {
     <Flex height="100dvh" maxHeight="100dvh" overflow="hidden">
       <Box flexShrink={0} zIndex="banner">
         <Navbar>
-          <Icon
-            as={HiOutlineDocumentText}
-            boxSize={6}
-            my={2}
-            aria-hidden
-            color="brand.solid"
-          />
+          {/* Uncolored on purpose: it inherits the rail's `app.railFg`, the
+              same color the theme and repo icons below it resolve to. */}
+          <Icon as={HiOutlineDocumentText} boxSize={6} my={2} aria-hidden />
         </Navbar>
       </Box>
 
