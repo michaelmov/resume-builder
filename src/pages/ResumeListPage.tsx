@@ -2,14 +2,12 @@ import {
   Alert,
   Box,
   Button,
-  chakra,
   CloseButton,
   EmptyState,
   Flex,
   Heading,
   Icon,
   SimpleGrid,
-  Text,
 } from '@chakra-ui/react';
 import { DragEvent, FC, useCallback, useState } from 'react';
 import {
@@ -24,7 +22,6 @@ import { ImportDialog } from '../components/ImportDialog';
 import { Navbar } from '../components/Navbar';
 import { DeleteResumeDialog } from '../components/ResumeList/DeleteResumeDialog';
 import { ResumeCard } from '../components/ResumeList/ResumeCard';
-import { PAGE_ASPECT_RATIO } from '../components/ResumeList/ResumeThumbnail';
 import { SaveErrorBanner } from '../components/SaveErrorBanner';
 import {
   ImportedResume,
@@ -239,32 +236,6 @@ export const ResumeListPage: FC = () => {
                   onDelete={() => setPendingDelete(summary)}
                 />
               ))}
-
-              {/* Sized to match a card's page so the grid row stays even. */}
-              <chakra.button
-                type="button"
-                onClick={handleCreate}
-                aria-label="New resume"
-                width="100%"
-                aspectRatio={PAGE_ASPECT_RATIO}
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                gap={2}
-                rounded="md"
-                borderWidth="2px"
-                borderStyle="dashed"
-                borderColor="border"
-                color="fg.muted"
-                cursor="pointer"
-                _hover={{ borderColor: 'brand.solid', color: 'brand.fg' }}
-              >
-                <Icon as={HiOutlinePlus} boxSize={7} />
-                <Text fontSize="sm" fontWeight="medium">
-                  New resume
-                </Text>
-              </chakra.button>
             </SimpleGrid>
           )}
         </Box>
