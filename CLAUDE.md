@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code (claude.ai/code) when working in this repository.
 
 ## Commands
 
@@ -14,108 +14,74 @@ npm run test           # Vitest (run once); test:watch for watch mode
 npm run deploy         # Build + publish dist/ to GitHub Pages (gh-pages branch)
 ```
 
-- Node version is pinned to `20.19.0` (`.nvmrc`).
-- A Husky pre-commit hook runs `npm run lint && npm test` — commits fail on lint errors or failing tests (lint runs first and short-circuits).
-- Tests use **Vitest** (config lives in `vite.config.ts` under `test`) in the `node` environment — there is no jsdom, no setup file, and no component/UI test setup. Coverage is the pure utilities plus the storage layer: `src/utils/resume-repository.test.ts` runs against RxDB's own in-memory storage (`initDatabase({ storage: 'memory' })`), which needs no IndexedDB shim and no extra devDependency. **Don't add `fake-indexeddb`** — the Dexie adapter is RxDB's code to test, not this project's.
+Node is pinned to `20.19.0` (`.nvmrc`). A Husky pre-commit hook runs
+`npm run lint && npm test` — commits fail on lint errors or failing tests (lint
+runs first and short-circuits).
 
-## Architecture
+Claude Code hooks in `.claude/settings.json` mirror that gate during a session:
+edited files are Prettier-formatted on write, and lint plus tests run when a
+turn ends — but only if source was actually touched. A failure is reported back
+rather than handed over. See `.claude/hooks/`.
 
-A client-only React 18 + TypeScript SPA (Vite) that builds resumes with a live PDF preview. There is **no backend**: all data lives in an **RxDB** database in the browser (IndexedDB, via the Dexie storage), and the app is deployed as static files to GitHub Pages (`base: '/resume-builder/'` in `vite.config.ts`). The only thing still in `localStorage` is the colour-mode preference, which has to be readable synchronously before first paint.
+## What this is
 
-There are two pages, routed in `App.tsx` (`main.tsx` mounts a `HashRouter`, since GitHub Pages can't rewrite paths):
+A client-only React 18 + TypeScript SPA (Vite). **There is no backend**: all
+data lives in an **RxDB** database in the browser (IndexedDB via Dexie), and the
+app ships as static files to GitHub Pages. Two routes — `/` (the resume list)
+and `/editor/:id` (forms on the left, live PDF preview on the right). The data
+model follows the [JSON Resume](https://jsonresume.org/) schema.
 
-- **`/` — `pages/ResumeListPage`**: a card grid of every saved resume, each showing a real thumbnail of its first PDF page.
-- **`/editor/:id` — `pages/EditorPage`**: the two-panel editor — a left **Editor** panel (forms) that can slide/collapse, and a right **Preview** panel (rendered PDF).
+## Rules that hold everywhere
 
-Anything else redirects to `/`. So does `/editor/:id` for an id that isn't in the library (a stale bookmark, a resume deleted in another tab), passing `state.missingResume` so the list can explain the bounce. The `Navbar` left rail is on both pages and takes its contextual top slot as `children`.
+- **Only `utils/resume-repository.ts` may import `rxdb`.** Everything above it
+  sees plain values and Promises.
+- **Anything written to the database must be plain JSON** — RxDB refuses to
+  structured-clone a `Date`.
+- **Route persisted section order through `resolveSectionOrder()`** and read
+  section titles through `getSectionTitle(type, resume.sectionTitles)`, never
+  `SECTION_TITLES[type]`.
+- **Style with semantic Chakra tokens** (`bg.panel`, `fg.muted`, `border`,
+  `brand.solid`) rather than raw steps like `gray.200`, so each component works
+  in both color modes.
+- **Before editing any template in `src/templates/`, use the
+  `resume-pdf-templates` skill.** Templates carry pagination rules that are
+  invisible in review and easy to undo by accident.
+- **Edits auto-save; there is no Save button anywhere in the app.** A silently
+  dropped write loses the user's work.
 
-The data model follows the [JSON Resume](https://jsonresume.org/) schema, so resumes can be imported/exported as standard JSON.
+## Testing
 
-### The resume library
+Vitest (config in `vite.config.ts` under `test`) in the **`node` environment** —
+no jsdom, no setup file, no component/UI test setup. Coverage is the pure
+utilities plus the storage layer, which runs against RxDB's own in-memory
+storage (`initDatabase({ storage: 'memory' })`). **Don't add `fake-indexeddb`** —
+the Dexie adapter is RxDB's code to test, not this project's.
 
-**`utils/resume-repository.ts` is the only module in the app that imports `rxdb`.** Everything above it sees plain `Resume` / `ResumeSummary` / `ResumeDocument` values and Promises — no `RxDocument`, no `RxCollection`, no RxJS observable escapes it, so replacing the database means rewriting that one file. Database `resumebuilder`, three collections:
+## Code style
 
-| Collection   | Primary key | Holds                                                                                 |
-| ------------ | ----------- | ------------------------------------------------------------------------------------- |
-| `resumes`    | `id`        | `{ id, name, createdAt, updatedAt, resume, settings }` — one document per resume.     |
-| `thumbnails` | `resumeId`  | `{ resumeId, stamp }` plus the page-1 PNG as the attachment `page1`.                  |
-| `appmeta`    | `id`        | A single `{ id: 'app', defaultSettings }` — the look a newly created resume inherits. |
-
-- **`resume` and `settings` are deliberately schema'd as open `{ type: 'object' }`.** RxDB only needs the top-level fields it queries, and keeping these opaque sidesteps three hazards in the model: date fields typed `Date | string`, an `accentId` whose `null` means "Auto", and `sectionOrder`, where absent (the default sections) and `[]` (no sections) mean different things. **Don't expand these into a full schema** — a strict schema would reject or normalize all three.
-- **Anything written has to be plain JSON.** `localStorage`'s `JSON.stringify` used to flatten the model's real `Date` objects into ISO strings for free; RxDB refuses to structured-clone a `Date` at all (error DOC24). `toPlainJson` in the repository does that flattening explicitly on every write path — remove it and creating a resume fails outright.
-- **`updatedAt` is an indexed number, so its schema carries `minimum`/`maximum`/`multipleOf`.** RxDB throws at collection creation without all three.
-- **There is no first-run seeding and no migration.** A new browser gets an empty list and the list's own empty state. Clicking "New resume" is the only thing that produces sample content (`createResume` → `sampleResume()`).
-- **Writes throw `ResumeStorageError`.** Everything auto-saves with no Save button, so a silently dropped write is invisible until the user reloads and finds their work gone. `ResumeLibraryProvider` catches it into `saveError`, which `SaveErrorBanner` (rendered on both pages) surfaces. Quota now arrives asynchronously wrapped in an `RxError`, so `isQuotaError` walks the `cause`/`parameters` chain rather than checking the error it was handed.
-- **Thumbnails are a separate collection on purpose.** Capturing one mid-edit would otherwise be a write to the very document the editor is auto-saving, bumping its revision and firing a change event back at the screen that produced it. The cost is that `deleteResume` has to clear the thumbnail document itself — RxDB only drops attachments belonging to the document being removed.
-- **`context/ResumeLibraryContext`** sits above the router. It opens the database, subscribes to the resume list, and owns `createResume`/`duplicateResume`/`renameResume`/`deleteResume`/`saveResume`/`rememberSettings` — all now async. Read it with **`useResumeLibrary()`**. It renders **nothing until the database is open and the first list has arrived**, which is why no screen below it has to tell "still loading" from "no resumes". Because the list is a live subscription there is no manual state to keep in step, no `commitIndex`, no `resumesRef`, and no refresh-on-focus hack — a change made in another tab simply arrives. Resume _content_ is still not held here; the editor route loads the one document it shows.
-- **Opening the database falls back to in-memory storage** when the browser refuses IndexedDB (private-mode Safari, some webviews). The session works and nothing persists, and `SaveErrorBanner` says so. That warning outlives any single write, so it stands in whenever there's no fresher failure.
-
-### State: single source of truth + auto-save
-
-This is the most important pattern to understand before editing the Editor.
-
-- **`context/ResumeContext`** holds the committed `Resume` in a `useReducer` store — the single source of truth for the **one** resume being edited. It lives **under the `/editor/:id` route**, keyed by that id and handed a `ResumeDocument` the route already read, so a keystroke rewrites one document instead of the whole library, and switching resumes remounts the store rather than reconciling one reducer state onto another. **The editor reads its document once and never subscribes to it.** Subscribing would send the editor's own auto-save straight back as a change event, putting a guard on the typing path whose failure mode is silently clobbering what someone is typing. The trade is that two tabs on the _same_ resume stay stale; the list is reactive, so names and timestamps still sync across tabs. Access it via **`useResume()`** (never `useContext` directly): `resume` and `settings` plus `updateResume`, `updateSettings`, `updateSectionData(section, data)`, `updateSectionOrder`, and `updateSectionTitles`. The reducer (`ResumeReducer.ts`) has four actions: `updateResume`, `updateSection` (`{ section, data }` — sets `state[section]`), `updateSectionOrder`, and `updateSectionTitles`.
-
-- **The save effect skips its first run.** Merely opening a resume must not count as editing it — the list sorts by most recently edited, so a save on mount would reshuffle it on every visit. It calls `saveResume` through a ref rather than naming it as a dependency: the effect must fire for edits only, and coupling it to the identity of a function that itself writes storage is how it would end up retriggering itself.
-
-- **`EditorPage` tracks its document as three states, not two.** Reading a resume is asynchronous, so "no document yet" is the normal first render — treating that as "not found" the way a synchronous read could would bounce every visit straight back to the list. `undefined` is loading, `null` is genuinely missing. A document that loads while its summary is still absent is the list subscription lagging a just-created resume, so that waits rather than redirecting.
-
-- **Edits auto-save; there is no Save button.** Each section owns a local `react-hook-form`, and **`useAutoCommitSection`** commits its values to the store a beat after typing stops and on blur — so the flow is **section form → ResumeContext → the `resumes` document → re-render PDF**. The hook re-seeds the form when its committed `value` changes externally (a JSON import), but a reference-identity guard (the reducer stores the exact reference it's handed) skips the echo of the section's own commit so live typing is never clobbered. Adding, reordering, and renaming sections commit straight to the store from `Editor.tsx` (`updateSectionOrder`/`updateSectionTitles`). Removing a section is a permanent delete — it clears the section's data and is gated behind a confirmation popover on the trash button.
-
-- **`OpenSectionContext`** makes the sections behave like an accordion (only one open at a time); `useSectionOpenState(id)` falls back to local state when used outside the provider, and `useOpenSection()` imperatively expands a section (used to auto-open a freshly added one). **`SectionActionsContext`** exposes `removeSection(id)` to the section header's trash button.
-
-- **`OpenSubsectionContext`** is the same accordion one level down: within a section, only one entry (`EditorSubsection` — a job, a school, a skill) is expanded at a time, and all start collapsed. `Editor.tsx` wraps **each section** in its own `OpenSubsectionProvider`, so the scope is per section (every section remembers its own open entry) and section components — which render `EditorSection` themselves — still sit inside the provider. Entries are keyed by their `useFieldArray` `field.id`, passed as `EditorSubsection`'s `id`. Because that id is minted inside `append()`, an "Add" handler expands the new entry via **`useOpenAppendedSubsection(fields)`**: call the returned function right after `append` and the next id to appear at the end of `fields` opens (otherwise a fresh, untitled entry would show as a blank collapsed row). For the same reason, subsection `title`/`subtitle` come from `watch(...)` rather than the `fields` snapshot, which only refreshes on append/remove/move/reset and would otherwise show a stale name on a collapsed entry.
-
-### Sections model
-
-`types/resume.model.ts` defines the schema and the section machinery. **All 12 JSON Resume section types are wired into the editor and all three templates.** Users add/remove section types from the **`AddSectionMenu`** picker (a category-grouped Chakra `Menu` at the bottom of the editor that lists only not-yet-added types). One instance per type — the model stays JSON Resume compatible (no duplicate sections). Each section's display title can be renamed inline from its editor header (the pencil icon), persisted in `sectionTitles`.
-
-- `SectionTypes` enum + `SECTION_TITLES` (display names) + `SECTION_DESCRIPTIONS` (picker subtitles). Note titles differ from keys (e.g. `basics` → "Profile").
-- `REORDERABLE_SECTIONS` — the full universe of addable/removable/reorderable types (all 11 non-Basics types). **`Basics` is deliberately excluded**: it is always rendered first as the resume header and can't be removed or collapsed.
-- `SECTION_CATEGORIES` groups those types for the picker menu.
-- **The active set _is_ `sectionOrder`**: a section is on the resume iff it appears in the persisted `sectionOrder`; types absent from it sit in the picker. `resolveSectionOrder(order?)` returns that active set in order — validating against `REORDERABLE_SECTIONS`, dropping Basics/unknown/dupes. `undefined` falls back to `DEFAULT_ACTIVE_SECTIONS` (the original four: Skills/Work/Education/Projects) so pre-feature saves and brand-new resumes are unchanged; an explicit empty array means "no sections". **Always route persisted order through this helper** (the Editor and every template do).
-- `sectionOrder` is persisted as part of the `Resume`. `sectionVisibility` is a **retired** field kept only for JSON-import back-compat — nothing in the app reads it anymore (sections are added/removed, not hidden).
-- `sectionTitles` (`Partial<Record<SectionTypes, string>>`) holds per-type title overrides, also persisted on the `Resume`. Read titles through **`getSectionTitle(type, resume.sectionTitles)`** (editor header, all templates, text export) — never `SECTION_TITLES[type]` directly — so custom names win, falling back to the default otherwise. `normalizeSectionTitles` strips blank/default-equal entries before persisting. Removing a section also clears its override (a re-added section returns to its default name).
-
-Most sections share one config-driven editor, **`GenericListSection`** (flat fields + an optional bullet list); the seven simpler types are thin wrappers in `NewSections.tsx`. Skills/Work/Education/Projects keep bespoke editors. In the templates, the seven added types reuse each template's existing entry/skill renderers via a small `SimpleEntry`/`InterestGroup` adapter, and an active-but-empty section still renders its heading.
-
-**To add an editable section:** add to `SectionTypes` + `SECTION_TITLES` (+ `SECTION_DESCRIPTIONS`/`SECTION_CATEGORIES` for the picker, and `REORDERABLE_SECTIONS`), give it a field in the `Resume` interface, build an editor (usually a `GenericListSection` wrapper in `NewSections.tsx`) and wire it into `Editor.tsx`'s `sectionComponents` map, and render it in each template's `sectionContent`.
-
-### Templates & accents (PDF)
-
-- **`templates/index.ts`** is a registry of `TemplateDefinition`s (`id`, `name`, `defaultAccentId`, `supportsAccent?`, `Component`). Templates are `Duo`, `Linea`, `Aria`, `Folio`, `Mono`. Each receives `TemplateProps = { resume, accent, marginScale }`. `Mono` is monochrome by design and sets `supportsAccent: false`, which disables the accent picker while it is active.
-- **`templates/accents.ts`** defines pastel `AccentPalette`s (`soft`/`muted`/`strong`/`swatch` tonal ramp). "Auto" (accentId `null`) resolves to the active template's `defaultAccentId`.
-- **`templates/margins.ts`** holds the page-margin presets (Narrow/Normal/Wide). Each is a **multiplier** on the template's own base page padding, so every template keeps its distinct spacing; Normal is ×1, i.e. unchanged. Resolve a stored id with `getMarginScale(id)` and multiply the template's base padding by the result.
-- **Template, accent, and margin are stored per resume**, in the document's `ResumeSettings` — not app-wide — so a designer-styled resume and an ATS-plain one coexist. Change them through `updateSettings` from `useResume()`; that also writes the `appmeta` document, which the next new resume inherits. `resolveSettings` (in **`utils/resume-settings.ts`**, kept apart from the repository so the editor and JSON import don't pull RxDB into their import graph) coerces a retired template/margin id back to the default rather than leaving the preview with no component to render, and treats `accentId: null` as meaningful ("Auto"), not missing.
-- **`Preview.tsx`** renders the chosen component with `usePDF` (regeneration debounced so rapid auto-saved edits coalesce), and displays the resulting blob with `react-pdf` (`Document`/`Page`). It deliberately locks the rendered document height (`minDocHeight`) while the next PDF regenerates so an edit doesn't reset scroll position. It also owns the resume's editable name (`ui/EditableTitle` in the nav bar's left cell) and captures the list thumbnail.
-- Templates are built with `@react-pdf/renderer` primitives (`Page`/`View`/`Text`/`StyleSheet`), not DOM. Styles are functions of the accent (`makeStyles(accent, marginScale)`); `Mono` ignores the accent and uses a module-level `StyleSheet`.
-
-**Before editing any template, use the `resume-pdf-templates` skill** (`.agents/skills/resume-pdf-templates/`). Templates carry structural rules that are invisible in review and easy to undo by accident — chiefly that a section heading is rendered _inside_ its first entry (`templates/pagination.tsx`) so react-pdf can't strand it at the foot of a page, and that each section must be wrapped in a `View` rather than a `Fragment` or entries get pushed to the next page instead of splitting. `minPresenceAhead` does **not** solve any of this. The skill covers those rules, font registration (static TTFs only), accent/margin wiring, adding a template, and a harness for checking pagination against a rendered PDF.
-
-### Thumbnails
-
-The list card shows a real PNG of page 1, stored as an RxDB attachment on the `thumbnails` collection and stamped with the resume's `updatedAt`. **`utils/thumbnails.ts` now holds only `renderPdfThumbnail`** — a pure PDF-blob → PNG-blob function with no storage concern; where the images are cached is the repository's business.
-
-- **The editor is the normal producer.** `Preview` snapshots its live `usePDF` blob once the PDF _and_ `updatedAt` have both been quiet for `THUMBNAIL_CAPTURE_DELAY_MS`. That wait is not cosmetic: `updatedAt` bumps the moment an edit saves while the blob catches up only after the render debounce, so capturing eagerly can stamp an older image with a newer time — which then reads as fresh and is never re-rendered.
-- **The list is the fallback.** `ResumeThumbnail` paints a stale cached image immediately (it still shows the right resume) and re-renders via `utils/render-resume-pdf.tsx` only on a miss or a stamp mismatch — lazily behind an `IntersectionObserver` and serialized through a module-level queue, since rendering a PDF blocks the main thread in bursts.
-- The four thumbnail functions in the repository (`getThumbnail`/`putThumbnail`/`deleteThumbnail`/`copyThumbnail`) **fail soft**, unlike every other write there: a broken image cache must never break the list, and losing one only costs a re-render.
-- `PAGE_ASPECT_RATIO` is **A4** (595.28 × 841.89pt) because every template renders `<Page size="A4">`. Getting it wrong letterboxes or crops the thumbnail.
-- pdf.js drives its render continuation with `requestAnimationFrame`, which Chrome pauses in a background tab — thumbnail renders stall there and resume when the tab is shown again. Expected, not a bug.
-- `pdfjs.GlobalWorkerOptions.workerSrc` is set once in `utils/pdf-worker.ts`; both `Preview` and `thumbnails.ts` depend on it via `ensurePdfWorker()`. RxDB's Dexie storage uses no worker of its own, so `vite.config.ts` needs no worker configuration.
-
-### Import / export
-
-- **Export** (`Preview/ExportMenu.tsx`, and the list card's Download submenu): PDF (the live `usePDF` blob in the editor, a fresh `renderResumePdf` from the list), JSON (`utils/json-export.ts`), and ATS-plain-text (`utils/text-export.ts`). Both entry points name the file through `resumeExportFileName` (`utils/download.ts`) so they can't drift.
-- **Import happens on the list only** — the editor has no import affordance, so a file can never overwrite the resume you have open. `useJsonImport.ts`'s `readResumeFile(file)` validates a JSON Resume file and returns `{ resume, meta, fileName }`, resolving `null` and exposing an `importError` (rather than throwing) when the file can't be read, parsed, or validated. It stops at "parsed" rather than committing, leaving the caller to decide what to do with the result; the list adds it as a new resume, named via `nameForImport`.
-- **`ImportDialog.tsx`** commits as soon as a file parses. There is nothing to confirm, because importing only ever _adds_: a bad file costs nothing and a good one can be deleted from its card. The dropzone pins `acceptedFiles` to a stable empty array and lives _inside_ the dialog body: it imports on pick and must never retain a file, or re-picking one would be rejected as a duplicate instead of re-importing. The list also accepts a `.json` dropped anywhere on the grid.
-- **`meta["resume-builder"]`** carries the app-only state through a round-trip: `sectionOrder`/`sectionTitles`/`sectionVisibility` plus the resume's `name` and `settings`. `toJsonResume(resume)` with no second argument still produces exactly what it did before names existed. `readResumeDocumentMeta` reads that block **defensively** and separately from `fromJsonResume` — it validates template/accent/margin ids against the live registries and drops `settings` wholesale if they don't resolve, so a stale block costs the settings, not the import. The zod schema keeps `meta` as `z.record(z.unknown())` for the same reason.
-- **`utils/jsonresume.ts`** is the translation/validation layer between the internal `Resume` model and the standard [JSON Resume](https://jsonresume.org/) schema, used by both JSON export and import. The internal model deliberately diverges from the schema — `work`/`volunteer` `highlights` and `skills` `keywords` are `{ value }[]` (for react-hook-form), dates may be `Date` objects, and `isPresent`/`sectionVisibility`/`sectionOrder`/`sectionTitles` are app-only — so `toJsonResume` unwraps lists to `string[]`, normalizes dates to `YYYY-MM-DD`, drops `isPresent` in favor of omitting `endDate`, and tucks app state under `meta["resume-builder"]`. `fromJsonResume` reverses this and validates the input with a lenient **zod** schema (`jsonResumeSchema`), throwing a descriptive error for non-resume files. It tolerates both real JSON Resume files and this app's legacy exports. Covered by `jsonresume.test.ts`.
-
-## Conventions
-
-- **Import order is lint-enforced** (`import/order`): groups `builtin → external → internal → parent → sibling → index`, newlines between groups, alphabetized case-insensitive. Run `npm run lint:fix` if unsure.
-- `no-console` except `console.error`/`console.info`. `@typescript-eslint/no-explicit-any` is a warning (some form code uses `any`).
+- **Import order is lint-enforced** (`import/order`): groups
+  `builtin → external → internal → parent → sibling → index`, newlines between
+  groups, alphabetized case-insensitive. Run `npm run lint:fix` if unsure.
+- `no-console` except `console.error`/`console.info`.
+  `@typescript-eslint/no-explicit-any` is a warning (some form code uses `any`).
 - Prettier: single quotes, semicolons, `printWidth` 80, always arrow parens.
-- UI is **Chakra UI v3** (`createSystem` theme in `theme.ts`). Three raw ramps drive the whole app: **`brand`** (indigo — the accent, consumed as `colorPalette="brand"` / `brand.solid` / `brand.fg`) plus two neutrals — **`gray`** (overridden from Chakra's default zinc to a cool slate) for light mode and **`zinc`** (near-neutral) for dark. Overriding `gray` retunes every light neutral, because Chakra's own semantic tokens (`bg.subtle`, `bg.panel`, `fg.muted`, `border`, …) and the `gray` colorPalette are all defined as `{colors.gray.N}` references; the dark half of those tokens is repointed at `zinc` explicitly (see Color mode). **Nothing consumes `zinc.N` directly** — it exists only to feed `_dark` conditions. **Style components with the semantic names** (`bg.panel`, `fg.muted`, `border`, `brand.solid`) rather than raw steps like `gray.200`, so a retune stays a one-file change and each component works in both modes. `app.rail` / `app.railHover` / `app.railFg` / `app.canvas` name the chrome roles Chakra has no token for (left icon rail, its hover, its icon color, the PDF backdrop). Drag-and-drop is **`@dnd-kit`**.
+- Chakra UI v3 for UI, `react-hook-form` for forms, `@dnd-kit` for drag-and-drop.
 
-- **Color mode.** The app ships light and dark chrome. `ColorModeProvider` (`context/ColorModeContext`) owns the choice; read it with **`useColorMode()`** (`colorMode`, `preference`, `setPreference`, `toggleColorMode`) and toggle it from the left rail (`Navbar.tsx`). The persisted preference is `'light' | 'dark' | 'system'` and defaults to **`system`** — it keeps following the OS (via a `matchMedia` listener) until the toggle pins an explicit mode. The provider mirrors the resolved mode onto `<html>` as the `dark`/`light` class that Chakra's `_dark`/`_light` conditions select on (`.dark &`), plus native `color-scheme`; an inline script in **`index.html`** applies the same class before first paint, so its storage key must stay in sync with `useColorModeLocalStorage`. **The templates are deliberately unaffected** — they render to PDF with colors baked in, and the pages stay white paper on a dark canvas. In `theme.ts` the `_dark` half of every neutral token (`bg.*`, `fg.*`, `border.*`, the `gray` colorPalette, `app.*`) points at the **`zinc`** ramp, not `gray`: slate is crisp as light chrome but reads as a blue cast across large dark surfaces. Those same slots are also re-pitched into a ladder — rail (950) → editor panel & PDF canvas (900) → panels (800) → hover (700) → emphasized (600) — because Chakra's stock dark values map both `bg.subtle` (editor panel) and `bg.panel` (the cards on it) to the 950 step, which flattens the two levels and leaves hovers darker than what they sit on. The `_light` values there are Chakra's defaults, restated only because a semantic token must define every condition it takes part in — light mode is unchanged by any of this. Forms are **`react-hook-form`** (`useFieldArray` for repeatable entries like work highlights / skill keywords).
+## Architecture docs
+
+Read the relevant document before working in an area — each one records why the
+code is shaped the way it is, and most of it is not recoverable from the code.
+
+| Read                                                                       | Before working on                                     |
+| -------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [docs/architecture/README.md](docs/architecture/README.md)                 | Anything — the overview and index.                    |
+| [docs/architecture/storage.md](docs/architecture/storage.md)               | The repository, RxDB schemas, `ResumeLibraryContext`. |
+| [docs/architecture/editor-state.md](docs/architecture/editor-state.md)     | The Editor, `ResumeContext`, auto-save.               |
+| [docs/architecture/sections.md](docs/architecture/sections.md)             | The section model, or adding a section type.          |
+| [docs/architecture/templates.md](docs/architecture/templates.md)           | Templates, accents, margins, `Preview`.               |
+| [docs/architecture/thumbnails.md](docs/architecture/thumbnails.md)         | List thumbnails and their caching.                    |
+| [docs/architecture/import-export.md](docs/architecture/import-export.md)   | JSON/PDF/text export and JSON Resume import.          |
+| [docs/architecture/ui-and-theming.md](docs/architecture/ui-and-theming.md) | The theme, colour ramps, light/dark mode.             |
+
+Path-scoped rules in `.claude/rules/` restate the hard constraints for each area
+and load automatically when you open a matching file.

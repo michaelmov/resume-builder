@@ -49,3 +49,5 @@ React 18 · TypeScript · Vite · Chakra UI v3 · RxDB · react-hook-form ·
 `@react-pdf/renderer` · `@dnd-kit` · zod · Vitest
 
 Contributions are welcome — open an issue or a pull request.
+[`docs/architecture/`](docs/architecture/README.md) explains how the pieces fit
+together and why they're shaped the way they are.
