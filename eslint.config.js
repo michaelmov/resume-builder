@@ -11,8 +11,11 @@ import importPlugin from 'eslint-plugin-import';
 export default [
   {
     ignores: [
-      'dist',
-      'node_modules',
+      // Globbed with **/ so a build output anywhere — docs/dist, a nested
+      // package — is skipped. A bare 'dist' only matches the repo root, which
+      // let a stray docs/dist bundle through and produced thousands of errors.
+      '**/dist',
+      '**/node_modules',
       '*.config.js',
       '*.config.ts',
       'vite-env.d.ts',
