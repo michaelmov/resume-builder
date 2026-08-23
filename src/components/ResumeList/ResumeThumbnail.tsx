@@ -4,12 +4,12 @@ import { HiOutlineDocumentText } from 'react-icons/hi';
 
 import { ResumeSummary } from '../../types/resume-library';
 import { renderResumePdf } from '../../utils/render-resume-pdf';
-import { readDocument } from '../../utils/resume-storage';
 import {
   getThumbnail,
   putThumbnail,
-  renderPdfThumbnail,
-} from '../../utils/thumbnails';
+  readDocument,
+} from '../../utils/resume-repository';
+import { renderPdfThumbnail } from '../../utils/thumbnails';
 
 /**
  * A4 (595.28 × 841.89pt). Every template renders `<Page size="A4">`, so the
@@ -95,7 +95,7 @@ export const ResumeThumbnail: FC<{ summary: ResumeSummary }> = ({
 
       try {
         const png = await enqueue(async () => {
-          const document = readDocument(summary.id);
+          const document = await readDocument(summary.id);
           if (!document) return null;
           return renderPdfThumbnail(await renderResumePdf(document));
         });

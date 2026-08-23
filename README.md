@@ -3,7 +3,7 @@
 A free and open source resume builder made for developers. Fill in a form on the
 left, watch a real PDF render on the right, and export when it looks right.
 
-Data is stored in your browser's `localStorage` — there is no backend. Resumes
+Data is stored in your browser, in IndexedDB — there is no backend. Resumes
 follow the [JSON Resume](https://jsonresume.org/) schema, so they can be
 imported and exported as standard JSON.
 
@@ -45,7 +45,7 @@ push and pull request.
 
 ## Built with
 
-React 18 · TypeScript · Vite · Chakra UI v3 · react-hook-form ·
+React 18 · TypeScript · Vite · Chakra UI v3 · RxDB · react-hook-form ·
 `@react-pdf/renderer` · `@dnd-kit` · zod · Vitest
 
 Contributions are welcome — open an issue or a pull request.

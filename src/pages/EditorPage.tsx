@@ -1,5 +1,5 @@
-import { Box, Flex, IconButton } from '@chakra-ui/react';
-import { FC, useCallback, useMemo, useState } from 'react';
+import { Box, Center, Flex, IconButton, Spinner } from '@chakra-ui/react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import {
   Navigate,
@@ -15,8 +15,8 @@ import { SaveErrorBanner } from '../components/SaveErrorBanner';
 import { Tooltip } from '../components/ui/Tooltip';
 import { ResumeProvider } from '../context/ResumeContext/ResumeContext';
 import { useResumeLibrary } from '../hooks/useResumeLibrary';
-import { ResumeSummary } from '../types/resume-library';
-import { readDocument } from '../utils/resume-storage';
+import { ResumeDocument, ResumeSummary } from '../types/resume-library';
+import { readDocument } from '../utils/resume-repository';
 
 /** Router state set by the list when it creates a resume and navigates here. */
 export interface EditorLocationState {
@@ -109,12 +109,52 @@ export const EditorPage: FC = () => {
   const { resumes } = useResumeLibrary();
   const { state } = useLocation() as { state: EditorLocationState | null };
 
+  /**
+   * Three states, not two. Reading a resume is asynchronous, so "no document
+   * yet" is the normal first render — treating that as "not found", the way a
+   * synchronous read could, would bounce every visit straight back to the list.
+   * `undefined` is still loading; `null` is genuinely missing.
+   */
+  const [document, setDocument] = useState<ResumeDocument | null | undefined>(
+    undefined
+  );
+
   // Read once per id — from here on the provider owns this resume's content.
-  const document = useMemo(() => (id ? readDocument(id) : undefined), [id]);
+  useEffect(() => {
+    if (!id) return;
+
+    let cancelled = false;
+    setDocument(undefined);
+
+    void readDocument(id).then(
+      (found) => {
+        if (!cancelled) setDocument(found ?? null);
+      },
+      (error) => {
+        console.error('Could not open the resume:', error);
+        if (!cancelled) setDocument(null);
+      }
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
   const summary = resumes.find((resume) => resume.id === id);
 
-  if (!id || !document || !summary) {
+  if (!id || document === null) {
     return <Navigate to="/" replace state={{ missingResume: true }} />;
+  }
+
+  // A resume that exists but has no summary yet is the list subscription
+  // lagging a just-created resume, not a missing one — wait rather than bounce.
+  if (document === undefined || !summary) {
+    return (
+      <Center height="100dvh" bg="app.canvas">
+        <Spinner size="lg" color="brand.fg" />
+      </Center>
+    );
   }
 
   return (
