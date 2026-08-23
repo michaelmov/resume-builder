@@ -18,6 +18,7 @@ import {
 } from 'react-icons/hi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { Footer } from '../components/Footer';
 import { ImportDialog } from '../components/ImportDialog';
 import { Navbar } from '../components/Navbar';
 import { DeleteResumeDialog } from '../components/ResumeList/DeleteResumeDialog';
@@ -127,6 +128,8 @@ export const ResumeListPage: FC = () => {
       <Box
         flex={1}
         overflowY="auto"
+        display="flex"
+        flexDirection="column"
         bg="bg.subtle"
         onDragOver={(event) => {
           event.preventDefault();
@@ -144,7 +147,16 @@ export const ResumeListPage: FC = () => {
         outlineColor="brand.solid"
         outlineOffset="-8px"
       >
-        <Box maxWidth="80rem" mx="auto" px={{ base: 4, md: 8 }} py={8}>
+        {/* Flexes so the footer below it is pushed to the foot of the window
+            when the grid is short, rather than floating under the cards. */}
+        <Box
+          flex={1}
+          width="100%"
+          maxWidth="80rem"
+          mx="auto"
+          px={{ base: 4, md: 8 }}
+          py={8}
+        >
           <Flex align="center" justify="space-between" gap={4} mb={6}>
             <Heading size="lg">Resumes</Heading>
             <Flex gap={2}>
@@ -239,6 +251,8 @@ export const ResumeListPage: FC = () => {
             </SimpleGrid>
           )}
         </Box>
+
+        <Footer />
       </Box>
 
       <ImportDialog
