@@ -1,4 +1,4 @@
-import { Heading, Link, Stack } from '@chakra-ui/react';
+import { Stack } from '@chakra-ui/react';
 import {
   closestCenter,
   DndContext,
@@ -205,23 +205,6 @@ export const Editor: FC = () => {
           }}
         >
           <Stack width="100%" position="relative" p={6} gap={8}>
-            <Heading
-              as="h3"
-              fontSize="medium"
-              textAlign="center"
-              fontWeight="normal"
-              color="fg.muted"
-            >
-              Made with ❤️ by{' '}
-              <Link
-                href="https://michaelmov.dev/"
-                target="_blank"
-                textDecoration="underline"
-                color="brand.fg"
-              >
-                Michael
-              </Link>
-            </Heading>
             {sectionComponents[SectionTypes.Basics]}
             <DndContext
               sensors={sensors}
