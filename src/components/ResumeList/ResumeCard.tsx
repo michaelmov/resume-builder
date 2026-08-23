@@ -23,7 +23,7 @@ import { formatRelativeTime } from '../../utils/date-utilities';
 import { downloadBlob, resumeExportFileName } from '../../utils/download';
 import { exportResumeAsJson } from '../../utils/json-export';
 import { renderResumePdf } from '../../utils/render-resume-pdf';
-import { readDocument } from '../../utils/resume-storage';
+import { readDocument } from '../../utils/resume-repository';
 import { exportResumeAsText } from '../../utils/text-export';
 import { EditableTitle } from '../ui/EditableTitle';
 
@@ -51,7 +51,7 @@ export const ResumeCard: FC<ResumeCardProps> = ({
 
   const download = useCallback(
     async (format: 'pdf' | 'json' | 'txt') => {
-      const document = readDocument(summary.id);
+      const document = await readDocument(summary.id);
       if (!document) return;
 
       const fileName = resumeExportFileName(summary.name, document.resume);

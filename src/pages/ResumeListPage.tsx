@@ -73,14 +73,14 @@ export const ResumeListPage: FC = () => {
   );
 
   const handleCreate = useCallback(
-    () => openNew(createResume(), true),
+    async () => openNew(await createResume(), true),
     [createResume, openNew]
   );
 
   const handleImport = useCallback(
-    (imported: ImportedResume) => {
+    async (imported: ImportedResume) => {
       openNew(
-        createResume({
+        await createResume({
           name: nameForImport(imported),
           resume: imported.resume,
           settings: imported.meta.settings,
@@ -107,13 +107,13 @@ export const ResumeListPage: FC = () => {
       }
 
       const imported = await readResumeFile(file);
-      if (imported) handleImport(imported);
+      if (imported) await handleImport(imported);
     },
     [handleImport, readResumeFile, showImportError]
   );
 
   const confirmDelete = useCallback(() => {
-    if (pendingDelete) deleteResume(pendingDelete.id);
+    if (pendingDelete) void deleteResume(pendingDelete.id);
     setPendingDelete(null);
   }, [deleteResume, pendingDelete]);
 

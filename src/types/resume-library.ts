@@ -12,10 +12,12 @@ export interface ResumeSettings {
   marginId: string;
 }
 
+/** What a resume is called before anyone names it. */
+export const UNTITLED_RESUME_NAME = 'Untitled resume';
+
 /**
- * One row of the resume index: everything the list screen needs to render a
- * card, without parsing the resume itself. The index is the source of truth
- * for a resume's name and timestamps; the document holds only resume data.
+ * Everything the list screen needs to render a card, without handling the
+ * resume itself. A projection of the stored document, not a separate record.
  */
 export interface ResumeSummary {
   id: string;
@@ -30,4 +32,12 @@ export interface ResumeSummary {
 export interface ResumeDocument {
   resume: Resume;
   settings: ResumeSettings;
+}
+
+/** A cached PNG of a resume's first page, for the list card. */
+export interface ThumbnailRecord {
+  /** PNG image of page 1. */
+  png: Blob;
+  /** The resume's `updatedAt` (epoch ms) this image was rendered from. */
+  stamp: number;
 }

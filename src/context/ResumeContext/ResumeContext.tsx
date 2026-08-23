@@ -14,7 +14,7 @@ import { useResumeLibrary } from '../../hooks/useResumeLibrary';
 import { emptyResume } from '../../mocks/empty-resume';
 import { ResumeDocument, ResumeSettings } from '../../types/resume-library';
 import { Resume } from '../../types/resume.model';
-import { DEFAULT_SETTINGS } from '../../utils/resume-storage';
+import { DEFAULT_SETTINGS } from '../../utils/resume-settings';
 
 import { ACTIONTYPE, resumeReducer } from './ResumeReducer';
 
@@ -78,9 +78,10 @@ const ResumeProvider: FC<ResumeProviderProps> = ({
       hasMountedRef.current = true;
       return;
     }
-    // Called through a ref: `saveResume` writes the index it closes over, so
-    // depending on its identity here would make this effect retrigger itself.
-    saveResumeRef.current(id, { resume: state, settings });
+    // Called through a ref rather than named as a dependency: this effect must
+    // fire for edits only, and coupling it to the identity of a function that
+    // itself writes storage is how it would end up retriggering itself.
+    void saveResumeRef.current(id, { resume: state, settings });
   }, [id, state, settings]);
 
   const updateSettings = useCallback((patch: Partial<ResumeSettings>) => {

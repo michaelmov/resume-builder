@@ -16,7 +16,8 @@ import { getAccent } from '../../templates/accents';
 import { getMarginScale } from '../../templates/margins';
 import { ResumeSummary } from '../../types/resume-library';
 import { ensurePdfWorker } from '../../utils/pdf-worker';
-import { putThumbnail, renderPdfThumbnail } from '../../utils/thumbnails';
+import { putThumbnail } from '../../utils/resume-repository';
+import { renderPdfThumbnail } from '../../utils/thumbnails';
 
 import { PreviewNavBar } from './PreviewNavBar';
 

@@ -1,4 +1,4 @@
-import { UNTITLED_RESUME_NAME } from '../context/ResumeLibraryContext/ResumeLibraryContext';
+import { UNTITLED_RESUME_NAME } from '../types/resume-library';
 import { Resume } from '../types/resume.model';
 
 /** Push a blob to the user as a file download. */
