@@ -6,8 +6,9 @@ Guidance for Claude Code (claude.ai/code) when working in this repository.
 
 ```bash
 npm run dev            # Vite dev server (auto-opens browser); dev:host exposes on LAN
-npm run build          # tsc typecheck + production Vite build → dist/
+npm run build          # typecheck + production Vite build → dist/
 npm run preview        # Serve the production build locally
+npm run typecheck      # tsc --noEmit over src/ (no build output)
 npm run lint           # ESLint over .ts/.tsx/.js/.jsx (lint:fix to autofix, lint:check for 0 warnings)
 npm run format         # Prettier write (format:check to verify)
 npm run test           # Vitest (run once); test:watch for watch mode
@@ -15,13 +16,13 @@ npm run deploy         # Build + publish dist/ to GitHub Pages (gh-pages branch)
 ```
 
 Node is pinned to `20.19.0` (`.nvmrc`). A Husky pre-commit hook runs
-`npm run lint && npm test` — commits fail on lint errors or failing tests (lint
-runs first and short-circuits).
+`npm run lint && npm run typecheck && npm test` — commits fail on lint errors,
+type errors, or failing tests (each stage short-circuits the next).
 
 Claude Code hooks in `.claude/settings.json` mirror that gate during a session:
-edited files are Prettier-formatted on write, and lint plus tests run when a
-turn ends — but only if source was actually touched. A failure is reported back
-rather than handed over. See `.claude/hooks/`.
+edited files are Prettier-formatted on write, and lint, typecheck, and tests run
+when a turn ends — but only if source was actually touched. A failure is
+reported back rather than handed over. See `.claude/hooks/`.
 
 ## What this is
 

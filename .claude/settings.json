@@ -19,7 +19,7 @@
             "type": "command",
             "command": "bash \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/verify.sh\"",
             "timeout": 180,
-            "statusMessage": "Verifying: lint + tests"
+            "statusMessage": "Verifying: lint + typecheck + tests"
           }
         ]
       }
@@ -31,7 +31,7 @@
             "type": "command",
             "command": "bash \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/verify.sh\"",
             "timeout": 180,
-            "statusMessage": "Verifying: lint + tests"
+            "statusMessage": "Verifying: lint + typecheck + tests"
           }
         ]
       }
