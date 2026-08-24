@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --open",
     "dev:host": "vite --open --host",
-    "build": "tsc && vite build --mode production",
+    "build": "npm run typecheck && vite build --mode production",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
@@ -16,6 +16,7 @@
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
     "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 0",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "prepare": "husky"

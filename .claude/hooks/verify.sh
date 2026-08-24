@@ -28,6 +28,11 @@ if ! output=$(npm run lint 2>&1); then
   exit 2
 fi
 
+if ! output=$(npm run typecheck 2>&1); then
+  printf 'Typecheck failed — fix before finishing:\n\n%s\n' "$(printf '%s' "$output" | tail -60)" >&2
+  exit 2
+fi
+
 if ! output=$(npm test 2>&1); then
   printf 'Tests failed — fix before finishing:\n\n%s\n' "$(printf '%s' "$output" | tail -60)" >&2
   exit 2
