@@ -47,6 +47,24 @@ This is the most important pattern to understand before editing the Editor.
   is a permanent delete — it clears the section's data and is gated behind a
   confirmation popover on the trash button.
 
+- **The sidebar is two panes, and both stay mounted.** `Editor.tsx` splits into
+  a **Profile** pane (Basics alone — it heads every resume and is neither
+  removable nor reorderable, so it doesn't belong above a list it can't take
+  part in) and a **Sections** pane (the sortable list plus `AddSectionMenu`).
+  A Chakra **`SegmentGroup`** switches between them. That is a radio group, not
+  a tab set: it owns a value and nothing else, so `Editor.tsx` holds the
+  selected pane in local state and renders both panes itself, hiding the
+  inactive one with `hidden` (i.e. `display: none`). **Hide it — never unmount
+  it.** With auto-save on a debounce, swapping the inactive pane for `null`
+  would tear down its forms and drop whatever hadn't been committed yet.
+  Basics passes `hideTitle` to `EditorSection` because the Profile segment
+  already names it.
+
+  The tradeoff against the `Tabs` this replaced is semantics: screen readers
+  announce the control as a radio group rather than tabs, and the panes are
+  plain regions with no `aria-controls` relationship back to it. Keyboard
+  arrow-key navigation is equivalent.
+
 - **`OpenSectionContext`** makes the sections behave like an accordion (only one
   open at a time); `useSectionOpenState(id)` falls back to local state when used
   outside the provider, and `useOpenSection()` imperatively expands a section

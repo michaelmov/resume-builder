@@ -20,6 +20,10 @@ commits state. The non-negotiables:
 - **`useAutoCommitSection`'s reference-identity guard** is what stops a
   section's own commit echoing back over live typing. Keep the reducer storing
   the exact reference it is handed.
+- **The sidebar's Profile/Sections panes must both stay mounted.** The
+  `SegmentGroup` in `Editor.tsx` only switches a value; the panes are rendered
+  unconditionally and the inactive one is hidden with `hidden`. Never swap it
+  for `null` — auto-save is debounced, so unmounting drops uncommitted edits.
 - **`EditorPage` has three document states**, not two: `undefined` is loading,
   `null` is genuinely missing. Treating "not loaded yet" as "not found" bounces
   every visit back to the list.

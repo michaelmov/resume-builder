@@ -30,6 +30,13 @@ interface EditorSectionProps {
    */
   alwaysOpen?: boolean;
   /**
+   * Drop the in-card heading because something else already names the section —
+   * Basics sits alone in the editor's "Profile" pane, which would otherwise
+   * label it twice in a row. Only meaningful alongside `alwaysOpen`; a
+   * collapsible section's title is its trigger and can't be hidden.
+   */
+  hideTitle?: boolean;
+  /**
    * Fired when focus leaves the section's content (React blur bubbles), letting
    * auto-saving sections flush a pending edit the moment a field is left.
    */
@@ -40,6 +47,7 @@ export const EditorSection: FC<EditorSectionProps> = ({
   title,
   children,
   alwaysOpen = false,
+  hideTitle = false,
   onBlur,
 }) => {
   const [isOpen, setIsOpen] = useSectionOpenState(id);
@@ -116,16 +124,16 @@ export const EditorSection: FC<EditorSectionProps> = ({
         boxShadow="xs"
         borderWidth="1px"
         borderColor="border"
-        borderLeftWidth="3px"
-        borderLeftColor="brand.solid"
         overflow="hidden"
       >
-        <Flex align="center" px={8} pt={6} pb={4}>
-          <Heading as="h3" fontSize="xl" fontWeight="medium" color="fg">
-            {title}
-          </Heading>
-        </Flex>
-        <Box px={8} pb={8} onBlur={onBlur}>
+        {!hideTitle && (
+          <Flex align="center" px={8} pt={6} pb={4}>
+            <Heading as="h3" fontSize="xl" fontWeight="medium" color="fg">
+              {title}
+            </Heading>
+          </Flex>
+        )}
+        <Box px={8} pt={hideTitle ? 8 : 0} pb={8} onBlur={onBlur}>
           {children}
         </Box>
       </Box>

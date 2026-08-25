@@ -1,4 +1,4 @@
-import { Stack } from '@chakra-ui/react';
+import { Box, SegmentGroup, Stack } from '@chakra-ui/react';
 import {
   closestCenter,
   DndContext,
@@ -16,6 +16,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { FC, ReactNode, useCallback, useMemo, useState } from 'react';
+import { HiOutlineUser, HiOutlineViewList } from 'react-icons/hi';
 
 import { SectionData } from '../../context/ResumeContext/ResumeReducer';
 import { useResume } from '../../hooks/useResume';
@@ -23,6 +24,7 @@ import {
   getSectionTitle,
   normalizeSectionTitles,
   resolveSectionOrder,
+  SECTION_TITLES,
   SectionTitles,
   SectionTypes,
 } from '../../types/resume.model';
@@ -47,9 +49,31 @@ import { SkillsSection } from './SkillsSection/SkillsSection';
 import { SectionDraggingProvider, SortableSection } from './SortableSection';
 import { WorkSection } from './WorkSection';
 
+/**
+ * The sidebar's two panes. Basics heads every resume and is neither removable
+ * nor reorderable, so it gets its own pane rather than sitting above a list it
+ * doesn't belong to.
+ */
+const PROFILE_PANE = 'profile';
+const SECTIONS_PANE = 'sections';
+
 export const Editor: FC = () => {
   const { resume, updateSectionData, updateSectionOrder, updateSectionTitles } =
     useResume();
+
+  // A segmented control is a radio group — it switches a value, it doesn't own
+  // any panels — so which pane is showing is ours to track and ours to render.
+  //
+  // Open on Sections when the resume already has a name and on Profile when it
+  // doesn't: a named resume is one you're coming back to, an unnamed one is
+  // fresh and wants its header filled in first. This is a mount-time seed and
+  // must stay one — recomputing it from `resume` on each render would yank the
+  // pane away the moment someone typed the first letter of a name. It still
+  // re-runs per resume, because `ResumeProvider` is keyed by id and opening a
+  // different resume remounts this component.
+  const [pane, setPane] = useState<string>(() =>
+    resume.basics.name?.trim() ? SECTIONS_PANE : PROFILE_PANE
+  );
 
   const onSectionUpdate = useCallback(
     (sectionType: SectionTypes, data: SectionData) => {
@@ -204,36 +228,104 @@ export const Editor: FC = () => {
             renameSection: handleRenameSection,
           }}
         >
-          <Stack width="100%" position="relative" p={6} gap={8}>
-            {sectionComponents[SectionTypes.Basics]}
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
-              onDragStart={() => setIsDraggingSection(true)}
-              onDragEnd={handleDragEnd}
-              onDragCancel={() => setIsDraggingSection(false)}
+          <Box>
+            {/* Sticky so the switcher stays reachable however far down a long
+                section list the user has scrolled. `height` matches
+                `PreviewNavBar`'s 60px so the two headers line up across the
+                divider, and `px` matches the panes' so the control's edges
+                line up with the cards under it. */}
+            <Box
+              position="sticky"
+              top={0}
+              zIndex="docked"
+              display="flex"
+              alignItems="center"
+              height="60px"
+              px={6}
+              bg="bg.subtle"
             >
-              <SortableContext
-                items={order}
-                strategy={verticalListSortingStrategy}
+              <SegmentGroup.Root
+                value={pane}
+                onValueChange={({ value }) => setPane(value ?? PROFILE_PANE)}
+                colorPalette="brand"
+                size="sm"
+                width="100%"
               >
-                <Stack width="100%" gap={8}>
-                  {order.map((sectionType) => (
-                    <SortableSection key={sectionType} id={sectionType}>
-                      {/* One accordion scope per section: only one of its
-                          entries is expanded at a time, and each section keeps
-                          track of its own. */}
-                      <OpenSubsectionProvider>
-                        {sectionComponents[sectionType]}
-                      </OpenSubsectionProvider>
-                    </SortableSection>
-                  ))}
-                </Stack>
-              </SortableContext>
-            </DndContext>
-            <AddSectionMenu activeSections={order} onAdd={handleAddSection} />
-          </Stack>
+                <SegmentGroup.Indicator />
+                {/* `flex="1"` splits the sidebar evenly between the two
+                    segments; the recipe already centres each one's contents.
+                    `_checked` sits on the item rather than the text so the
+                    icon picks the accent up too — it inherits
+                    `currentColor`. */}
+                <SegmentGroup.Item
+                  value={PROFILE_PANE}
+                  flex="1"
+                  cursor="pointer"
+                  _checked={{ color: 'brand.fg', fontWeight: 'medium' }}
+                >
+                  <HiOutlineUser />
+                  <SegmentGroup.ItemText>
+                    {SECTION_TITLES[SectionTypes.Basics]}
+                  </SegmentGroup.ItemText>
+                  <SegmentGroup.ItemHiddenInput />
+                </SegmentGroup.Item>
+                <SegmentGroup.Item
+                  value={SECTIONS_PANE}
+                  flex="1"
+                  cursor="pointer"
+                  _checked={{ color: 'brand.fg', fontWeight: 'medium' }}
+                >
+                  <HiOutlineViewList />
+                  <SegmentGroup.ItemText>Sections</SegmentGroup.ItemText>
+                  <SegmentGroup.ItemHiddenInput />
+                </SegmentGroup.Item>
+              </SegmentGroup.Root>
+            </Box>
+
+            {/* The inactive pane is hidden, never unmounted. Edits auto-save on
+                a debounce, so tearing a pane down on every switch would drop
+                whatever hadn't been committed yet. */}
+            <Box p={6} hidden={pane !== PROFILE_PANE}>
+              {sectionComponents[SectionTypes.Basics]}
+            </Box>
+
+            <Box p={6} hidden={pane !== SECTIONS_PANE}>
+              <Stack width="100%" position="relative" gap={8}>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  measuring={{
+                    droppable: { strategy: MeasuringStrategy.Always },
+                  }}
+                  onDragStart={() => setIsDraggingSection(true)}
+                  onDragEnd={handleDragEnd}
+                  onDragCancel={() => setIsDraggingSection(false)}
+                >
+                  <SortableContext
+                    items={order}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <Stack width="100%" gap={8}>
+                      {order.map((sectionType) => (
+                        <SortableSection key={sectionType} id={sectionType}>
+                          {/* One accordion scope per section: only one of its
+                              entries is expanded at a time, and each section
+                              keeps track of its own. */}
+                          <OpenSubsectionProvider>
+                            {sectionComponents[sectionType]}
+                          </OpenSubsectionProvider>
+                        </SortableSection>
+                      ))}
+                    </Stack>
+                  </SortableContext>
+                </DndContext>
+                <AddSectionMenu
+                  activeSections={order}
+                  onAdd={handleAddSection}
+                />
+              </Stack>
+            </Box>
+          </Box>
         </SectionActionsProvider>
       </OpenSectionProvider>
     </SectionDraggingProvider>

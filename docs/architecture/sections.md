@@ -3,16 +3,20 @@
 `types/resume.model.ts` defines the schema and the section machinery. **All 12
 JSON Resume section types are wired into the editor and all three templates.**
 Users add/remove section types from the **`AddSectionMenu`** picker (a
-category-grouped Chakra `Menu` at the bottom of the editor that lists only
-not-yet-added types). One instance per type — the model stays JSON Resume
-compatible (no duplicate sections). Each section's display title can be renamed
-inline from its editor header (the pencil icon), persisted in `sectionTitles`.
+category-grouped Chakra `Menu` at the bottom of the editor's Sections pane that
+lists only not-yet-added types). One instance per type — the model stays JSON
+Resume compatible (no duplicate sections). Each section's display title can be
+renamed inline from its editor header (the pencil icon), persisted in
+`sectionTitles`.
 
 - `SectionTypes` enum + `SECTION_TITLES` (display names) + `SECTION_DESCRIPTIONS`
   (picker subtitles). Note titles differ from keys (e.g. `basics` → "Profile").
 - `REORDERABLE_SECTIONS` — the full universe of addable/removable/reorderable
   types (all 11 non-Basics types). **`Basics` is deliberately excluded**: it is
   always rendered first as the resume header and can't be removed or collapsed.
+  That is also why the editor sidebar splits it off into its own **Profile** pane
+  rather than pinning it above a list it can't take part in — see
+  [editor-state.md](editor-state.md).
 - `SECTION_CATEGORIES` groups those types for the picker menu.
 - **The active set _is_ `sectionOrder`**: a section is on the resume iff it
   appears in the persisted `sectionOrder`; types absent from it sit in the

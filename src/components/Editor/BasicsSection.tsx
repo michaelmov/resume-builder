@@ -31,6 +31,8 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
       id={SectionTypes.Basics}
       title={SECTION_TITLES[SectionTypes.Basics]}
       alwaysOpen
+      // The editor's "Profile" pane already names this section.
+      hideTitle
       onBlur={onBlur}
     >
       <Box>
