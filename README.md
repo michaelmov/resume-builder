@@ -51,3 +51,17 @@ React 18 · TypeScript · Vite · Chakra UI v3 · RxDB · react-hook-form ·
 Contributions are welcome — open an issue or a pull request.
 [`docs/architecture/`](docs/architecture/README.md) explains how the pieces fit
 together and why they're shaped the way they are.
+
+## License
+
+Copyright © 2022–2026 Michael Movsesov.
+
+Licensed under the [GNU Affero General Public License v3.0](LICENSE) — you may
+use, study, modify, and redistribute this software, and you are free to run your
+own instance of it. If you distribute a modified version, or run one where
+others can use it over a network, you must release your source under the same
+license.
+
+A commercial license is available for anyone who wants to build on this without
+those obligations — open an issue or email
+[michael.movsesov@gmail.com](mailto:michael.movsesov@gmail.com).

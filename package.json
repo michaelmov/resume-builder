@@ -1,8 +1,9 @@
 {
   "name": "resume-builder",
   "version": "0.0.0",
+  "license": "AGPL-3.0-only",
   "type": "module",
-  "homepage": "https://michaelmovsesov.github.io/resume-builder",
+  "homepage": "https://michaelmov.github.io/resume-builder",
   "scripts": {
     "dev": "vite --open",
     "dev:host": "vite --open --host",
