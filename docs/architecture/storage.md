@@ -36,6 +36,22 @@ file. Database `resumebuilder`, three collections:
   which `SaveErrorBanner` (rendered on both pages) surfaces. Quota now arrives
   asynchronously wrapped in an `RxError`, so `isQuotaError` walks the
   `cause`/`parameters` chain rather than checking the error it was handed.
+- **Deleting purges the row; it does not leave a tombstone.** RxDB's
+  `RxDocument.remove()` is a _soft_ delete — the row stays in IndexedDB with its
+  full body under `_deleted: true`, hidden from every query but readable from
+  devtools, until a cleanup sweep frees it. Tombstones only earn their keep when
+  something replicates, and nothing here does, so `deleteResume` and
+  `deleteThumbnail` follow the remove with `purgeDeleted`, which calls the
+  storage's own `cleanup(0)` — no grace period, so it also clears tombstones
+  left by versions of the app that predate this. **Registering
+  `RxDBCleanupPlugin` instead would be worse**: it sweeps on a background timer
+  rather than at the moment of deletion, its default policy calls
+  `waitForLeadership()` (which throws without the leader-election plugin, and
+  this database is `multiInstance`), and it drags the replication protocol into
+  the bundle. Attachments need no purge — a removed document's blobs are deleted
+  outright, which is why only the thumbnail's `{ resumeId, stamp }` row needs
+  sweeping. `countStoredRows` exists solely so the tests can see tombstones,
+  which no other export can.
 - **Thumbnails are a separate collection on purpose.** Capturing one mid-edit
   would otherwise be a write to the very document the editor is auto-saving,
   bumping its revision and firing a change event back at the screen that

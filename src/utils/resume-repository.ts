@@ -340,6 +340,32 @@ const write = async <T>(action: () => Promise<T>): Promise<T> => {
   }
 };
 
+/**
+ * Physically drop a collection's deleted rows.
+ *
+ * `RxDocument.remove()` is a *soft* delete: RxDB rewrites the row with
+ * `_deleted: true` and the document body untouched, and only a cleanup sweep
+ * ever frees it. Tombstones exist so replication can tell "deleted" from "never
+ * seen" — nothing here replicates, so all they do is leave a deleted resume's
+ * employers, dates and contact details sitting in IndexedDB, readable from
+ * devtools by whoever opens the browser next. A grace period of `0` purges the
+ * row being deleted along with any tombstone an earlier version left behind.
+ *
+ * This calls the storage's own cleanup rather than registering
+ * `RxDBCleanupPlugin`, which sweeps on a background timer (a minute after the
+ * collection opens, then throttled to every five) instead of at the moment of
+ * deletion, needs the leader-election plugin to satisfy its own default policy,
+ * and pulls the replication protocol into a bundle that never replicates.
+ */
+const purgeDeleted = async <T>(collection: RxCollection<T>): Promise<void> => {
+  // `cleanup` reports false when it stopped early rather than block the storage
+  // for too long, so it has to be asked again until it says it is finished.
+  let done = false;
+  while (!done) {
+    done = await collection.storageInstance.cleanup(0);
+  }
+};
+
 // ---------------------------------------------------------------------------
 // Ids and names
 // ---------------------------------------------------------------------------
@@ -526,11 +552,19 @@ export const renameResume = async (id: string, name: string): Promise<void> => {
   });
 };
 
+/**
+ * Delete a resume for good — the row itself, not just a tombstone. Deleting is
+ * the only way to get a resume out of this browser, so it has to actually take
+ * the contents with it.
+ */
 export const deleteResume = async (id: string): Promise<void> => {
   await write(async () => {
     const db = await getDatabase();
     const doc = await db.resumes.findOne(id).exec();
-    await doc?.remove();
+    if (!doc) return;
+
+    await doc.remove();
+    await purgeDeleted(db.resumes);
   });
 
   // RxDB only drops attachments belonging to the document being removed, so the
@@ -606,7 +640,13 @@ export const deleteThumbnail = async (id: string): Promise<void> => {
   try {
     const db = await getDatabase();
     const doc = await db.thumbnails.findOne(id).exec();
-    await doc?.remove();
+    if (!doc) return;
+
+    // Removing the document does hard-delete its PNG — attachment blobs are
+    // stored outside the row and dropped outright — so the purge here is for
+    // the `{ resumeId, stamp }` row that would otherwise linger behind it.
+    await doc.remove();
+    await purgeDeleted(db.thumbnails);
   } catch (error) {
     console.error('Error deleting cached thumbnail:', error);
   }
@@ -624,4 +664,26 @@ export const copyThumbnail = async (
   const record = await getThumbnail(fromId);
   if (!record) return;
   await putThumbnail(toId, record);
+};
+
+// ---------------------------------------------------------------------------
+// Testing
+// ---------------------------------------------------------------------------
+
+/**
+ * How many rows the storage still holds under `id` — the resume, its thumbnail,
+ * or a tombstone of either.
+ *
+ * Exists for the tests. A purge is invisible through every other export here,
+ * because RxDB's queries hide deleted rows whether or not those rows are
+ * actually gone, so this is the only way to prove a delete left nothing behind.
+ */
+export const countStoredRows = async (id: string): Promise<number> => {
+  const db = await getDatabase();
+  const [resumes, thumbnails] = await Promise.all([
+    db.resumes.storageInstance.findDocumentsById([id], true),
+    db.thumbnails.storageInstance.findDocumentsById([id], true),
+  ]);
+
+  return resumes.length + thumbnails.length;
 };
