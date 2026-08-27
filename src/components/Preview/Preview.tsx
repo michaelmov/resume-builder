@@ -10,6 +10,7 @@ import { Document, Page } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 
+import { usePreviewZoom } from '../../hooks/usePreviewZoom';
 import { useResume } from '../../hooks/useResume';
 import { templates } from '../../templates';
 import { getAccent } from '../../templates/accents';
@@ -23,16 +24,12 @@ import { PreviewNavBar } from './PreviewNavBar';
 
 ensurePdfWorker();
 
-const DEFAULT_SCALE = 1.4;
-const MAX_SCALE = 2;
-const MIN_SCALE = 0.8;
-const SCALE_STEP = 0.1;
-
-// Stepping by 0.1 accumulates float error (1.4 + 0.1 - 0.1 !== 1.4), which
-// would leave the reset button on screen at what looks like the default zoom,
-// so snap every step back to one decimal.
-const clampScale = (value: number) =>
-  Math.min(Math.max(Math.round(value * 10) / 10, MIN_SCALE), MAX_SCALE);
+// Gutter and hairline around each rendered page. Held in pixels rather than as
+// spacing tokens because fitting the page to the column means subtracting them
+// from the measured width — a token would have to be resolved back to px here.
+const PAGE_GUTTER_PX = 24;
+const PAGE_BORDER_PX = 1;
+const PAGE_FRAME_PX = 2 * (PAGE_GUTTER_PX + PAGE_BORDER_PX);
 
 // Coalesce bursts of edits (auto-save now fires on blur / after a typing pause,
 // and several sections can commit in quick succession) into one PDF
@@ -124,7 +121,20 @@ export const Preview: FC<PreviewProps> = ({
   );
   const [instance, update] = usePDF({ document: template });
   const [numPages, setNumPages] = useState<number>();
-  const [scale, setScale] = useState<number>(DEFAULT_SCALE);
+
+  // Pages shrink to fit the preview column, which the fixed-width editor
+  // sidebar can leave narrow, until the user picks a zoom of their own.
+  const {
+    scale,
+    viewportRef,
+    onPageLoad,
+    zoomIn,
+    zoomOut,
+    resetZoom,
+    isFitted,
+    canZoomIn,
+    canZoomOut,
+  } = usePreviewZoom({ frameWidth: PAGE_FRAME_PX });
 
   // Holding the rendered document height while the next PDF regenerates keeps
   // the scroll container from collapsing (and resetting the scroll position)
@@ -191,6 +201,7 @@ export const Preview: FC<PreviewProps> = ({
 
   return (
     <Box
+      ref={viewportRef}
       display="flex"
       flexDirection="column"
       alignItems="center"
@@ -228,11 +239,11 @@ export const Preview: FC<PreviewProps> = ({
       >
         {/* The stack is anchored to the bottom, so the reset button sits on top
             to keep the zoom buttons from shifting as it appears/disappears. */}
-        {scale !== DEFAULT_SCALE && (
+        {!isFitted && (
           <IconButton
-            aria-label="Reset zoom"
-            title="Reset zoom"
-            onClick={() => setScale(DEFAULT_SCALE)}
+            aria-label="Fit to width"
+            title="Fit to width"
+            onClick={resetZoom}
             {...floatingControlProps}
           >
             <HiOutlineRefresh />
@@ -241,18 +252,18 @@ export const Preview: FC<PreviewProps> = ({
         <IconButton
           aria-label="Zoom in"
           title="Zoom in"
-          onClick={() => setScale(clampScale(scale + SCALE_STEP))}
+          onClick={zoomIn}
           {...floatingControlProps}
-          disabled={scale === MAX_SCALE}
+          disabled={!canZoomIn}
         >
           <HiOutlineZoomIn />
         </IconButton>
         <IconButton
           aria-label="Zoom out"
           title="Zoom out"
-          onClick={() => setScale(clampScale(scale - SCALE_STEP))}
+          onClick={zoomOut}
           {...floatingControlProps}
-          disabled={scale === MIN_SCALE}
+          disabled={!canZoomOut}
         >
           <HiOutlineZoomOut />
         </IconButton>
@@ -268,14 +279,15 @@ export const Preview: FC<PreviewProps> = ({
           {Array.from({ length: numPages ?? 0 }).map((_, index) => (
             <Box
               shadow="lg"
-              borderWidth="1px"
+              borderWidth={`${PAGE_BORDER_PX}px`}
               borderColor="border.emphasized"
               key={`page-${index}`}
-              margin="6"
+              margin={`${PAGE_GUTTER_PX}px`}
             >
               <Page
                 key={index}
                 pageNumber={index + 1}
+                onLoadSuccess={onPageLoad}
                 onRenderSuccess={handlePageRenderSuccess}
               />
             </Box>
