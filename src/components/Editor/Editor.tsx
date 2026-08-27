@@ -57,7 +57,17 @@ import { WorkSection } from './WorkSection';
 const PROFILE_PANE = 'profile';
 const SECTIONS_PANE = 'sections';
 
-export const Editor: FC = () => {
+interface EditorProps {
+  /**
+   * Fires while a section is being dragged to reorder. On mobile the editor
+   * lives inside a draggable bottom sheet, and a vertical drag means one thing
+   * to dnd-kit and another to the sheet — the sheet listens for this so it can
+   * stand down for the duration.
+   */
+  onSectionDraggingChange?: (isDragging: boolean) => void;
+}
+
+export const Editor: FC<EditorProps> = ({ onSectionDraggingChange }) => {
   const { resume, updateSectionData, updateSectionOrder, updateSectionTitles } =
     useResume();
 
@@ -83,6 +93,14 @@ export const Editor: FC = () => {
   );
 
   const [isDraggingSection, setIsDraggingSection] = useState(false);
+
+  const setDragging = useCallback(
+    (isDragging: boolean) => {
+      setIsDraggingSection(isDragging);
+      onSectionDraggingChange?.(isDragging);
+    },
+    [onSectionDraggingChange]
+  );
 
   // The active set + order lives in the resume; adds, removes, and reorders all
   // commit straight to the store (auto-save), so there is no staging buffer and
@@ -159,7 +177,7 @@ export const Editor: FC = () => {
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
-      setIsDraggingSection(false);
+      setDragging(false);
       const { active, over } = event;
       if (over && active.id !== over.id) {
         const oldIndex = order.indexOf(active.id as SectionTypes);
@@ -170,7 +188,7 @@ export const Editor: FC = () => {
         updateSectionOrder(arrayMove(order, oldIndex, newIndex));
       }
     },
-    [order, updateSectionOrder]
+    [order, updateSectionOrder, setDragging]
   );
 
   const sectionComponents: Record<SectionTypes, ReactNode> = {
@@ -297,9 +315,9 @@ export const Editor: FC = () => {
                   measuring={{
                     droppable: { strategy: MeasuringStrategy.Always },
                   }}
-                  onDragStart={() => setIsDraggingSection(true)}
+                  onDragStart={() => setDragging(true)}
                   onDragEnd={handleDragEnd}
-                  onDragCancel={() => setIsDraggingSection(false)}
+                  onDragCancel={() => setDragging(false)}
                 >
                   <SortableContext
                     items={order}

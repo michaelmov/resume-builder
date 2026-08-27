@@ -26,6 +26,8 @@ interface PreviewNavBarProps {
   onMarginChange: (marginId: string) => void;
   isEditorCollapsed: boolean;
   onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
+  /** Phone layout: one row of icon-only controls, no editor-collapse toggle. */
+  isMobile?: boolean;
 }
 
 export const PreviewNavBar = ({
@@ -43,7 +45,30 @@ export const PreviewNavBar = ({
   onMarginChange,
   isEditorCollapsed,
   onEditorCollapseChange,
+  isMobile = false,
 }: PreviewNavBarProps) => {
+  const controls = (
+    <>
+      <TemplateMenu
+        selectedTemplateId={selectedTemplateId}
+        onTemplateChange={onTemplateChange}
+        compact={isMobile}
+      />
+      <AccentMenu
+        selectedAccentId={selectedAccentId}
+        resolvedAccentId={resolvedAccentId}
+        onAccentChange={onAccentChange}
+        disabled={accentDisabled}
+        compact={isMobile}
+      />
+      <MarginMenu
+        selectedMarginId={selectedMarginId}
+        onMarginChange={onMarginChange}
+        compact={isMobile}
+      />
+    </>
+  );
+
   return (
     <Box
       as="header"
@@ -52,14 +77,22 @@ export const PreviewNavBar = ({
       alignItems="center"
       top={0}
       width="100%"
-      height="60px"
+      height={isMobile ? '52px' : '60px'}
       bg="bg.panel"
       borderBottomWidth="1px"
       borderColor="border"
       zIndex={900}
-      px={4}
+      px={isMobile ? 2 : 4}
     >
-      <Grid templateColumns="1fr 1fr 1fr" width="100%" alignItems="center">
+      {/* Three even columns keep the design controls optically centred on
+          desktop. On a phone there is no room for that: the title takes what
+          is left after the controls, which are icon-only and right-aligned. */}
+      <Grid
+        templateColumns={isMobile ? '1fr auto' : '1fr 1fr 1fr'}
+        width="100%"
+        alignItems="center"
+        gap={isMobile ? 1 : 0}
+      >
         <GridItem
           display="flex"
           justifyContent="start"
@@ -67,15 +100,19 @@ export const PreviewNavBar = ({
           gap={1}
           minWidth={0}
         >
-          <IconButton
-            aria-label={isEditorCollapsed ? 'Expand editor' : 'Collapse editor'}
-            onClick={() => onEditorCollapseChange(!isEditorCollapsed)}
-            variant="ghost"
-            color="fg.muted"
-            _hover={{ color: 'fg', backgroundColor: 'bg.muted' }}
-          >
-            {isEditorCollapsed ? <GoSidebarCollapse /> : <GoSidebarExpand />}
-          </IconButton>
+          {!isMobile && (
+            <IconButton
+              aria-label={
+                isEditorCollapsed ? 'Expand editor' : 'Collapse editor'
+              }
+              onClick={() => onEditorCollapseChange(!isEditorCollapsed)}
+              variant="ghost"
+              color="fg.muted"
+              _hover={{ color: 'fg', backgroundColor: 'bg.muted' }}
+            >
+              {isEditorCollapsed ? <GoSidebarCollapse /> : <GoSidebarExpand />}
+            </IconButton>
+          )}
           <EditableTitle
             value={resumeName}
             onCommit={onRename}
@@ -83,24 +120,18 @@ export const PreviewNavBar = ({
             label="Resume name"
           />
         </GridItem>
-        <GridItem display="flex" justifyContent="center" gap={2}>
-          <TemplateMenu
-            selectedTemplateId={selectedTemplateId}
-            onTemplateChange={onTemplateChange}
+        {!isMobile && (
+          <GridItem display="flex" justifyContent="center" gap={2}>
+            {controls}
+          </GridItem>
+        )}
+        <GridItem display="flex" justifyContent="end" gap={1} flexShrink={0}>
+          {isMobile && controls}
+          <ExportMenu
+            template={resumeTemplate}
+            resumeName={resumeName}
+            compact={isMobile}
           />
-          <AccentMenu
-            selectedAccentId={selectedAccentId}
-            resolvedAccentId={resolvedAccentId}
-            onAccentChange={onAccentChange}
-            disabled={accentDisabled}
-          />
-          <MarginMenu
-            selectedMarginId={selectedMarginId}
-            onMarginChange={onMarginChange}
-          />
-        </GridItem>
-        <GridItem display="flex" justifyContent="end">
-          <ExportMenu template={resumeTemplate} resumeName={resumeName} />
         </GridItem>
       </Grid>
     </Box>

@@ -13,9 +13,12 @@ import { exportResumeAsText } from '../../utils/text-export';
 const ExportMenu = ({
   template,
   resumeName,
+  compact = false,
 }: {
   template: JSX.Element;
   resumeName: string;
+  /** Drop the label — the mobile header has no room for it. */
+  compact?: boolean;
 }) => {
   const { resume, settings } = useResume();
 
@@ -37,8 +40,15 @@ const ExportMenu = ({
   return (
     <Menu.Root>
       <Menu.Trigger asChild>
-        <Button size="sm" colorPalette="gray" variant="subtle">
-          Export
+        <Button
+          size="sm"
+          colorPalette="gray"
+          variant="subtle"
+          px={compact ? 2 : undefined}
+          aria-label={compact ? 'Export' : undefined}
+          title={compact ? 'Export' : undefined}
+        >
+          {!compact && 'Export'}
           <PiExportLight size={24} />
         </Button>
       </Menu.Trigger>

@@ -9,11 +9,16 @@ import {
 } from 'react-router-dom';
 
 import { Editor } from '../components/Editor/Editor';
+import {
+  MobileEditorSheet,
+  SHEET_PEEK_INSET,
+} from '../components/Editor/MobileEditorSheet';
 import { Navbar, railButtonProps } from '../components/Navbar';
 import { Preview } from '../components/Preview/Preview';
 import { SaveErrorBanner } from '../components/SaveErrorBanner';
 import { Tooltip } from '../components/ui/Tooltip';
 import { ResumeProvider } from '../context/ResumeContext/ResumeContext';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { useResumeLibrary } from '../hooks/useResumeLibrary';
 import { ResumeDocument, ResumeSummary } from '../types/resume-library';
 import { readDocument } from '../utils/resume-repository';
@@ -30,6 +35,7 @@ const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
 }) => {
   const navigate = useNavigate();
   const { renameResume } = useResumeLibrary();
+  const isMobile = useIsMobile();
 
   const [isEditorCollapsed, setIsEditorCollapsed] = useState(false);
 
@@ -38,21 +44,61 @@ const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
     [renameResume, summary.id]
   );
 
+  const allResumesButton = (
+    <Tooltip content="All resumes">
+      <IconButton
+        {...railButtonProps}
+        aria-label="All resumes"
+        onClick={() => navigate('/')}
+      >
+        <HiOutlineViewGrid />
+      </IconButton>
+    </Tooltip>
+  );
+
+  /**
+   * On a phone the two panes stack instead of sitting side by side: the
+   * preview takes the whole area under the app bar, and the editor rides over
+   * it in a bottom sheet that is never dismissed (see `MobileEditorSheet`).
+   * The sheet is `position: fixed`, so the preview is told how much of its
+   * bottom edge is covered rather than being laid out around it.
+   */
+  if (isMobile) {
+    return (
+      <Flex
+        direction="column"
+        height="100dvh"
+        maxHeight="100dvh"
+        overflow="hidden"
+      >
+        <Box zIndex="banner">
+          <Navbar orientation="horizontal">{allResumesButton}</Navbar>
+        </Box>
+
+        <Box flex={1} minHeight={0} position="relative">
+          <Preview
+            summary={summary}
+            onRename={handleRename}
+            focusName={focusName}
+            onEditorCollapseChange={setIsEditorCollapsed}
+            isEditorCollapsed={isEditorCollapsed}
+            isMobile
+            bottomInset={SHEET_PEEK_INSET}
+          />
+        </Box>
+
+        <MobileEditorSheet />
+
+        <SaveErrorBanner />
+      </Flex>
+    );
+  }
+
   return (
     <Flex height="100dvh" maxHeight="100dvh" overflow="hidden">
       {/* Navbar — remains while the editor slides */}
       <Box flexShrink={0} zIndex="banner">
-        <Navbar>
-          <Tooltip content="All resumes">
-            <IconButton
-              {...railButtonProps}
-              aria-label="All resumes"
-              onClick={() => navigate('/')}
-            >
-              <HiOutlineViewGrid />
-            </IconButton>
-          </Tooltip>
-        </Navbar>
+        <Navbar>{allResumesButton}</Navbar>
       </Box>
 
       {/* Editor Panel — slides out (keeping its width) when collapsed */}

@@ -28,8 +28,11 @@ ensurePdfWorker();
 // spacing tokens because fitting the page to the column means subtracting them
 // from the measured width — a token would have to be resolved back to px here.
 const PAGE_GUTTER_PX = 24;
+// A phone can't spare 24px a side. Every pixel taken off the frame goes
+// straight into the fitted scale, which is already down near 0.5 there.
+const MOBILE_PAGE_GUTTER_PX = 8;
 const PAGE_BORDER_PX = 1;
-const PAGE_FRAME_PX = 2 * (PAGE_GUTTER_PX + PAGE_BORDER_PX);
+const pageFramePx = (gutterPx: number) => 2 * (gutterPx + PAGE_BORDER_PX);
 
 // Coalesce bursts of edits (auto-save now fires on blur / after a typing pause,
 // and several sections can commit in quick succession) into one PDF
@@ -62,6 +65,15 @@ interface PreviewProps {
   focusName: boolean;
   isEditorCollapsed: boolean;
   onEditorCollapseChange: (isEditorCollapsed: boolean) => void;
+  /** Phone layout: a compact header and a tighter page frame. */
+  isMobile?: boolean;
+  /**
+   * CSS length of viewport hidden at the bottom by the editor sheet resting at
+   * its peek. The sheet is `position: fixed`, so nothing here reflows around
+   * it — this scroll container has to reserve the space itself, and the
+   * floating zoom controls have to sit above it.
+   */
+  bottomInset?: string;
 }
 
 export const Preview: FC<PreviewProps> = ({
@@ -70,7 +82,10 @@ export const Preview: FC<PreviewProps> = ({
   focusName,
   isEditorCollapsed,
   onEditorCollapseChange,
+  isMobile = false,
+  bottomInset = '0px',
 }) => {
+  const pageGutterPx = isMobile ? MOBILE_PAGE_GUTTER_PX : PAGE_GUTTER_PX;
   // Template, accent, and margin are stored on the resume itself, so switching
   // resumes restores the look each one was last rendered with.
   const { resume, settings, updateSettings } = useResume();
@@ -134,7 +149,7 @@ export const Preview: FC<PreviewProps> = ({
     isFitted,
     canZoomIn,
     canZoomOut,
-  } = usePreviewZoom({ frameWidth: PAGE_FRAME_PX });
+  } = usePreviewZoom({ frameWidth: pageFramePx(pageGutterPx) });
 
   // Holding the rendered document height while the next PDF regenerates keeps
   // the scroll container from collapsing (and resetting the scroll position)
@@ -209,10 +224,16 @@ export const Preview: FC<PreviewProps> = ({
       width="100%"
       height="100%"
       overflow="scroll"
-      padding="20"
+      // The header is absolutely positioned, so the top padding is what keeps
+      // the first page clear of it. The bottom padding does the same for the
+      // editor sheet, which is fixed and equally outside the flow.
+      padding={isMobile ? 3 : 20}
+      paddingTop={isMobile ? '64px' : 20}
+      paddingBottom={isMobile ? `calc(${bottomInset} + 16px)` : 20}
       zIndex={0}
     >
       <PreviewNavBar
+        isMobile={isMobile}
         resumeTemplate={template}
         resumeName={summary.name}
         onRename={onRename}
@@ -231,11 +252,15 @@ export const Preview: FC<PreviewProps> = ({
       <Flex
         position="absolute"
         right={0}
-        bottom={0}
+        bottom={bottomInset}
         direction="column"
         gap={2}
         margin={4}
-        zIndex="overlay"
+        // On mobile these have to sit in a narrow band: above react-pdf's text
+        // layer, which would otherwise swallow the clicks, but below the editor
+        // sheet, so zoom buttons never float over the form being filled in.
+        // `overlay` clears the sheet's z-index and would do exactly that.
+        zIndex={isMobile ? 10 : 'overlay'}
       >
         {/* The stack is anchored to the bottom, so the reset button sits on top
             to keep the zoom buttons from shifting as it appears/disappears. */}
@@ -282,7 +307,7 @@ export const Preview: FC<PreviewProps> = ({
               borderWidth={`${PAGE_BORDER_PX}px`}
               borderColor="border.emphasized"
               key={`page-${index}`}
-              margin={`${PAGE_GUTTER_PX}px`}
+              margin={`${pageGutterPx}px`}
             >
               <Page
                 key={index}

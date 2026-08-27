@@ -11,6 +11,8 @@ interface AccentMenuProps {
   onAccentChange: (accentId: string | null) => void;
   /** Disabled for monochrome templates that have no secondary color. */
   disabled?: boolean;
+  /** Drop the label and chevron — the mobile header has no room for them. */
+  compact?: boolean;
 }
 
 const Dot = ({ color }: { color: string }) => (
@@ -30,8 +32,11 @@ const AccentMenu = ({
   resolvedAccentId,
   onAccentChange,
   disabled = false,
+  compact = false,
 }: AccentMenuProps) => {
   const resolved = getAccent(resolvedAccentId);
+
+  const label = disabled || selectedAccentId === null ? 'Auto' : resolved.name;
 
   return (
     <Menu.Root>
@@ -41,15 +46,23 @@ const AccentMenu = ({
           colorPalette="gray"
           variant="subtle"
           disabled={disabled}
+          px={compact ? 2 : undefined}
+          aria-label={compact ? `Accent color: ${label}` : undefined}
           title={
             disabled
               ? 'This template is monochrome — no accent color'
-              : undefined
+              : compact
+                ? `Accent color: ${label}`
+                : undefined
           }
         >
           <Dot color={disabled ? 'fg.subtle' : resolved.swatch} />
-          {disabled || selectedAccentId === null ? 'Auto' : resolved.name}
-          <HiChevronDown size={18} />
+          {!compact && (
+            <>
+              {label}
+              <HiChevronDown size={18} />
+            </>
+          )}
         </Button>
       </Menu.Trigger>
       <Portal>

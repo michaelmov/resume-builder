@@ -24,6 +24,7 @@ import { Navbar } from '../components/Navbar';
 import { DeleteResumeDialog } from '../components/ResumeList/DeleteResumeDialog';
 import { ResumeCard } from '../components/ResumeList/ResumeCard';
 import { SaveErrorBanner } from '../components/SaveErrorBanner';
+import { useIsMobile } from '../hooks/useIsMobile';
 import {
   ImportedResume,
   nameForImport,
@@ -41,6 +42,7 @@ interface ListLocationState {
 
 export const ResumeListPage: FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { state } = useLocation() as { state: ListLocationState | null };
   const { resumes, createResume, duplicateResume, renameResume, deleteResume } =
     useResumeLibrary();
@@ -116,9 +118,16 @@ export const ResumeListPage: FC = () => {
   }, [deleteResume, pendingDelete]);
 
   return (
-    <Flex height="100dvh" maxHeight="100dvh" overflow="hidden">
+    // The rail runs down the left edge on a desktop and across the top on a
+    // phone, where 50px of fixed width for two buttons is 13% of the viewport.
+    <Flex
+      direction={isMobile ? 'column' : 'row'}
+      height="100dvh"
+      maxHeight="100dvh"
+      overflow="hidden"
+    >
       <Box flexShrink={0} zIndex="banner">
-        <Navbar>
+        <Navbar orientation={isMobile ? 'horizontal' : 'vertical'}>
           {/* Uncolored on purpose: it inherits the rail's `app.railFg`, the
               same color the theme and repo icons below it resolve to. */}
           <Icon as={HiOutlineDocumentText} boxSize={6} my={2} aria-hidden />
@@ -157,18 +166,32 @@ export const ResumeListPage: FC = () => {
           px={{ base: 4, md: 8 }}
           py={8}
         >
-          <Flex align="center" justify="space-between" gap={4} mb={6}>
+          {/* Heading and actions share a row from `sm` up. Below that the two
+              buttons alone are wider than the viewport, so they drop to their
+              own row and split it evenly rather than being clipped. */}
+          <Flex
+            direction={{ base: 'column', sm: 'row' }}
+            align={{ base: 'stretch', sm: 'center' }}
+            justify="space-between"
+            gap={4}
+            mb={6}
+          >
             <Heading size="lg">Resumes</Heading>
-            <Flex gap={2}>
+            <Flex gap={2} flexShrink={0}>
               <Button
                 variant="surface"
                 colorPalette="gray"
+                flex={{ base: 1, sm: 'initial' }}
                 onClick={() => setIsImportOpen(true)}
               >
                 <HiOutlineUpload />
                 Import
               </Button>
-              <Button colorPalette="brand" onClick={handleCreate}>
+              <Button
+                colorPalette="brand"
+                flex={{ base: 1, sm: 'initial' }}
+                onClick={handleCreate}
+              >
                 <HiOutlinePlus />
                 New resume
               </Button>
