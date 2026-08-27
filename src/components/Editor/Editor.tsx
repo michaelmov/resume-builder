@@ -57,6 +57,18 @@ import { WorkSection } from './WorkSection';
 const PROFILE_PANE = 'profile';
 const SECTIONS_PANE = 'sections';
 
+/**
+ * Horizontal inset of the panes and the sticky switcher above them — they have
+ * to agree or the control's edges stop lining up with the cards under it.
+ *
+ * Tighter below `md` because that is where the editor is the whole screen
+ * rather than a 600px-plus sidebar: on a 390px phone this inset and the entry
+ * card's are the only chrome between the screen edge and a field, and the
+ * two-column field grids then split whatever is left. The breakpoint matches
+ * `useIsMobile`, so it flips at the same width the bottom-sheet layout does.
+ */
+const PANE_PX = { base: 3, md: 6 };
+
 interface EditorProps {
   /**
    * Fires while a section is being dragged to reorder. On mobile the editor
@@ -259,7 +271,7 @@ export const Editor: FC<EditorProps> = ({ onSectionDraggingChange }) => {
               display="flex"
               alignItems="center"
               height="60px"
-              px={6}
+              px={PANE_PX}
               bg="bg.subtle"
             >
               <SegmentGroup.Root
@@ -303,11 +315,11 @@ export const Editor: FC<EditorProps> = ({ onSectionDraggingChange }) => {
             {/* The inactive pane is hidden, never unmounted. Edits auto-save on
                 a debounce, so tearing a pane down on every switch would drop
                 whatever hadn't been committed yet. */}
-            <Box p={6} hidden={pane !== PROFILE_PANE}>
+            <Box px={PANE_PX} py={6} hidden={pane !== PROFILE_PANE}>
               {sectionComponents[SectionTypes.Basics]}
             </Box>
 
-            <Box p={6} hidden={pane !== SECTIONS_PANE}>
+            <Box px={PANE_PX} py={6} hidden={pane !== SECTIONS_PANE}>
               <Stack width="100%" position="relative" gap={8}>
                 <DndContext
                   sensors={sensors}

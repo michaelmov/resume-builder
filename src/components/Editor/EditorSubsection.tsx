@@ -52,13 +52,30 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
       open={isOpen}
       onOpenChange={(details) => setIsOpen(details.open)}
     >
+      {/* An entry is the only card in the stack: its section draws no surface
+          of its own, so this sits straight on the sidebar's `bg.subtle` and
+          has to supply the panel background, border and lift itself. Keeping
+          the inset small is the point of the arrangement — one card's padding
+          between the sidebar edge and a field instead of two nested ones — and
+          it tightens again below `md`, where the editor is the whole phone
+          screen rather than a 600px-plus sidebar.
+
+          `px` rather than `p`: the vertical insets differ and would have to
+          override the shorthand anyway (`pt` clears the action buttons that
+          hang off the top edge).
+
+          `mb` is set here rather than at each call site so every section
+          spaces its entries alike; `rest` can still override it. */}
       <Box
+        bg="bg.panel"
+        boxShadow="xs"
         borderWidth={1}
         borderColor={isOpen ? 'border.emphasized' : 'border'}
-        p={4}
+        px={{ base: 3, md: 4 }}
         pt={8}
         pb={isOpen ? 4 : 8}
-        borderRadius={6}
+        mb={3}
+        borderRadius={8}
         position="relative"
         transition="border-color 0.15s ease-in-out"
         _hover={{ borderColor: 'border.emphasized' }}

@@ -72,7 +72,6 @@ export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
               title={watch(`skills.${index}.name`)}
               entryLabel="skill"
               onDeleteClick={() => remove(index)}
-              mb={6}
               key={field.id}
               id={field.id}
               onMoveUpClick={() => move(index, index - 1)}

@@ -18,6 +18,14 @@ import { useSectionOpenState } from './OpenSectionContext';
 import { useSectionActions } from './SectionActionsContext';
 import { useDragHandle, useIsSectionDragging } from './SortableSection';
 
+/**
+ * Horizontal inset of the pinned (`alwaysOpen`) card. Tracks `EditorSubsection`'s
+ * so a field is about as wide in Basics as it is inside any other section, and
+ * tightens below `md` for the same reason it does there — on a phone the editor
+ * is the whole screen and this inset is most of what a field doesn't get.
+ */
+const CARD_PX = { base: 3, md: 6 };
+
 interface EditorSectionProps {
   /** Unique id used to coordinate the single-open accordion behavior. */
   id: string;
@@ -127,13 +135,16 @@ export const EditorSection: FC<EditorSectionProps> = ({
         overflow="hidden"
       >
         {!hideTitle && (
-          <Flex align="center" px={8} pt={6} pb={4}>
+          <Flex align="center" px={CARD_PX} pt={6} pb={4}>
             <Heading as="h3" fontSize="xl" fontWeight="medium" color="fg">
               {title}
             </Heading>
           </Flex>
         )}
-        <Box px={8} pt={hideTitle ? 8 : 0} pb={8} onBlur={onBlur}>
+        {/* `px` is kept close to the entry cards' own inset so a field is
+            about as wide here as it is inside a section — this card is the
+            only one Basics gets, where the sections stack a card per entry. */}
+        <Box px={CARD_PX} pt={hideTitle ? 8 : 0} pb={8} onBlur={onBlur}>
           {children}
         </Box>
       </Box>
@@ -267,16 +278,12 @@ export const EditorSection: FC<EditorSectionProps> = ({
             />
           )}
         </Flex>
-        <Collapsible.Content
-          as="section"
-          bg="bg.panel"
-          borderRadius={8}
-          borderWidth="1px"
-          borderColor="border"
-          p={8}
-          boxShadow="xs"
-          onBlur={onBlur}
-        >
+        {/* Deliberately no card of its own. A section used to draw a panel
+            surface here and then every entry drew a second one inside it, and
+            the two insets together cost a quarter of the sidebar's width. The
+            entries carry the card (see `EditorSubsection`); what groups them
+            is the header above and the gap to the next section. */}
+        <Collapsible.Content as="section" onBlur={onBlur}>
           {children}
         </Collapsible.Content>
       </Box>

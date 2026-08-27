@@ -2,9 +2,9 @@ import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 const DEFAULT_SCALE = 1.4;
 const MAX_SCALE = 2;
-// Low enough that a page still fits a preview column squeezed by the 600px
-// editor sidebar on a laptop display — the fitted scale shares this floor, and
-// a higher one would just let the page overflow again.
+// Low enough that a page still fits a preview column squeezed by the editor
+// sidebar at its 600px minimum on a laptop display — the fitted scale shares
+// this floor, and a higher one would just let the page overflow again.
 const MIN_SCALE = 0.4;
 const SCALE_STEP = 0.1;
 
@@ -60,8 +60,8 @@ export interface PreviewZoom {
  * Zoom for the PDF preview, in two modes.
  *
  * By default the scale *fits the column*: it drops as the column narrows —
- * because the editor sidebar is a fixed 600px, so the preview is what gives way
- * on a smaller display — and climbs back as it widens, stopping at the default
+ * the editor sidebar holds a 600px floor, so the preview is what gives way on
+ * a smaller display — and climbs back as it widens, stopping at the default
  * zoom rather than magnifying past it. The zoom buttons switch to an explicit
  * scale, which then holds even where it overflows, because the user asked for
  * it; `resetZoom` returns to fitting. Resetting to a fixed 1.4 instead would

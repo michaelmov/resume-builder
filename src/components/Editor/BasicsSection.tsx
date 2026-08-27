@@ -1,4 +1,4 @@
-import { Box, Grid, GridItem, Input, Textarea, Field } from '@chakra-ui/react';
+import { Box, Input, Textarea, Field } from '@chakra-ui/react';
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -6,6 +6,7 @@ import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
 import { Basics, SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
+import { FieldGrid, FieldGridItem } from './FieldGrid';
 
 interface BasicsSectionProps {
   value: Basics;
@@ -36,50 +37,50 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
       onBlur={onBlur}
     >
       <Box>
-        <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
-          <GridItem colSpan={1}>
+        <FieldGrid>
+          <FieldGridItem>
             <Field.Root id="name">
               <Field.Label>Name</Field.Label>
               <Input type="text" {...register('name')} />
             </Field.Root>
-          </GridItem>
-          <GridItem colSpan={1}>
+          </FieldGridItem>
+          <FieldGridItem>
             <Field.Root id="label">
               <Field.Label>Title</Field.Label>
               <Input type="text" {...register('label')} />
             </Field.Root>
-          </GridItem>
-          <GridItem colSpan={1}>
+          </FieldGridItem>
+          <FieldGridItem>
             <Field.Root id="city">
               <Field.Label>Location</Field.Label>
               <Input type="text" {...register('location.city')} />
             </Field.Root>
-          </GridItem>
-          <GridItem colSpan={1}>
+          </FieldGridItem>
+          <FieldGridItem>
             <Field.Root id="phone">
               <Field.Label>Phone</Field.Label>
               <Input type="text" {...register('phone')} />
             </Field.Root>
-          </GridItem>
-          <GridItem colSpan={1}>
+          </FieldGridItem>
+          <FieldGridItem>
             <Field.Root id="email">
               <Field.Label>Email</Field.Label>
               <Input type="text" {...register('email')} />
             </Field.Root>
-          </GridItem>
-          <GridItem colSpan={1}>
+          </FieldGridItem>
+          <FieldGridItem>
             <Field.Root id="url">
               <Field.Label>URL</Field.Label>
               <Input type="text" {...register('url')} />
             </Field.Root>
-          </GridItem>
-          <GridItem colSpan={2}>
+          </FieldGridItem>
+          <FieldGridItem full>
             <Field.Root id="summary">
               <Field.Label>Summary</Field.Label>
               <Textarea {...register('summary')} />
             </Field.Root>
-          </GridItem>
-        </Grid>
+          </FieldGridItem>
+        </FieldGrid>
       </Box>
     </EditorSection>
   );
