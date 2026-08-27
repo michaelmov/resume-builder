@@ -57,8 +57,7 @@ const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
 
       {/* Editor Panel — slides out (keeping its width) when collapsed */}
       <Box
-        width={{ base: '300px', xl: '450px', '2xl': '600px' }}
-        maxWidth="600px"
+        width="600px"
         bg="bg.subtle"
         borderRightWidth="1px"
         borderColor="border"
@@ -67,11 +66,7 @@ const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
         overflow="auto"
         transition="all 0.3s ease-in-out"
         transform={isEditorCollapsed ? 'translateX(-100%)' : 'translateX(0)'}
-        marginRight={
-          isEditorCollapsed
-            ? { base: '-300px', xl: '-450px', '2xl': '-600px' }
-            : '0'
-        }
+        marginRight={isEditorCollapsed ? '-600px' : '0'}
         flexShrink={0}
       >
         <Editor />
