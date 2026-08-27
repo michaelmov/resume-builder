@@ -6,6 +6,7 @@ import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
 import { Basics, SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 
 import { EditorSection } from './EditorSection';
+import { FIELD_GRID_COLUMNS, FIELD_GRID_FULL_SPAN } from './field-grid';
 
 interface BasicsSectionProps {
   value: Basics;
@@ -36,7 +37,7 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
       onBlur={onBlur}
     >
       <Box>
-        <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
+        <Grid templateColumns={FIELD_GRID_COLUMNS} rowGap={4} columnGap={2}>
           <GridItem colSpan={1}>
             <Field.Root id="name">
               <Field.Label>Name</Field.Label>
@@ -73,7 +74,7 @@ export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
               <Input type="text" {...register('url')} />
             </Field.Root>
           </GridItem>
-          <GridItem colSpan={2}>
+          <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
             <Field.Root id="summary">
               <Field.Label>Summary</Field.Label>
               <Textarea {...register('summary')} />

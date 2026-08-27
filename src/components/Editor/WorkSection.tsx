@@ -27,6 +27,7 @@ import { SECTION_TITLES, SectionTypes, Work } from '../../types/resume.model';
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { FIELD_GRID_COLUMNS, FIELD_GRID_FULL_SPAN } from './field-grid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 interface WorkSectionProps {
@@ -98,9 +99,12 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
               onMoveDownClick={() => move(index, index + 1)}
               moveUpDisabled={index === 0}
               moveDownDisabled={index >= fields.length - 1}
-              mb={10}
             >
-              <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
+              <Grid
+                templateColumns={FIELD_GRID_COLUMNS}
+                rowGap={4}
+                columnGap={2}
+              >
                 <GridItem colSpan={1}>
                   <Field.Root id={`company-${field.id}`}>
                     <Field.Label>Company name</Field.Label>
@@ -155,13 +159,13 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                     />
                   </Flex>
                 </GridItem>
-                <GridItem colSpan={2}>
+                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
                   <Field.Root id={`summary-${field.id}`}>
                     <Field.Label>Summary</Field.Label>
                     <Textarea {...register(`work.${index}.summary`)} />
                   </Field.Root>
                 </GridItem>
-                <GridItem colSpan={2}>
+                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
                   <HighlightsList
                     workIndex={index}
                     control={control}

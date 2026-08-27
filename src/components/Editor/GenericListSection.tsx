@@ -30,6 +30,7 @@ import { SECTION_TITLES, SectionTypes } from '../../types/resume.model';
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { FIELD_GRID_COLUMNS, FIELD_GRID_FULL_SPAN } from './field-grid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 /** A single flat input within an entry. */
@@ -128,11 +129,13 @@ export function GenericListSection<T>({
             onMoveDownClick={() => move(index, index + 1)}
             moveUpDisabled={index === 0}
             moveDownDisabled={index >= fields.length - 1}
-            mb={6}
           >
-            <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
+            <Grid templateColumns={FIELD_GRID_COLUMNS} rowGap={4} columnGap={2}>
               {fieldConfigs.map((config) => (
-                <GridItem key={config.name} colSpan={config.colSpan ?? 1}>
+                <GridItem
+                  key={config.name}
+                  colSpan={config.colSpan === 2 ? FIELD_GRID_FULL_SPAN : 1}
+                >
                   {config.type === 'date' ? (
                     <DateField
                       control={control}
@@ -160,7 +163,7 @@ export function GenericListSection<T>({
                 </GridItem>
               ))}
               {bullet && (
-                <GridItem colSpan={2}>
+                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
                   <BulletListField
                     entryIndex={index}
                     control={control}

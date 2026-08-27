@@ -51,3 +51,10 @@ Add to `SectionTypes` + `SECTION_TITLES` (+ `SECTION_DESCRIPTIONS` /
 field in the `Resume` interface, build an editor (usually a `GenericListSection`
 wrapper in `NewSections.tsx`) and wire it into `Editor.tsx`'s
 `sectionComponents` map, and render it in each template's `sectionContent`.
+
+A `GenericListSection` wrapper gets the responsive field grid for free —
+`colSpan: 2` in a `FieldConfig` is translated for you. **A bespoke editor has to
+take `FIELD_GRID_COLUMNS` and `FIELD_GRID_FULL_SPAN` from
+`components/Editor/field-grid.ts`** rather than writing `repeat(2, 1fr)` and
+`colSpan={2}` inline; see `docs/architecture/ui-and-theming.md` for why a bare
+`span 2` breaks the single-column layout small screens get.

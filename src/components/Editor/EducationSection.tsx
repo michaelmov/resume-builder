@@ -13,6 +13,7 @@ import {
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { FIELD_GRID_COLUMNS, FIELD_GRID_FULL_SPAN } from './field-grid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 interface EducationSectionProps {
@@ -82,7 +83,6 @@ export const EducationSection: FC<EducationSectionProps> = ({
                 subtitle={watch(`education.${index}.area`)}
                 entryLabel="education entry"
                 onDeleteClick={() => remove(index)}
-                mb={6}
                 key={field.id}
                 id={field.id}
                 onMoveUpClick={() => move(index, index - 1)}
@@ -90,7 +90,11 @@ export const EducationSection: FC<EducationSectionProps> = ({
                 moveUpDisabled={index === 0}
                 moveDownDisabled={index >= fields.length - 1}
               >
-                <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
+                <Grid
+                  templateColumns={FIELD_GRID_COLUMNS}
+                  rowGap={4}
+                  columnGap={2}
+                >
                   <GridItem colSpan={1}>
                     <Field.Root id={`${field.id}-institution`}>
                       <Field.Label>Institution</Field.Label>
@@ -145,7 +149,7 @@ export const EducationSection: FC<EducationSectionProps> = ({
                       id={`${field.id}-endDate`}
                     />
                   </GridItem>
-                  <GridItem colSpan={2}>
+                  <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
                     <Field.Root id={`${field.id}-url`}>
                       <Field.Label>Institution URL</Field.Label>
                       <Input

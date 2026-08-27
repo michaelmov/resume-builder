@@ -30,6 +30,7 @@ import {
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
+import { FIELD_GRID_COLUMNS, FIELD_GRID_FULL_SPAN } from './field-grid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 interface ProjectsSectionProps {
@@ -106,9 +107,12 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
               onMoveDownClick={() => move(index, index + 1)}
               moveUpDisabled={index === 0}
               moveDownDisabled={index >= fields.length - 1}
-              mb={10}
             >
-              <Grid templateColumns="repeat(2, 1fr)" rowGap={4} columnGap={2}>
+              <Grid
+                templateColumns={FIELD_GRID_COLUMNS}
+                rowGap={4}
+                columnGap={2}
+              >
                 <GridItem colSpan={1}>
                   <Field.Root id={`project-name-${field.id}`}>
                     <Field.Label>Project name</Field.Label>
@@ -143,19 +147,19 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
                     id={`project-end-${field.id}`}
                   />
                 </GridItem>
-                <GridItem colSpan={2}>
+                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
                   <Field.Root id={`project-url-${field.id}`}>
                     <Field.Label>URL</Field.Label>
                     <Input type="url" {...register(`projects.${index}.url`)} />
                   </Field.Root>
                 </GridItem>
-                <GridItem colSpan={2}>
+                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
                   <Field.Root id={`project-description-${field.id}`}>
                     <Field.Label>Description</Field.Label>
                     <Textarea {...register(`projects.${index}.description`)} />
                   </Field.Root>
                 </GridItem>
-                <GridItem colSpan={2}>
+                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
                   <HighlightsList
                     projectIndex={index}
                     control={control}

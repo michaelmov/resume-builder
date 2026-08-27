@@ -23,6 +23,21 @@ import { useResumeLibrary } from '../hooks/useResumeLibrary';
 import { ResumeDocument, ResumeSummary } from '../types/resume-library';
 import { readDocument } from '../utils/resume-repository';
 
+/**
+ * Width of the editor pane on desktop.
+ *
+ * The 600px floor is what the forms need — the two-column field grids stop
+ * being usable much below it — and holds up to roughly a 1580px viewport, so
+ * laptops see exactly what they saw before. Past that the pane takes a share
+ * of the extra width instead of handing all of it to the preview, which only
+ * spends it magnifying a page that already fits. The 760px cap is where the
+ * forms stop benefiting and inputs just get long.
+ *
+ * The preview measures its own column with a `ResizeObserver` and fits its
+ * zoom to whatever is left (`usePreviewZoom`), so it follows this on its own.
+ */
+const EDITOR_WIDTH = 'clamp(600px, 38vw, 760px)';
+
 /** Router state set by the list when it creates a resume and navigates here. */
 export interface EditorLocationState {
   /** Open the title bar in edit mode — a new resume is named, not left blank. */
@@ -103,7 +118,7 @@ const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
 
       {/* Editor Panel — slides out (keeping its width) when collapsed */}
       <Box
-        width="600px"
+        width={EDITOR_WIDTH}
         bg="bg.subtle"
         borderRightWidth="1px"
         borderColor="border"
@@ -112,7 +127,9 @@ const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
         overflow="auto"
         transition="all 0.3s ease-in-out"
         transform={isEditorCollapsed ? 'translateX(-100%)' : 'translateX(0)'}
-        marginRight={isEditorCollapsed ? '-600px' : '0'}
+        // Has to be the exact negative of the width, or a collapsed editor
+        // leaves a gap the preview never reclaims.
+        marginRight={isEditorCollapsed ? `calc(-1 * ${EDITOR_WIDTH})` : '0'}
         flexShrink={0}
       >
         <Editor />
