@@ -21,6 +21,10 @@ non-negotiables:
   ("Auto"), and the absent-vs-`[]` distinction in `sectionOrder`.
 - **Every write goes through `toPlainJson`.** RxDB refuses to
   structured-clone a `Date` (DOC24); removing it breaks resume creation.
+- **A delete must purge, not tombstone.** `doc.remove()` is a soft delete that
+  leaves the whole document in IndexedDB under `_deleted: true`, so both delete
+  paths follow it with `purgeDeleted`. Don't drop that call, and don't swap it
+  for `RxDBCleanupPlugin` — see `docs/architecture/storage.md` for why.
 - **Writes throw `ResumeStorageError`** so `SaveErrorBanner` can surface them —
   there is no Save button, so a silently dropped write loses the user's work.
   The four thumbnail functions are the deliberate exception: they fail soft.

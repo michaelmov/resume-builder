@@ -5,6 +5,7 @@ import { SectionTypes } from '../types/resume.model';
 
 import {
   closeDatabase,
+  countStoredRows,
   createResume,
   createResumeId,
   deleteResume,
@@ -231,6 +232,21 @@ describe('deleting', () => {
     await deleteResume(summary.id);
 
     expect(await getThumbnail(summary.id)).toBeUndefined();
+  });
+
+  it('takes the stored rows with it rather than leaving tombstones', async () => {
+    const summary = await createResume({ name: 'Confidential' });
+    await putThumbnail(summary.id, {
+      png: new Blob(['png'], { type: 'image/png' }),
+      stamp: summary.updatedAt,
+    });
+    expect(await countStoredRows(summary.id)).toBe(2);
+
+    await deleteResume(summary.id);
+
+    // A soft delete would still count both: RxDB keeps the row, body and all,
+    // marked `_deleted` — invisible to every query but sitting in the browser.
+    expect(await countStoredRows(summary.id)).toBe(0);
   });
 
   it('deleting a missing resume is a no-op', async () => {
