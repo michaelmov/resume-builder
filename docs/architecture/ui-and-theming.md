@@ -89,17 +89,18 @@ larger share of it: on a 390px phone they were 82px before, versus 150px per
 field. Keep the breakpoint at `md` — it is the one `useIsMobile` switches the
 sheet layout on, so the insets and the layout flip together.
 
-**The field grids themselves collapse to one column below `sm`** — every section
-takes `FIELD_GRID_COLUMNS` and `FIELD_GRID_FULL_SPAN` from
-`components/Editor/field-grid.ts` rather than spelling the values out, so the
-breakpoint is one edit. Two columns on a 390px phone leave ~166px per field,
-which doesn't fit a date plus its calendar button or a real email address; one
-column gives each field the whole ~340px. It stops at `sm` (480px) rather than
-the `md` the sheet layout switches on, because the trade is height — a form
-roughly doubles inside a sheet that only opens to 55–88% of the viewport — and
-between 480px and 768px two columns are still wide enough to be worth keeping.
+**The field grids themselves collapse to one column below `sm`.** Sections lay
+their fields out with **`FieldGrid` / `FieldGridItem`** (`components/Editor/`)
+rather than a raw `Grid`, so the columns, the gaps and the breakpoint are all
+one edit. Two columns on a 390px phone leave ~166px per field, which doesn't fit
+a date plus its calendar button or a real email address; one column gives each
+field the whole ~340px. It stops at `sm` (480px) rather than the `md` the sheet
+layout switches on, because the trade is height — a form roughly doubles inside
+a sheet that only opens to 55–88% of the viewport — and between 480px and 768px
+two columns are still wide enough to be worth keeping.
 
-**A full-row field must use `FIELD_GRID_FULL_SPAN`, never a bare `colSpan={2}`.**
-`span 2` does not clamp to the available tracks: in the single-column grid, CSS
-adds an implicit second track to satisfy it, and every other field shrinks to
-share the row with a column only the wide ones use.
+A full-row field (summary, bullet list) is **`<FieldGridItem full>`**.
+`FieldGridItem` omits `colSpan` from its props on purpose, so a raw span can't
+be passed: `span 2` does not clamp to the available tracks, and in the
+single-column grid CSS adds an implicit second track to satisfy it, leaving
+every other field shrunk to share the row with a column only the wide ones use.

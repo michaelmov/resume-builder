@@ -2,8 +2,6 @@ import {
   Box,
   Button,
   Flex,
-  Grid,
-  GridItem,
   IconButton,
   Input,
   Stack,
@@ -30,7 +28,7 @@ import {
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
-import { FIELD_GRID_COLUMNS, FIELD_GRID_FULL_SPAN } from './field-grid';
+import { FieldGrid, FieldGridItem } from './FieldGrid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 interface ProjectsSectionProps {
@@ -108,12 +106,8 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
               moveUpDisabled={index === 0}
               moveDownDisabled={index >= fields.length - 1}
             >
-              <Grid
-                templateColumns={FIELD_GRID_COLUMNS}
-                rowGap={4}
-                columnGap={2}
-              >
-                <GridItem colSpan={1}>
+              <FieldGrid>
+                <FieldGridItem>
                   <Field.Root id={`project-name-${field.id}`}>
                     <Field.Label>Project name</Field.Label>
                     <Input
@@ -121,8 +115,8 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
                       {...register(`projects.${index}.name`)}
                     />
                   </Field.Root>
-                </GridItem>
-                <GridItem colSpan={1}>
+                </FieldGridItem>
+                <FieldGridItem>
                   <Field.Root id={`project-type-${field.id}`}>
                     <Field.Label>Type</Field.Label>
                     <Input
@@ -130,43 +124,43 @@ export const ProjectsSection: FC<ProjectsSectionProps> = ({
                       {...register(`projects.${index}.type`)}
                     />
                   </Field.Root>
-                </GridItem>
-                <GridItem colSpan={1}>
+                </FieldGridItem>
+                <FieldGridItem>
                   <DateField
                     control={control}
                     name={`projects.${index}.startDate`}
                     label="Start date"
                     id={`project-start-${field.id}`}
                   />
-                </GridItem>
-                <GridItem colSpan={1}>
+                </FieldGridItem>
+                <FieldGridItem>
                   <DateField
                     control={control}
                     name={`projects.${index}.endDate`}
                     label="End date"
                     id={`project-end-${field.id}`}
                   />
-                </GridItem>
-                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
+                </FieldGridItem>
+                <FieldGridItem full>
                   <Field.Root id={`project-url-${field.id}`}>
                     <Field.Label>URL</Field.Label>
                     <Input type="url" {...register(`projects.${index}.url`)} />
                   </Field.Root>
-                </GridItem>
-                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
+                </FieldGridItem>
+                <FieldGridItem full>
                   <Field.Root id={`project-description-${field.id}`}>
                     <Field.Label>Description</Field.Label>
                     <Textarea {...register(`projects.${index}.description`)} />
                   </Field.Root>
-                </GridItem>
-                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
+                </FieldGridItem>
+                <FieldGridItem full>
                   <HighlightsList
                     projectIndex={index}
                     control={control}
                     register={register}
                   />
-                </GridItem>
-              </Grid>
+                </FieldGridItem>
+              </FieldGrid>
             </EditorSubsection>
           );
         })}

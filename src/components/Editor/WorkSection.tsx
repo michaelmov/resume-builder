@@ -2,8 +2,6 @@ import {
   Box,
   Button,
   Flex,
-  Grid,
-  GridItem,
   IconButton,
   Input,
   Stack,
@@ -27,7 +25,7 @@ import { SECTION_TITLES, SectionTypes, Work } from '../../types/resume.model';
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
-import { FIELD_GRID_COLUMNS, FIELD_GRID_FULL_SPAN } from './field-grid';
+import { FieldGrid, FieldGridItem } from './FieldGrid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 interface WorkSectionProps {
@@ -100,18 +98,14 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
               moveUpDisabled={index === 0}
               moveDownDisabled={index >= fields.length - 1}
             >
-              <Grid
-                templateColumns={FIELD_GRID_COLUMNS}
-                rowGap={4}
-                columnGap={2}
-              >
-                <GridItem colSpan={1}>
+              <FieldGrid>
+                <FieldGridItem>
                   <Field.Root id={`company-${field.id}`}>
                     <Field.Label>Company name</Field.Label>
                     <Input type="text" {...register(`work.${index}.name`)} />
                   </Field.Root>
-                </GridItem>
-                <GridItem colSpan={1}>
+                </FieldGridItem>
+                <FieldGridItem>
                   <Field.Root id={`title-${field.id}`}>
                     <Field.Label>Title</Field.Label>
                     <Input
@@ -119,16 +113,16 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                       {...register(`work.${index}.position`)}
                     />
                   </Field.Root>
-                </GridItem>
-                <GridItem colSpan={1}>
+                </FieldGridItem>
+                <FieldGridItem>
                   <DateField
                     control={control}
                     name={`work.${index}.startDate`}
                     label="Start date"
                     id={`start-${field.id}`}
                   />
-                </GridItem>
-                <GridItem colSpan={1}>
+                </FieldGridItem>
+                <FieldGridItem>
                   <DateField
                     control={control}
                     name={`work.${index}.endDate`}
@@ -158,21 +152,21 @@ export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
                       )}
                     />
                   </Flex>
-                </GridItem>
-                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
+                </FieldGridItem>
+                <FieldGridItem full>
                   <Field.Root id={`summary-${field.id}`}>
                     <Field.Label>Summary</Field.Label>
                     <Textarea {...register(`work.${index}.summary`)} />
                   </Field.Root>
-                </GridItem>
-                <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
+                </FieldGridItem>
+                <FieldGridItem full>
                   <HighlightsList
                     workIndex={index}
                     control={control}
                     register={register}
                   />
-                </GridItem>
-              </Grid>
+                </FieldGridItem>
+              </FieldGrid>
             </EditorSubsection>
           );
         })}

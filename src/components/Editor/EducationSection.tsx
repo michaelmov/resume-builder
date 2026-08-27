@@ -1,4 +1,4 @@
-import { Box, Button, Grid, GridItem, Input, Field } from '@chakra-ui/react';
+import { Box, Button, Input, Field } from '@chakra-ui/react';
 import { FC } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
@@ -13,7 +13,7 @@ import {
 import { DateField } from './DateField';
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
-import { FIELD_GRID_COLUMNS, FIELD_GRID_FULL_SPAN } from './field-grid';
+import { FieldGrid, FieldGridItem } from './FieldGrid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
 
 interface EducationSectionProps {
@@ -90,12 +90,8 @@ export const EducationSection: FC<EducationSectionProps> = ({
                 moveUpDisabled={index === 0}
                 moveDownDisabled={index >= fields.length - 1}
               >
-                <Grid
-                  templateColumns={FIELD_GRID_COLUMNS}
-                  rowGap={4}
-                  columnGap={2}
-                >
-                  <GridItem colSpan={1}>
+                <FieldGrid>
+                  <FieldGridItem>
                     <Field.Root id={`${field.id}-institution`}>
                       <Field.Label>Institution</Field.Label>
                       <Input
@@ -103,8 +99,8 @@ export const EducationSection: FC<EducationSectionProps> = ({
                         {...register(`education.${index}.institution`)}
                       />
                     </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={1}>
+                  </FieldGridItem>
+                  <FieldGridItem>
                     <Field.Root id={`${field.id}-area`}>
                       <Field.Label>Area of Study</Field.Label>
                       <Input
@@ -112,8 +108,8 @@ export const EducationSection: FC<EducationSectionProps> = ({
                         {...register(`education.${index}.area`)}
                       />
                     </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={1}>
+                  </FieldGridItem>
+                  <FieldGridItem>
                     <Field.Root id={`${field.id}-studyType`}>
                       <Field.Label>Study Type</Field.Label>
                       <Input
@@ -122,8 +118,8 @@ export const EducationSection: FC<EducationSectionProps> = ({
                         {...register(`education.${index}.studyType`)}
                       />
                     </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={1}>
+                  </FieldGridItem>
+                  <FieldGridItem>
                     <Field.Root id={`${field.id}-score`}>
                       <Field.Label>GPA/Score</Field.Label>
                       <Input
@@ -132,24 +128,24 @@ export const EducationSection: FC<EducationSectionProps> = ({
                         {...register(`education.${index}.score`)}
                       />
                     </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={1}>
+                  </FieldGridItem>
+                  <FieldGridItem>
                     <DateField
                       control={control}
                       name={`education.${index}.startDate`}
                       label="Start Date"
                       id={`${field.id}-startDate`}
                     />
-                  </GridItem>
-                  <GridItem colSpan={1}>
+                  </FieldGridItem>
+                  <FieldGridItem>
                     <DateField
                       control={control}
                       name={`education.${index}.endDate`}
                       label="End Date"
                       id={`${field.id}-endDate`}
                     />
-                  </GridItem>
-                  <GridItem colSpan={FIELD_GRID_FULL_SPAN}>
+                  </FieldGridItem>
+                  <FieldGridItem full>
                     <Field.Root id={`${field.id}-url`}>
                       <Field.Label>Institution URL</Field.Label>
                       <Input
@@ -158,8 +154,8 @@ export const EducationSection: FC<EducationSectionProps> = ({
                         {...register(`education.${index}.url`)}
                       />
                     </Field.Root>
-                  </GridItem>
-                </Grid>
+                  </FieldGridItem>
+                </FieldGrid>
               </EditorSubsection>
             );
           }
