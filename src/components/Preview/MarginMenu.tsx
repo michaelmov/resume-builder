@@ -7,19 +7,36 @@ import { margins } from '../../templates/margins';
 interface MarginMenuProps {
   selectedMarginId: string;
   onMarginChange: (marginId: string) => void;
+  /** Drop the label and chevron — the mobile header has no room for them. */
+  compact?: boolean;
 }
 
-const MarginMenu = ({ selectedMarginId, onMarginChange }: MarginMenuProps) => {
+const MarginMenu = ({
+  selectedMarginId,
+  onMarginChange,
+  compact = false,
+}: MarginMenuProps) => {
   const selected =
     margins.find((margin) => margin.id === selectedMarginId) ?? margins[0];
 
   return (
     <Menu.Root>
       <Menu.Trigger asChild>
-        <Button size="sm" colorPalette="gray" variant="subtle">
+        <Button
+          size="sm"
+          colorPalette="gray"
+          variant="subtle"
+          px={compact ? 2 : undefined}
+          aria-label={compact ? `Margins: ${selected.name}` : undefined}
+          title={compact ? `Margins: ${selected.name}` : undefined}
+        >
           <TbBoxMargin size={18} />
-          {selected.name}
-          <HiChevronDown size={18} />
+          {!compact && (
+            <>
+              {selected.name}
+              <HiChevronDown size={18} />
+            </>
+          )}
         </Button>
       </Menu.Trigger>
       <Portal>
