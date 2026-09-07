@@ -65,7 +65,7 @@ export const SkillsSection = ({ value, onUpdate }: SkillsSectionProps) => {
       onBlur={onBlur}
     >
       <Box>
-        {fields.map((field: any, index: number) => {
+        {fields.map((field, index) => {
           return (
             <EditorSubsection
               title={watch(`skills.${index}.name`)}

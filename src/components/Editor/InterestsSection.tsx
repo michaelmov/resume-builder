@@ -58,8 +58,7 @@ export const InterestsSection = ({
       onBlur={onBlur}
     >
       <Box>
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {fields.map((field: any, index: number) => (
+        {fields.map((field, index) => (
           <EditorSubsection
             title={watch(`interests.${index}.name`)}
             entryLabel="interest"

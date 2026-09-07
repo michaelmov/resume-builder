@@ -10,20 +10,41 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { KeyboardEvent } from 'react';
-import { useFieldArray } from 'react-hook-form';
+import {
+  Control,
+  FieldArrayPathByValue,
+  FieldValues,
+  useFieldArray,
+} from 'react-hook-form';
 
-import { KeywordItem } from './SortableKeywordTag';
 import { SortableKeywordTagContainer } from './SortableKeywordTagContainer';
 
-interface KeywordInputProps {
-  /** Field-array path to the keyword list, e.g. `skills.0.keywords`. */
-  name: string;
-  control: any;
+/**
+ * The list this drives, as react-hook-form sees it. Every keyword list in the
+ * app is a `{ value: string }[]` (see `Skill.keywords`), but the path to it
+ * differs per caller, so the hook is typed against this stand-in and `name`
+ * carries the real path at runtime.
+ */
+interface KeywordsFormView {
+  [path: string]: { value: string }[];
 }
 
-export const KeywordInput = ({ name, control }: KeywordInputProps) => {
-  const { fields, remove, append, move } = useFieldArray({
-    control,
+interface KeywordInputProps<T extends FieldValues> {
+  /** Field-array path to the keyword list, e.g. `skills.0.keywords`. */
+  name: FieldArrayPathByValue<T, { value: string }[]>;
+  control: Control<T>;
+}
+
+export function KeywordInput<T extends FieldValues>({
+  name,
+  control,
+}: KeywordInputProps<T>) {
+  const { fields, remove, append, move } = useFieldArray<
+    KeywordsFormView,
+    string,
+    'id'
+  >({
+    control: control as unknown as Control<KeywordsFormView>,
     name,
   });
 
@@ -63,10 +84,7 @@ export const KeywordInput = ({ name, control }: KeywordInputProps) => {
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <SortableKeywordTagContainer
-          keywords={fields as KeywordItem[]}
-          onRemove={remove}
-        />
+        <SortableKeywordTagContainer keywords={fields} onRemove={remove} />
       </DndContext>
       <Input
         type="text"
@@ -75,6 +93,6 @@ export const KeywordInput = ({ name, control }: KeywordInputProps) => {
       />
     </Box>
   );
-};
+}
 
 export type { KeywordInputProps };
