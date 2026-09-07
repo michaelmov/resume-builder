@@ -60,6 +60,13 @@ export default [
       // Disallow console.log statements (but allow console.error and console.info)
       'no-console': ['error', { allow: ['error', 'info'] }],
 
+      // Cap cyclomatic complexity at ESLint's own default. Note that `??`,
+      // `?.`, `||` and `&&` each count as a branch, so a long run of
+      // `field ?? ''` defaults can trip this without the code being hard to
+      // follow — the fix there is to lift the mapping into a named helper
+      // rather than to raise the ceiling.
+      complexity: ['error', 20],
+
       // Import ordering rules
       'import/order': [
         'error',

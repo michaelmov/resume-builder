@@ -5,13 +5,25 @@ import { accents } from '../templates/accents';
 import { margins } from '../templates/margins';
 import { ResumeSettings } from '../types/resume-library';
 import {
+  Award,
+  Basics,
+  Certificate,
+  Education,
+  Interest,
+  Language,
   Location,
   normalizeSectionTitles,
+  Profile,
+  Project,
+  Publication,
+  Reference,
   REORDERABLE_SECTIONS,
   Resume,
   SectionTitles,
   SectionTypes,
   SectionVisibility,
+  Skill,
+  Work,
 } from '../types/resume.model';
 
 /**
@@ -408,6 +420,135 @@ const derivePresent = (
 ): boolean => (typeof explicit === 'boolean' ? explicit : !nonEmpty(endDate));
 
 /**
+ * Map an optional schema array through a per-item mapper.
+ *
+ * Every section is optional in the schema, so absent and empty both have to
+ * land on `[]`. Keeping that `?? []` here rather than at each of the twelve
+ * call sites is what lets `fromJsonResume` stay inside the `complexity` budget.
+ */
+const mapList = <In, Out>(
+  items: In[] | undefined,
+  map: (item: In) => Out
+): Out[] => (items ?? []).map(map);
+
+// Per-section mappers. Each one is the same shape — fill every internal field,
+// defaulting a missing schema value to `''` — but they live as named functions
+// so `fromJsonResume` reads as a list of sections rather than 130 lines of
+// field defaults. The `= {}` defaults stand in for an absent object without
+// the optional chaining that the field defaults would otherwise each need.
+
+const toProfile = (p: z.infer<typeof profileSchema>): Profile => ({
+  network: p.network ?? '',
+  username: p.username ?? '',
+  url: p.url ?? '',
+});
+
+const toBasics = (basics: z.infer<typeof basicsSchema> = {}): Basics => ({
+  name: basics.name ?? '',
+  label: basics.label ?? '',
+  image: basics.image ?? '',
+  email: basics.email ?? '',
+  phone: basics.phone ?? '',
+  url: basics.url ?? '',
+  summary: basics.summary ?? '',
+  location: withLocationDefaults(basics.location),
+  profiles: basics.profiles?.map(toProfile),
+});
+
+// `work` and `volunteer` share `workSchema` but not a mapper: work names the
+// employer in `name`, volunteer names it in `organization`, and each section
+// leaves the other key off entirely. Filling in both would put a stray empty
+// string on every entry and start exporting it.
+const toWork = (w: z.infer<typeof workSchema>): Work => ({
+  name: w.name ?? '',
+  position: w.position ?? '',
+  url: w.url ?? '',
+  startDate: w.startDate ?? '',
+  endDate: w.endDate ?? '',
+  isPresent: derivePresent(w.endDate, w.isPresent),
+  summary: w.summary ?? '',
+  highlights: toValueArray(w.highlights),
+});
+
+const toVolunteer = (v: z.infer<typeof workSchema>): Work => ({
+  organization: v.organization ?? '',
+  position: v.position ?? '',
+  url: v.url ?? '',
+  startDate: v.startDate ?? '',
+  endDate: v.endDate ?? '',
+  isPresent: derivePresent(v.endDate, v.isPresent),
+  summary: v.summary ?? '',
+  highlights: toValueArray(v.highlights),
+});
+
+const toEducation = (e: z.infer<typeof educationSchema>): Education => ({
+  institution: e.institution ?? '',
+  url: e.url ?? '',
+  area: e.area ?? '',
+  studyType: e.studyType ?? '',
+  startDate: e.startDate ?? '',
+  endDate: e.endDate ?? '',
+  score: e.score ?? '',
+  courses: e.courses ?? [],
+});
+
+const toAward = (a: z.infer<typeof awardSchema>): Award => ({
+  title: a.title ?? '',
+  date: a.date ?? '',
+  awarder: a.awarder ?? '',
+  summary: a.summary ?? '',
+});
+
+const toCertificate = (c: z.infer<typeof certificateSchema>): Certificate => ({
+  name: c.name ?? '',
+  date: c.date ?? '',
+  issuer: c.issuer ?? '',
+  url: c.url ?? '',
+});
+
+const toPublication = (p: z.infer<typeof publicationSchema>): Publication => ({
+  name: p.name ?? '',
+  publisher: p.publisher ?? '',
+  releaseDate: p.releaseDate ?? '',
+  url: p.url ?? '',
+  summary: p.summary ?? '',
+});
+
+const toSkill = (s: z.infer<typeof skillSchema>): Skill => ({
+  name: s.name ?? '',
+  level: s.level ?? '',
+  keywords: toValueArray(s.keywords),
+});
+
+const toLanguage = (l: z.infer<typeof languageSchema>): Language => ({
+  language: l.language ?? '',
+  fluency: l.fluency ?? '',
+});
+
+const toInterest = (i: z.infer<typeof interestSchema>): Interest => ({
+  name: i.name ?? '',
+  keywords: toValueArray(i.keywords),
+});
+
+const toReference = (ref: z.infer<typeof referenceSchema>): Reference => ({
+  name: ref.name ?? '',
+  reference: ref.reference ?? '',
+});
+
+const toProject = (p: z.infer<typeof projectSchema>): Project => ({
+  name: p.name ?? '',
+  description: p.description ?? '',
+  highlights: toStringArray(p.highlights),
+  keywords: toStringArray(p.keywords),
+  startDate: p.startDate ?? '',
+  endDate: p.endDate ?? '',
+  url: p.url ?? '',
+  roles: p.roles ?? [],
+  entity: p.entity ?? '',
+  type: p.type ?? '',
+});
+
+/**
  * Validate and convert an arbitrary parsed JSON value into a complete internal
  * `Resume`. Throws a descriptive `Error` when the input is not a recognizable
  * JSON Resume document. Tolerates both real JSON Resume files (string lists,
@@ -432,99 +573,18 @@ export const fromJsonResume = (input: unknown): Resume => {
   };
 
   const resume: Resume = {
-    basics: {
-      name: r.basics?.name ?? '',
-      label: r.basics?.label ?? '',
-      image: r.basics?.image ?? '',
-      email: r.basics?.email ?? '',
-      phone: r.basics?.phone ?? '',
-      url: r.basics?.url ?? '',
-      summary: r.basics?.summary ?? '',
-      location: withLocationDefaults(r.basics?.location),
-      profiles: r.basics?.profiles?.map((p) => ({
-        network: p.network ?? '',
-        username: p.username ?? '',
-        url: p.url ?? '',
-      })),
-    },
-    work: (r.work ?? []).map((w) => ({
-      name: w.name ?? '',
-      position: w.position ?? '',
-      url: w.url ?? '',
-      startDate: w.startDate ?? '',
-      endDate: w.endDate ?? '',
-      isPresent: derivePresent(w.endDate, w.isPresent),
-      summary: w.summary ?? '',
-      highlights: toValueArray(w.highlights),
-    })),
-    volunteer: (r.volunteer ?? []).map((v) => ({
-      organization: v.organization ?? '',
-      position: v.position ?? '',
-      url: v.url ?? '',
-      startDate: v.startDate ?? '',
-      endDate: v.endDate ?? '',
-      isPresent: derivePresent(v.endDate, v.isPresent),
-      summary: v.summary ?? '',
-      highlights: toValueArray(v.highlights),
-    })),
-    education: (r.education ?? []).map((e) => ({
-      institution: e.institution ?? '',
-      url: e.url ?? '',
-      area: e.area ?? '',
-      studyType: e.studyType ?? '',
-      startDate: e.startDate ?? '',
-      endDate: e.endDate ?? '',
-      score: e.score ?? '',
-      courses: e.courses ?? [],
-    })),
-    awards: (r.awards ?? []).map((a) => ({
-      title: a.title ?? '',
-      date: a.date ?? '',
-      awarder: a.awarder ?? '',
-      summary: a.summary ?? '',
-    })),
-    certificates: (r.certificates ?? []).map((c) => ({
-      name: c.name ?? '',
-      date: c.date ?? '',
-      issuer: c.issuer ?? '',
-      url: c.url ?? '',
-    })),
-    publications: (r.publications ?? []).map((p) => ({
-      name: p.name ?? '',
-      publisher: p.publisher ?? '',
-      releaseDate: p.releaseDate ?? '',
-      url: p.url ?? '',
-      summary: p.summary ?? '',
-    })),
-    skills: (r.skills ?? []).map((s) => ({
-      name: s.name ?? '',
-      level: s.level ?? '',
-      keywords: toValueArray(s.keywords),
-    })),
-    languages: (r.languages ?? []).map((l) => ({
-      language: l.language ?? '',
-      fluency: l.fluency ?? '',
-    })),
-    interests: (r.interests ?? []).map((i) => ({
-      name: i.name ?? '',
-      keywords: toValueArray(i.keywords),
-    })),
-    references: (r.references ?? []).map((ref) => ({
-      name: ref.name ?? '',
-      reference: ref.reference ?? '',
-    })),
-    projects: (r.projects ?? []).map((p) => ({
-      name: p.name ?? '',
-      description: p.description ?? '',
-      highlights: toStringArray(p.highlights),
-      keywords: toStringArray(p.keywords),
-      startDate: p.startDate ?? '',
-      endDate: p.endDate ?? '',
-      url: p.url ?? '',
-      roles: p.roles ?? [],
-      entity: p.entity ?? '',
-      type: p.type ?? '',
-    })),
+    basics: toBasics(r.basics),
+    work: mapList(r.work, toWork),
+    volunteer: mapList(r.volunteer, toVolunteer),
+    education: mapList(r.education, toEducation),
+    awards: mapList(r.awards, toAward),
+    certificates: mapList(r.certificates, toCertificate),
+    publications: mapList(r.publications, toPublication),
+    skills: mapList(r.skills, toSkill),
+    languages: mapList(r.languages, toLanguage),
+    interests: mapList(r.interests, toInterest),
+    references: mapList(r.references, toReference),
+    projects: mapList(r.projects, toProject),
     sectionVisibility:
       appMeta.sectionVisibility ?? (r.sectionVisibility as SectionVisibility),
   };
