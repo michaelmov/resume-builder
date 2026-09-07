@@ -21,8 +21,15 @@ sentinel="$git_dir/claude-verify-pending"
 # below must not wedge every future turn behind a stale sentinel.
 rm -f "$sentinel"
 
-# Matches .husky/pre-commit: `npm run lint` tolerates the known `any` warnings,
-# `lint:check` would not.
+# Matches .husky/pre-commit. The PostToolUse hook formats files edited through
+# Write/Edit, but a file written by a script the agent ran is never seen by it,
+# so the gate has to check rather than assume.
+if ! output=$(npm run format:check 2>&1); then
+  printf 'Formatting failed — run `npm run format`:\n\n%s\n' "$(printf '%s' "$output" | tail -20)" >&2
+  exit 2
+fi
+
+# `npm run lint` tolerates the known `any` warnings, `lint:check` would not.
 if ! output=$(npm run lint 2>&1); then
   printf 'Lint failed — fix before finishing:\n\n%s\n' "$(printf '%s' "$output" | tail -60)" >&2
   exit 2

@@ -1,5 +1,4 @@
 import { Alert, Box, CloseButton } from '@chakra-ui/react';
-import { FC } from 'react';
 
 import { useResumeLibrary } from '../hooks/useResumeLibrary';
 
@@ -11,7 +10,7 @@ import { useResumeLibrary } from '../hooks/useResumeLibrary';
  * Floats over both pages rather than occupying layout, and stays until it is
  * dismissed: the next successful save clears it on its own.
  */
-export const SaveErrorBanner: FC = () => {
+export const SaveErrorBanner = () => {
   const { saveError, dismissSaveError } = useResumeLibrary();
 
   if (!saveError) return null;

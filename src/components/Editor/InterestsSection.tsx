@@ -1,5 +1,4 @@
 import { Box, Button, Input, Field } from '@chakra-ui/react';
-import { FC } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
@@ -24,10 +23,10 @@ interface FormProps {
   interests: Interest[];
 }
 
-export const InterestsSection: FC<InterestsSectionProps> = ({
+export const InterestsSection = ({
   value,
   onUpdate,
-}) => {
+}: InterestsSectionProps) => {
   const { control, register, reset, watch, getValues } = useForm<FormProps>({
     defaultValues: { interests: value },
   });

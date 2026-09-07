@@ -9,7 +9,7 @@ import {
   TextareaProps,
   Field,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import {
   HiChevronDown,
@@ -41,10 +41,7 @@ interface FormProps {
   projects: Project[];
 }
 
-export const ProjectsSection: FC<ProjectsSectionProps> = ({
-  value,
-  onUpdate,
-}) => {
+export const ProjectsSection = ({ value, onUpdate }: ProjectsSectionProps) => {
   const { control, register, reset, watch, getValues } = useForm<FormProps>({
     defaultValues: {
       name: 'projects',
@@ -187,11 +184,11 @@ interface HighlightsListProps {
   register: any;
 }
 
-const HighlightsList: FC<HighlightsListProps> = ({
+const HighlightsList = ({
   control,
   register,
   projectIndex,
-}) => {
+}: HighlightsListProps) => {
   const { fields, remove, append, move } = useFieldArray({
     control,
     name: `projects.[${projectIndex}].highlights`,
@@ -250,7 +247,7 @@ interface HighlightInputProps extends TextareaProps {
   moveDownDisabled?: boolean;
 }
 
-const HighlightInput: FC<HighlightInputProps> = ({
+const HighlightInput = ({
   highlight,
   index,
   projectIndex,
@@ -260,7 +257,7 @@ const HighlightInput: FC<HighlightInputProps> = ({
   onMoveDown,
   moveDownDisabled = false,
   moveUpDisabled = false,
-}) => {
+}: HighlightInputProps) => {
   const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
   return (
     <Flex

@@ -7,7 +7,7 @@ import {
   Portal,
   Text,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { HiOutlineTrash } from 'react-icons/hi';
 
 export interface ConfirmDeleteButtonProps
@@ -32,13 +32,13 @@ export interface ConfirmDeleteButtonProps
  * so every delete affordance (sections and their entries alike) asks first
  * through this anchored popover rather than acting on the first click.
  */
-export const ConfirmDeleteButton: FC<ConfirmDeleteButtonProps> = ({
+export const ConfirmDeleteButton = ({
   confirmTitle,
   confirmDescription,
   onConfirm,
   onConfirmOpenChange,
   ...buttonProps
-}) => {
+}: ConfirmDeleteButtonProps) => {
   const [open, setOpen] = useState(false);
 
   const changeOpen = (next: boolean) => {

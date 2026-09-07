@@ -1,5 +1,4 @@
 import { Box, Link, Text } from '@chakra-ui/react';
-import { FC } from 'react';
 
 /**
  * The site credit. It lives at the foot of the list page only — the editor is a
@@ -12,7 +11,7 @@ import { FC } from 'react';
  * interact with the app over a network be offered its Corresponding Source, and
  * this is where that offer is made. Keep it on any deployed surface.
  */
-export const Footer: FC = () => (
+export const Footer = () => (
   <Box as="footer" px={{ base: 4, md: 8 }} py={6}>
     <Text fontSize="sm" textAlign="center" color="fg.muted">
       Made with ❤️ by{' '}

@@ -15,7 +15,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { FC, ReactNode, useCallback, useMemo, useState } from 'react';
+import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { HiOutlineUser, HiOutlineViewList } from 'react-icons/hi';
 
 import { SectionData } from '../../context/ResumeContext/ResumeReducer';
@@ -79,7 +79,7 @@ interface EditorProps {
   onSectionDraggingChange?: (isDragging: boolean) => void;
 }
 
-export const Editor: FC<EditorProps> = ({ onSectionDraggingChange }) => {
+export const Editor = ({ onSectionDraggingChange }: EditorProps) => {
   const { resume, updateSectionData, updateSectionOrder, updateSectionTitles } =
     useResume();
 

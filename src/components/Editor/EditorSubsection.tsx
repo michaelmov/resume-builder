@@ -7,7 +7,7 @@ import {
   Flex,
   Text,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { HiChevronUp, HiChevronDown } from 'react-icons/hi';
 
 import { ConfirmDeleteButton } from '../ui/ConfirmDeleteButton';
@@ -31,7 +31,7 @@ interface EditorSubsectionProps extends BoxProps {
   moveDownDisabled?: boolean;
 }
 
-export const EditorSubsection: FC<EditorSubsectionProps> = ({
+export const EditorSubsection = ({
   id,
   children,
   onDeleteClick,
@@ -43,7 +43,7 @@ export const EditorSubsection: FC<EditorSubsectionProps> = ({
   subtitle = '',
   entryLabel = 'entry',
   ...rest
-}) => {
+}: EditorSubsectionProps) => {
   const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isOpen, setIsOpen] = useSubsectionOpenState(id);

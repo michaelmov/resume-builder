@@ -1,5 +1,3 @@
-import { FC } from 'react';
-
 import {
   Award,
   Certificate,
@@ -23,10 +21,7 @@ interface SectionProps<T> {
   onUpdate: (sectionType: SectionTypes, section: T[]) => void;
 }
 
-export const VolunteerSection: FC<SectionProps<Work>> = ({
-  value,
-  onUpdate,
-}) => (
+export const VolunteerSection = ({ value, onUpdate }: SectionProps<Work>) => (
   <GenericListSection<Work>
     sectionType={SectionTypes.Volunteer}
     value={value}
@@ -68,7 +63,7 @@ export const VolunteerSection: FC<SectionProps<Work>> = ({
   />
 );
 
-export const AwardsSection: FC<SectionProps<Award>> = ({ value, onUpdate }) => (
+export const AwardsSection = ({ value, onUpdate }: SectionProps<Award>) => (
   <GenericListSection<Award>
     sectionType={SectionTypes.Awards}
     value={value}
@@ -87,10 +82,10 @@ export const AwardsSection: FC<SectionProps<Award>> = ({ value, onUpdate }) => (
   />
 );
 
-export const CertificatesSection: FC<SectionProps<Certificate>> = ({
+export const CertificatesSection = ({
   value,
   onUpdate,
-}) => (
+}: SectionProps<Certificate>) => (
   <GenericListSection<Certificate>
     sectionType={SectionTypes.Certificates}
     value={value}
@@ -115,10 +110,10 @@ export const CertificatesSection: FC<SectionProps<Certificate>> = ({
   />
 );
 
-export const PublicationsSection: FC<SectionProps<Publication>> = ({
+export const PublicationsSection = ({
   value,
   onUpdate,
-}) => (
+}: SectionProps<Publication>) => (
   <GenericListSection<Publication>
     sectionType={SectionTypes.Publications}
     value={value}
@@ -150,10 +145,10 @@ export const PublicationsSection: FC<SectionProps<Publication>> = ({
   />
 );
 
-export const LanguagesSection: FC<SectionProps<Language>> = ({
+export const LanguagesSection = ({
   value,
   onUpdate,
-}) => (
+}: SectionProps<Language>) => (
   <GenericListSection<Language>
     sectionType={SectionTypes.Languages}
     value={value}
@@ -174,10 +169,10 @@ export const LanguagesSection: FC<SectionProps<Language>> = ({
   />
 );
 
-export const ReferencesSection: FC<SectionProps<Reference>> = ({
+export const ReferencesSection = ({
   value,
   onUpdate,
-}) => (
+}: SectionProps<Reference>) => (
   <GenericListSection<Reference>
     sectionType={SectionTypes.References}
     value={value}

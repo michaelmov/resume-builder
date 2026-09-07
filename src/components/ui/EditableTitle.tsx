@@ -1,5 +1,5 @@
 import { Editable, IconButton } from '@chakra-ui/react';
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HiOutlinePencil } from 'react-icons/hi';
 
 export interface EditableTitleProps {
@@ -42,7 +42,7 @@ const slotHeight = {
  * unrecoverable from the UI, and an empty field is far more often a
  * select-all-and-tab-away accident than an intention.
  */
-export const EditableTitle: FC<EditableTitleProps> = ({
+export const EditableTitle = ({
   value,
   onCommit,
   autoEdit = false,
@@ -50,7 +50,7 @@ export const EditableTitle: FC<EditableTitleProps> = ({
   fontSize = 'sm',
   fontWeight = 'medium',
   maxWidth = '20rem',
-}) => {
+}: EditableTitleProps) => {
   const [draft, setDraft] = useState(value);
   const [editing, setEditing] = useState(autoEdit);
 

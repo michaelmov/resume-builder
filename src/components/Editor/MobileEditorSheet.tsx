@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Sheet, SheetRef } from 'react-modal-sheet';
 
 import { Editor } from './Editor';
@@ -44,7 +44,7 @@ const OPEN_SETTLE_FALLBACK_MS = 700;
 /** The peek height as a CSS length, for laying out around the fixed sheet. */
 export const SHEET_PEEK_INSET = `${SNAP_POINTS[0] * 100}dvh`;
 
-export const MobileEditorSheet: FC = () => {
+export const MobileEditorSheet = () => {
   const sheetRef = useRef<SheetRef>(null);
   const [snapIndex, setSnapIndex] = useState(MID_INDEX);
 

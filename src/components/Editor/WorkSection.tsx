@@ -10,7 +10,7 @@ import {
   Field,
   Checkbox,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { useFieldArray, useForm, Controller } from 'react-hook-form';
 import {
   HiChevronDown,
@@ -37,7 +37,7 @@ interface FormProps {
   name: string;
   work: Work[];
 }
-export const WorkSection: FC<WorkSectionProps> = ({ value, onUpdate }) => {
+export const WorkSection = ({ value, onUpdate }: WorkSectionProps) => {
   const { control, register, reset, watch, getValues } = useForm<FormProps>({
     defaultValues: {
       name: 'work',
@@ -193,11 +193,11 @@ interface HighlightsListProps {
   register: any;
 }
 
-const HighlightsList: FC<HighlightsListProps> = ({
+const HighlightsList = ({
   control,
   register,
   workIndex,
-}) => {
+}: HighlightsListProps) => {
   const { fields, remove, append, move } = useFieldArray({
     control,
     name: `work.[${workIndex}].highlights`,
@@ -253,7 +253,7 @@ interface HighlightInputProps extends TextareaProps {
   moveUpDisabled?: boolean;
   moveDownDisabled?: boolean;
 }
-const HighlightInput: FC<HighlightInputProps> = ({
+const HighlightInput = ({
   highlight,
   index,
   workIndex,
@@ -263,7 +263,7 @@ const HighlightInput: FC<HighlightInputProps> = ({
   onMoveDown,
   moveDownDisabled = false,
   moveUpDisabled = false,
-}) => {
+}: HighlightInputProps) => {
   const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
   return (
     <Flex

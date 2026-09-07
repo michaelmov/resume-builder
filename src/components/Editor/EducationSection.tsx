@@ -1,5 +1,4 @@
 import { Box, Button, Input, Field } from '@chakra-ui/react';
-import { FC } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
@@ -26,10 +25,10 @@ interface FormProps {
   education: Education[];
 }
 
-export const EducationSection: FC<EducationSectionProps> = ({
+export const EducationSection = ({
   value,
   onUpdate,
-}) => {
+}: EducationSectionProps) => {
   const { control, register, reset, watch, getValues } = useForm<FormProps>({
     defaultValues: {
       name: 'education',

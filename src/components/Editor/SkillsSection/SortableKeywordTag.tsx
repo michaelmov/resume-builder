@@ -1,7 +1,7 @@
 import { Tag } from '@chakra-ui/react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import React, { FC } from 'react';
+import React from 'react';
 
 interface KeywordItem {
   id: string;
@@ -13,12 +13,12 @@ interface SortableKeywordTagProps extends KeywordItem {
   onRemove: (index: number) => void;
 }
 
-export const SortableKeywordTag: FC<SortableKeywordTagProps> = ({
+export const SortableKeywordTag = ({
   value,
   id,
   onRemove,
   idx,
-}) => {
+}: SortableKeywordTagProps) => {
   const {
     attributes,
     listeners,

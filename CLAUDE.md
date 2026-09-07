@@ -16,13 +16,20 @@ npm run deploy         # Build + publish dist/ to GitHub Pages (gh-pages branch)
 ```
 
 Node is pinned to `20.19.0` (`.nvmrc`). A Husky pre-commit hook runs
-`npm run lint && npm run typecheck && npm test` — commits fail on lint errors,
-type errors, or failing tests (each stage short-circuits the next).
+`npm run format:check && npm run lint && npm run typecheck && npm test` —
+commits fail on unformatted files, lint errors, type errors, or failing tests
+(each stage short-circuits the next). CI runs the same four as separate jobs.
 
 Claude Code hooks in `.claude/settings.json` mirror that gate during a session:
-edited files are Prettier-formatted on write, and lint, typecheck, and tests run
-when a turn ends — but only if source was actually touched. A failure is
-reported back rather than handed over. See `.claude/hooks/`.
+edited files are Prettier-formatted on write, and the four checks run when a
+turn ends — but only if source was actually touched. A failure is reported back
+rather than handed over. See `.claude/hooks/`.
+
+**Code style is not documented here — the tools are the source of truth.**
+Prettier (`.prettierrc`) owns formatting; ESLint (`eslint.config.js`) owns
+everything else, including import order and the ban on `React.FC`. Both are
+blocking, so `npm run lint:fix` and `npm run format` settle any question about
+style faster than prose could.
 
 ## What this is
 
@@ -57,16 +64,6 @@ no jsdom, no setup file, no component/UI test setup. Coverage is the pure
 utilities plus the storage layer, which runs against RxDB's own in-memory
 storage (`initDatabase({ storage: 'memory' })`). **Don't add `fake-indexeddb`** —
 the Dexie adapter is RxDB's code to test, not this project's.
-
-## Code style
-
-- **Import order is lint-enforced** (`import/order`): groups
-  `builtin → external → internal → parent → sibling → index`, newlines between
-  groups, alphabetized case-insensitive. Run `npm run lint:fix` if unsure.
-- `no-console` except `console.error`/`console.info`.
-  `@typescript-eslint/no-explicit-any` is a warning (some form code uses `any`).
-- Prettier: single quotes, semicolons, `printWidth` 80, always arrow parens.
-- Chakra UI v3 for UI, `react-hook-form` for forms, `@dnd-kit` for drag-and-drop.
 
 ## Architecture docs
 

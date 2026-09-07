@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FC, useCallback } from 'react';
+import { useCallback } from 'react';
 import {
   HiOutlineExternalLink,
   HiOutlineSparkles,
@@ -52,7 +52,7 @@ const NO_ACCEPTED_FILES: File[] = [];
  * prompt with their resume attached, then drops the JSON it returns onto the
  * dropzone above — the ordinary import path, unchanged.
  */
-const HandoffSection: FC = () => (
+const HandoffSection = () => (
   <Box borderWidth="1px" borderColor="border" rounded="md" p={4}>
     <Stack gap={3}>
       <Stack gap={1}>
@@ -85,11 +85,11 @@ const HandoffSection: FC = () => (
  * confirm — a file that fails to parse costs the user nothing, and one that
  * succeeds can be deleted from its card.
  */
-export const ImportDialog: FC<ImportDialogProps> = ({
+export const ImportDialog = ({
   open,
   onOpenChange,
   onImport,
-}) => {
+}: ImportDialogProps) => {
   const {
     readResumeFile,
     isImporting,

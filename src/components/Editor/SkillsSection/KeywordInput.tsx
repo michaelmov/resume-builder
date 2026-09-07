@@ -9,7 +9,7 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { FC, KeyboardEvent } from 'react';
+import { KeyboardEvent } from 'react';
 import { useFieldArray } from 'react-hook-form';
 
 import { KeywordItem } from './SortableKeywordTag';
@@ -21,7 +21,7 @@ interface KeywordInputProps {
   control: any;
 }
 
-export const KeywordInput: FC<KeywordInputProps> = ({ name, control }) => {
+export const KeywordInput = ({ name, control }: KeywordInputProps) => {
   const { fields, remove, append, move } = useFieldArray({
     control,
     name,

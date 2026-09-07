@@ -1,6 +1,6 @@
 import { Box, IconButton, Flex } from '@chakra-ui/react';
 import { usePDF } from '@react-pdf/renderer';
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   HiOutlineRefresh,
   HiOutlineZoomIn,
@@ -76,7 +76,7 @@ interface PreviewProps {
   bottomInset?: string;
 }
 
-export const Preview: FC<PreviewProps> = ({
+export const Preview = ({
   summary,
   onRename,
   focusName,
@@ -84,7 +84,7 @@ export const Preview: FC<PreviewProps> = ({
   onEditorCollapseChange,
   isMobile = false,
   bottomInset = '0px',
-}) => {
+}: PreviewProps) => {
   const pageGutterPx = isMobile ? MOBILE_PAGE_GUTTER_PX : PAGE_GUTTER_PX;
   // Template, accent, and margin are stored on the resume itself, so switching
   // resumes restores the look each one was last rendered with.

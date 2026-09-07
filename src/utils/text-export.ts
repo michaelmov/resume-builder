@@ -86,7 +86,11 @@ export const generateAtsCompliantText = (resume: Resume): string => {
       resume.work.forEach((work) => {
         const endDate = formatDate(work.endDate) || 'Present';
         lines.push(
-          joinCells(work.name, work.position, `${formatDate(work.startDate)} - ${endDate}`)
+          joinCells(
+            work.name,
+            work.position,
+            `${formatDate(work.startDate)} - ${endDate}`
+          )
         );
         if (work.summary) lines.push(work.summary);
         work.highlights?.forEach((h) => lines.push(`• ${h.value}`));
@@ -101,7 +105,11 @@ export const generateAtsCompliantText = (resume: Resume): string => {
       resume.volunteer.forEach((v) => {
         const endDate = formatDate(v.endDate) || 'Present';
         lines.push(
-          joinCells(v.organization, v.position, `${formatDate(v.startDate)} - ${endDate}`)
+          joinCells(
+            v.organization,
+            v.position,
+            `${formatDate(v.startDate)} - ${endDate}`
+          )
         );
         if (v.summary) lines.push(v.summary);
         v.highlights?.forEach((h) => lines.push(`• ${h.value}`));
@@ -128,7 +136,9 @@ export const generateAtsCompliantText = (resume: Resume): string => {
       if (!resume.awards?.length) return [];
       const lines = [heading(SectionTypes.Awards)];
       resume.awards.forEach((award) => {
-        lines.push(joinCells(award.title, award.awarder, formatDate(award.date)));
+        lines.push(
+          joinCells(award.title, award.awarder, formatDate(award.date))
+        );
         if (award.summary) lines.push(award.summary);
       });
       lines.push('');

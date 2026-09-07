@@ -1,6 +1,5 @@
 import { Box } from '@chakra-ui/react';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
-import { FC } from 'react';
 
 import { SortableKeywordTag, KeywordItem } from './SortableKeywordTag';
 
@@ -9,9 +8,10 @@ interface SortableKeywordTagContainerProps {
   onRemove: (index: number) => void;
 }
 
-export const SortableKeywordTagContainer: FC<
-  SortableKeywordTagContainerProps
-> = ({ keywords, onRemove }) => {
+export const SortableKeywordTagContainer = ({
+  keywords,
+  onRemove,
+}: SortableKeywordTagContainerProps) => {
   return (
     <SortableContext
       items={keywords.map((k) => k.id)}

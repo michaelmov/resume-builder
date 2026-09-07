@@ -1,13 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import {
-  createContext,
-  CSSProperties,
-  FC,
-  ReactNode,
-  useContext,
-} from 'react';
+import { createContext, CSSProperties, ReactNode, useContext } from 'react';
 
 interface DragHandle {
   setActivatorNodeRef: ReturnType<typeof useSortable>['setActivatorNodeRef'];
@@ -43,7 +37,7 @@ interface SortableSectionProps {
   children: ReactNode;
 }
 
-export const SortableSection: FC<SortableSectionProps> = ({ id, children }) => {
+export const SortableSection = ({ id, children }: SortableSectionProps) => {
   const {
     setNodeRef,
     setActivatorNodeRef,

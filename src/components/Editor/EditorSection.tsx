@@ -6,7 +6,7 @@ import {
   IconButton,
   Input,
 } from '@chakra-ui/react';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { HiCheck, HiChevronDown, HiOutlinePencil } from 'react-icons/hi';
 import { MdDragIndicator } from 'react-icons/md';
 
@@ -50,14 +50,14 @@ interface EditorSectionProps {
    */
   onBlur?: React.FocusEventHandler<HTMLDivElement>;
 }
-export const EditorSection: FC<EditorSectionProps> = ({
+export const EditorSection = ({
   id,
   title,
   children,
   alwaysOpen = false,
   hideTitle = false,
   onBlur,
-}) => {
+}: EditorSectionProps) => {
   const [isOpen, setIsOpen] = useSectionOpenState(id);
   const dragHandle = useDragHandle();
   const isSectionDragging = useIsSectionDragging();

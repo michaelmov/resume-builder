@@ -1,5 +1,4 @@
 import { Box, Button, Input, Field } from '@chakra-ui/react';
-import { FC } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { HiPlus } from 'react-icons/hi';
 
@@ -25,7 +24,7 @@ interface FormProps {
   skills: Skill[];
 }
 
-export const SkillsSection: FC<SkillsSectionProps> = ({ value, onUpdate }) => {
+export const SkillsSection = ({ value, onUpdate }: SkillsSectionProps) => {
   const { control, register, reset, watch, getValues } = useForm<FormProps>({
     defaultValues: {
       name: 'skills',
