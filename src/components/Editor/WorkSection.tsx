@@ -11,7 +11,13 @@ import {
   Checkbox,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { useFieldArray, useForm, Controller } from 'react-hook-form';
+import {
+  Control,
+  Controller,
+  UseFormRegister,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
 import {
   HiChevronDown,
   HiChevronUp,
@@ -84,7 +90,7 @@ export const WorkSection = ({ value, onUpdate }: WorkSectionProps) => {
       onBlur={onBlur}
     >
       <Box>
-        {fields.map((field: any, index: number) => {
+        {fields.map((field, index) => {
           return (
             <EditorSubsection
               title={watch(`work.${index}.name`) ?? ''}
@@ -189,8 +195,8 @@ export const WorkSection = ({ value, onUpdate }: WorkSectionProps) => {
 
 interface HighlightsListProps {
   workIndex: number;
-  control: any;
-  register: any;
+  control: Control<FormProps>;
+  register: UseFormRegister<FormProps>;
 }
 
 const HighlightsList = ({
@@ -200,7 +206,7 @@ const HighlightsList = ({
 }: HighlightsListProps) => {
   const { fields, remove, append, move } = useFieldArray({
     control,
-    name: `work.[${workIndex}].highlights`,
+    name: `work.${workIndex}.highlights`,
   });
   return (
     <Box>
@@ -211,7 +217,7 @@ const HighlightsList = ({
         return (
           <HighlightInput
             key={highlight.id}
-            highlight={highlight as HighlightItem}
+            highlight={highlight}
             index={index}
             workIndex={workIndex}
             register={register}
@@ -226,7 +232,7 @@ const HighlightsList = ({
 
       <Button
         mt={4}
-        onClick={() => append('')}
+        onClick={() => append({ value: '' })}
         width="100%"
         size="xs"
         variant="subtle"
@@ -246,7 +252,7 @@ interface HighlightInputProps extends TextareaProps {
   highlight: HighlightItem;
   index: number;
   workIndex: number;
-  register: any;
+  register: UseFormRegister<FormProps>;
   onDelete: (index: number) => void;
   onMoveUp: (index: number) => void;
   onMoveDown: (index: number) => void;

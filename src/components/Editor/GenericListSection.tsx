@@ -110,8 +110,7 @@ export function GenericListSection<T>({
       onBlur={onBlur}
     >
       <Box>
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {fields.map((field: any, index: number) => (
+        {fields.map((field, index) => (
           <EditorSubsection
             key={field.id}
             id={field.id}

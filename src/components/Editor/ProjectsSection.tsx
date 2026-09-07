@@ -10,7 +10,12 @@ import {
   Field,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import {
+  Control,
+  UseFormRegister,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
 import {
   HiChevronDown,
   HiChevronUp,
@@ -89,7 +94,7 @@ export const ProjectsSection = ({ value, onUpdate }: ProjectsSectionProps) => {
       onBlur={onBlur}
     >
       <Box>
-        {fields.map((field: any, index: number) => {
+        {fields.map((field, index) => {
           return (
             <EditorSubsection
               title={watch(`projects.${index}.name`)}
@@ -180,8 +185,19 @@ export const ProjectsSection = ({ value, onUpdate }: ProjectsSectionProps) => {
 
 interface HighlightsListProps {
   projectIndex: number;
-  control: any;
-  register: any;
+  control: Control<FormProps>;
+  register: UseFormRegister<FormProps>;
+}
+
+/**
+ * `Project.highlights` is a plain `string[]`, and react-hook-form's
+ * `FieldArrayPath` only admits arrays of objects — `useFieldArray` drives a
+ * list of strings correctly at runtime, but the path cannot be named in the
+ * types. This view describes the same form with the element type widened to
+ * include an object so the path typechecks; the entries stay strings.
+ */
+interface HighlightsFormView {
+  projects: { highlights: (string | { value: string })[] }[];
 }
 
 const HighlightsList = ({
@@ -190,8 +206,8 @@ const HighlightsList = ({
   projectIndex,
 }: HighlightsListProps) => {
   const { fields, remove, append, move } = useFieldArray({
-    control,
-    name: `projects.[${projectIndex}].highlights`,
+    control: control as unknown as Control<HighlightsFormView>,
+    name: `projects.${projectIndex}.highlights`,
   });
   return (
     <Box>
@@ -202,7 +218,7 @@ const HighlightsList = ({
         return (
           <HighlightInput
             key={highlight.id}
-            highlight={highlight as HighlightItem}
+            highlight={highlight}
             index={index}
             projectIndex={projectIndex}
             register={register}
@@ -230,16 +246,20 @@ const HighlightsList = ({
   );
 };
 
+/**
+ * A highlight as `useFieldArray` hands it back: the entry itself is a string,
+ * so only the generated `id` is readable here — the text is reached through
+ * `register`.
+ */
 interface HighlightItem {
   id: string;
-  value: string;
 }
 
 interface HighlightInputProps extends TextareaProps {
   highlight: HighlightItem;
   index: number;
   projectIndex: number;
-  register: any;
+  register: UseFormRegister<FormProps>;
   onDelete: (index: number) => void;
   onMoveUp: (index: number) => void;
   onMoveDown: (index: number) => void;
