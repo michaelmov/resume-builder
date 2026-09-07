@@ -5,7 +5,7 @@ import {
   LinkOverlay,
   Spacer,
 } from '@chakra-ui/react';
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { HiOutlineMoon, HiOutlineSun } from 'react-icons/hi';
 import { VscGithub } from 'react-icons/vsc';
 
@@ -33,10 +33,13 @@ export const railButtonProps = {
  * on mobile it lays out as a horizontal bar across the top instead. Same
  * children, same order; only the axis changes.
  */
-export const Navbar: FC<{
+export const Navbar = ({
+  children,
+  orientation = 'vertical',
+}: {
   children?: ReactNode;
   orientation?: 'vertical' | 'horizontal';
-}> = ({ children, orientation = 'vertical' }) => {
+}) => {
   const { colorMode, toggleColorMode } = useColorMode();
 
   const colorModeLabel =

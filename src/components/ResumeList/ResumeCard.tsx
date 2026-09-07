@@ -7,7 +7,7 @@ import {
   Portal,
   Text,
 } from '@chakra-ui/react';
-import { FC, useCallback } from 'react';
+import { useCallback } from 'react';
 import { BsFiletypeJson, BsFiletypePdf, BsFiletypeTxt } from 'react-icons/bs';
 import {
   HiOutlineChevronRight,
@@ -36,12 +36,12 @@ interface ResumeCardProps {
   onDelete: () => void;
 }
 
-export const ResumeCard: FC<ResumeCardProps> = ({
+export const ResumeCard = ({
   summary,
   onRename,
   onDuplicate,
   onDelete,
-}) => {
+}: ResumeCardProps) => {
   const navigate = useNavigate();
 
   const open = useCallback(

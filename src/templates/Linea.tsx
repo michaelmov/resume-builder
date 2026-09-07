@@ -522,10 +522,18 @@ const LineaTemplate = ({
   // time (see `withSectionHeading`) so the two cannot be split across a page.
   const sectionContent: Partial<Record<SectionTypes, ReactNode[]>> = {
     [SectionTypes.Skills]: skills.map((skill, index) => (
-      <SkillsSection key={`${skill.name}-${index}`} skill={skill} styles={styles} />
+      <SkillsSection
+        key={`${skill.name}-${index}`}
+        skill={skill}
+        styles={styles}
+      />
     )),
     [SectionTypes.Work]: work.map((item, index) => (
-      <WorkExperience key={`${item.name}-${index}`} work={item} styles={styles} />
+      <WorkExperience
+        key={`${item.name}-${index}`}
+        work={item}
+        styles={styles}
+      />
     )),
     [SectionTypes.Volunteer]: volunteer.map((item, index) => (
       <WorkExperience
@@ -551,25 +559,29 @@ const LineaTemplate = ({
         styles={styles}
       />
     )),
-    [SectionTypes.Certificates]: certificates.map((item: Certificate, index) => (
-      <SimpleEntry
-        key={`${item.name}-${index}`}
-        title={item.name}
-        dates={formatDate(item.date)}
-        role={item.issuer}
-        styles={styles}
-      />
-    )),
-    [SectionTypes.Publications]: publications.map((item: Publication, index) => (
-      <SimpleEntry
-        key={`${item.name}-${index}`}
-        title={item.name}
-        dates={formatDate(item.releaseDate)}
-        role={item.publisher}
-        summary={item.summary}
-        styles={styles}
-      />
-    )),
+    [SectionTypes.Certificates]: certificates.map(
+      (item: Certificate, index) => (
+        <SimpleEntry
+          key={`${item.name}-${index}`}
+          title={item.name}
+          dates={formatDate(item.date)}
+          role={item.issuer}
+          styles={styles}
+        />
+      )
+    ),
+    [SectionTypes.Publications]: publications.map(
+      (item: Publication, index) => (
+        <SimpleEntry
+          key={`${item.name}-${index}`}
+          title={item.name}
+          dates={formatDate(item.releaseDate)}
+          role={item.publisher}
+          summary={item.summary}
+          styles={styles}
+        />
+      )
+    ),
     [SectionTypes.Languages]: languages.map((item: Language, index) => (
       <SimpleEntry
         key={`${item.language}-${index}`}
@@ -579,7 +591,11 @@ const LineaTemplate = ({
       />
     )),
     [SectionTypes.Interests]: interests.map((item: Interest, index) => (
-      <InterestGroup key={`${item.name}-${index}`} interest={item} styles={styles} />
+      <InterestGroup
+        key={`${item.name}-${index}`}
+        interest={item}
+        styles={styles}
+      />
     )),
     [SectionTypes.References]: references.map((item: Reference, index) => (
       <SimpleEntry
@@ -590,7 +606,11 @@ const LineaTemplate = ({
       />
     )),
     [SectionTypes.Projects]: projects.map((item, index) => (
-      <ProjectSection key={`${item.name}-${index}`} project={item} styles={styles} />
+      <ProjectSection
+        key={`${item.name}-${index}`}
+        project={item}
+        styles={styles}
+      />
     )),
   };
 

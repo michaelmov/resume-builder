@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  FC,
   useCallback,
   useEffect,
   useMemo,
@@ -39,7 +38,7 @@ const colorModeContext = createContext<ColorModeContextValue | undefined>(
  * Only the app chrome changes — the resume templates are `@react-pdf/renderer`
  * documents whose colors are baked into the PDF, so they are unaffected.
  */
-const ColorModeProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+const ColorModeProvider = ({ children }: { children: React.ReactNode }) => {
   const { getColorModePreference, saveColorModePreference } =
     useColorModeLocalStorage();
 

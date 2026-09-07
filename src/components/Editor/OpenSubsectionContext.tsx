@@ -1,6 +1,5 @@
 import {
   createContext,
-  FC,
   ReactNode,
   useCallback,
   useContext,
@@ -29,9 +28,9 @@ interface OpenSubsectionProviderProps {
  * before. The `Editor` wraps each section in its own provider, so the accordion
  * is scoped per section and every section remembers its own open entry.
  */
-export const OpenSubsectionProvider: FC<OpenSubsectionProviderProps> = ({
+export const OpenSubsectionProvider = ({
   children,
-}) => {
+}: OpenSubsectionProviderProps) => {
   const [openSubsectionId, setOpenSubsectionId] = useState<string | null>(null);
 
   const value = useMemo(

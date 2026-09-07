@@ -1,5 +1,4 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { FC } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { ColorModeProvider } from './context/ColorModeContext/ColorModeContext';
@@ -8,7 +7,7 @@ import { EditorPage } from './pages/EditorPage';
 import { ResumeListPage } from './pages/ResumeListPage';
 import { system } from './theme';
 
-const App: FC = () => (
+const App = () => (
   <ColorModeProvider>
     <ChakraProvider value={system}>
       {/*

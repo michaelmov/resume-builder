@@ -1,7 +1,6 @@
 import { Center, Spinner } from '@chakra-ui/react';
 import React, {
   createContext,
-  FC,
   useCallback,
   useEffect,
   useMemo,
@@ -84,8 +83,10 @@ export const resumeLibraryContext = createContext<ResumeLibraryValue>({
  * Resume *content* is deliberately not held here. Each document is loaded by
  * the editor route for the one id it is showing.
  */
-export const ResumeLibraryProvider: FC<{ children: React.ReactNode }> = ({
+export const ResumeLibraryProvider = ({
   children,
+}: {
+  children: React.ReactNode;
 }) => {
   // `null` means the library hasn't been read yet, which is not the same as an
   // empty one. Distinguishing them is what stops the list flashing its empty

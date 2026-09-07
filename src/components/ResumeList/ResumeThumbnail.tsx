@@ -1,5 +1,5 @@
 import { AspectRatio, Box, Icon, Image, Skeleton } from '@chakra-ui/react';
-import { FC, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { HiOutlineDocumentText } from 'react-icons/hi';
 
 import { ResumeSummary } from '../../types/resume-library';
@@ -36,9 +36,7 @@ const enqueue = <T,>(task: () => Promise<T>): Promise<T> => {
  * captured; it only renders a PDF itself when a resume has never been opened
  * since thumbnails existed, or was edited in another tab.
  */
-export const ResumeThumbnail: FC<{ summary: ResumeSummary }> = ({
-  summary,
-}) => {
+export const ResumeThumbnail = ({ summary }: { summary: ResumeSummary }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   const [src, setSrc] = useState<string | null>(null);

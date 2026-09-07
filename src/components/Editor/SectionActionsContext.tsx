@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useContext } from 'react';
+import { createContext, ReactNode, useContext } from 'react';
 
 import { SectionTypes } from '../../types/resume.model';
 
@@ -16,10 +16,13 @@ interface SectionActionsValue {
 
 const SectionActionsContext = createContext<SectionActionsValue | null>(null);
 
-export const SectionActionsProvider: FC<{
+export const SectionActionsProvider = ({
+  value,
+  children,
+}: {
   value: SectionActionsValue;
   children: ReactNode;
-}> = ({ value, children }) => (
+}) => (
   <SectionActionsContext.Provider value={value}>
     {children}
   </SectionActionsContext.Provider>

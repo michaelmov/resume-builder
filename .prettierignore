@@ -44,3 +44,8 @@ pnpm-lock.yaml
 
 # Prettier ignore patterns for specific frameworks
 public/
+
+# Vendored skill assets. Copied in from upstream and not this project's code to
+# format — reformatting them only creates churn against the source. ESLint
+# ignores .agents for the same reason.
+.agents/

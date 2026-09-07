@@ -1,5 +1,5 @@
 import { Box, Center, Flex, IconButton, Spinner } from '@chakra-ui/react';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import {
   Navigate,
@@ -44,9 +44,12 @@ export interface EditorLocationState {
   focusName?: boolean;
 }
 
-const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
+const EditorLayout = ({
   summary,
   focusName,
+}: {
+  summary: ResumeSummary;
+  focusName: boolean;
 }) => {
   const navigate = useNavigate();
   const { renameResume } = useResumeLibrary();
@@ -162,7 +165,7 @@ const EditorLayout: FC<{ summary: ResumeSummary; focusName: boolean }> = ({
  * mounting the provider, so a stale bookmark or a resume deleted in another tab
  * lands back on the list with an explanation rather than on a broken editor.
  */
-export const EditorPage: FC = () => {
+export const EditorPage = () => {
   const { id } = useParams<{ id: string }>();
   const { resumes } = useResumeLibrary();
   const { state } = useLocation() as { state: EditorLocationState | null };

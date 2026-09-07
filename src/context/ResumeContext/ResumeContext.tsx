@@ -1,7 +1,6 @@
 import React, {
   createContext,
   Dispatch,
-  FC,
   useCallback,
   useEffect,
   useMemo,
@@ -48,11 +47,7 @@ interface ResumeProviderProps {
  * rather than at the app root so a keystroke rewrites a single storage key
  * instead of re-serializing every resume in the library.
  */
-const ResumeProvider: FC<ResumeProviderProps> = ({
-  id,
-  document,
-  children,
-}) => {
+const ResumeProvider = ({ id, document, children }: ResumeProviderProps) => {
   const { saveResume, rememberSettings } = useResumeLibrary();
 
   const [state, dispatch] = useReducer(resumeReducer, document.resume);

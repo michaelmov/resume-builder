@@ -1,5 +1,5 @@
 import { Box, Button, Menu, Portal, Text } from '@chakra-ui/react';
-import { FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import { HiPlus } from 'react-icons/hi';
 
 import {
@@ -18,10 +18,10 @@ interface AddSectionMenuProps {
   onAdd: (section: SectionTypes) => void;
 }
 
-export const AddSectionMenu: FC<AddSectionMenuProps> = ({
+export const AddSectionMenu = ({
   activeSections,
   onAdd,
-}) => {
+}: AddSectionMenuProps) => {
   const openSection = useOpenSection();
 
   // Only offer categories that still have at least one un-added section.
@@ -77,9 +77,7 @@ export const AddSectionMenu: FC<AddSectionMenuProps> = ({
                     py={2}
                   >
                     <Box>
-                      <Text fontWeight="medium">
-                        {SECTION_TITLES[section]}
-                      </Text>
+                      <Text fontWeight="medium">{SECTION_TITLES[section]}</Text>
                       {SECTION_DESCRIPTIONS[section] && (
                         <Text fontSize="xs" color="fg.muted">
                           {SECTION_DESCRIPTIONS[section]}

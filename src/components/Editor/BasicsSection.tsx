@@ -1,5 +1,4 @@
 import { Box, Input, Textarea, Field } from '@chakra-ui/react';
-import { FC } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useAutoCommitSection } from '../../hooks/useAutoCommitSection';
@@ -12,7 +11,7 @@ interface BasicsSectionProps {
   value: Basics;
   onUpdate: (sectionType: SectionTypes, section: Basics) => void;
 }
-export const BasicsSection: FC<BasicsSectionProps> = ({ value, onUpdate }) => {
+export const BasicsSection = ({ value, onUpdate }: BasicsSectionProps) => {
   const { register, reset, watch, getValues } = useForm<Basics>({
     defaultValues: value,
   });

@@ -1,5 +1,4 @@
 import { Button, Text } from '@chakra-ui/react';
-import { FC } from 'react';
 
 import { ResumeSummary } from '../../types/resume-library';
 import {
@@ -25,11 +24,11 @@ interface DeleteResumeDialogProps {
  * losing a whole resume is a different order of mistake, and it names the
  * resume so the wrong card can't be deleted by muscle memory.
  */
-export const DeleteResumeDialog: FC<DeleteResumeDialogProps> = ({
+export const DeleteResumeDialog = ({
   resume,
   onCancel,
   onConfirm,
-}) => (
+}: DeleteResumeDialogProps) => (
   <DialogRoot
     open={resume !== null}
     onOpenChange={(details) => {

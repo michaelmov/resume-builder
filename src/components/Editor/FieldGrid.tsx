@@ -1,5 +1,4 @@
 import { Grid, GridItem, GridItemProps, GridProps } from '@chakra-ui/react';
-import { FC } from 'react';
 
 /**
  * The grid a section's form fields are laid out on — two columns, collapsing to
@@ -15,7 +14,7 @@ import { FC } from 'react';
  * following the `md` breakpoint the sheet layout itself switches on. Between
  * 480px and 768px two columns are still wide enough to be worth keeping.
  */
-export const FieldGrid: FC<GridProps> = ({ children, ...rest }) => (
+export const FieldGrid = ({ children, ...rest }: GridProps) => (
   <Grid
     templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)' }}
     rowGap={4}
@@ -39,11 +38,11 @@ interface FieldGridItemProps extends Omit<GridItemProps, 'colSpan'> {
   full?: boolean;
 }
 
-export const FieldGridItem: FC<FieldGridItemProps> = ({
+export const FieldGridItem = ({
   full = false,
   children,
   ...rest
-}) => (
+}: FieldGridItemProps) => (
   <GridItem colSpan={full ? { base: 1, sm: 2 } : 1} {...rest}>
     {children}
   </GridItem>

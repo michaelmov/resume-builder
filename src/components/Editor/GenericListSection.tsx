@@ -8,7 +8,7 @@ import {
   Textarea,
   Field,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import {
   Control,
   useFieldArray,
@@ -197,12 +197,12 @@ interface BulletListFieldProps {
   bullet: BulletConfig;
 }
 
-const BulletListField: FC<BulletListFieldProps> = ({
+const BulletListField = ({
   entryIndex,
   control,
   register,
   bullet,
-}) => {
+}: BulletListFieldProps) => {
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: `entries.${entryIndex}.${bullet.name}`,
@@ -256,7 +256,7 @@ interface BulletInputProps {
   moveDownDisabled: boolean;
 }
 
-const BulletInput: FC<BulletInputProps> = ({
+const BulletInput = ({
   path,
   register,
   onDelete,
@@ -264,7 +264,7 @@ const BulletInput: FC<BulletInputProps> = ({
   onMoveDown,
   moveUpDisabled,
   moveDownDisabled,
-}) => {
+}: BulletInputProps) => {
   const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
   return (
     <Flex

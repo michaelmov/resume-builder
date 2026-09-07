@@ -9,7 +9,7 @@ import {
   Icon,
   SimpleGrid,
 } from '@chakra-ui/react';
-import { DragEvent, FC, useCallback, useState } from 'react';
+import { DragEvent, useCallback, useState } from 'react';
 import {
   HiOutlineDocumentAdd,
   HiOutlineDocumentText,
@@ -40,7 +40,7 @@ interface ListLocationState {
   missingResume?: boolean;
 }
 
-export const ResumeListPage: FC = () => {
+export const ResumeListPage = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { state } = useLocation() as { state: ListLocationState | null };

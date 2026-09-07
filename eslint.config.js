@@ -8,6 +8,10 @@ import react from 'eslint-plugin-react';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import importPlugin from 'eslint-plugin-import';
 
+const bannedComponentType =
+  'Declare the component as a function and let its return type be inferred, ' +
+  'or annotate it as JSX.Element.';
+
 export default [
   {
     ignores: [
@@ -86,8 +90,43 @@ export default [
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
 
-      // Arrow function rules
-      'arrow-parens': ['error', 'always'], // Require parentheses around arrow function arguments
+      // Components are plain functions: let TypeScript infer the return type,
+      // or annotate it as JSX.Element. React.FC types the *variable* instead,
+      // which drags in an implicit children prop, blocks generic components,
+      // and hides the actual props type behind a wrapper.
+      '@typescript-eslint/no-restricted-types': [
+        'error',
+        {
+          types: {
+            FC: { message: bannedComponentType, suggest: ['JSX.Element'] },
+            'React.FC': {
+              message: bannedComponentType,
+              suggest: ['JSX.Element'],
+            },
+            FunctionComponent: {
+              message: bannedComponentType,
+              suggest: ['JSX.Element'],
+            },
+            'React.FunctionComponent': {
+              message: bannedComponentType,
+              suggest: ['JSX.Element'],
+            },
+            VFC: { message: bannedComponentType, suggest: ['JSX.Element'] },
+            'React.VFC': {
+              message: bannedComponentType,
+              suggest: ['JSX.Element'],
+            },
+            VoidFunctionComponent: {
+              message: bannedComponentType,
+              suggest: ['JSX.Element'],
+            },
+            'React.VoidFunctionComponent': {
+              message: bannedComponentType,
+              suggest: ['JSX.Element'],
+            },
+          },
+        },
+      ],
 
       // Import rules
       'import/no-unresolved': 'error',

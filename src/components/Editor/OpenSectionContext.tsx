@@ -1,6 +1,5 @@
 import {
   createContext,
-  FC,
   ReactNode,
   useCallback,
   useContext,
@@ -27,10 +26,10 @@ interface OpenSectionProviderProps {
  * Tracks which single editor section is expanded so the sections behave like an
  * accordion: opening one collapses whichever was open before.
  */
-export const OpenSectionProvider: FC<OpenSectionProviderProps> = ({
+export const OpenSectionProvider = ({
   children,
   defaultOpenId = null,
-}) => {
+}: OpenSectionProviderProps) => {
   const [openSectionId, setOpenSectionId] = useState<string | null>(
     defaultOpenId
   );

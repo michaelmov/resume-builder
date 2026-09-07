@@ -164,9 +164,7 @@ export const SECTION_CATEGORIES: { label: string; sections: SectionTypes[] }[] =
  * - An explicit array (including an empty one — every section removed) is taken
  *   at face value, with Basics, unknown/stale values, and duplicates dropped.
  */
-export const resolveSectionOrder = (
-  order?: SectionTypes[]
-): SectionTypes[] => {
+export const resolveSectionOrder = (order?: SectionTypes[]): SectionTypes[] => {
   if (order === undefined) {
     return [...DEFAULT_ACTIVE_SECTIONS];
   }
