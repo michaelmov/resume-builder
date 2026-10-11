@@ -28,6 +28,7 @@ import {
   Work,
 } from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
+import { formatScore } from '../utils/education-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
 
 import { AccentPalette } from './accents';
@@ -292,11 +293,13 @@ const WorkExperience = ({
         {leading}
         <View style={styles.workExperienceHeading}>
           <Text style={styles.workExperienceName}>{work.name}</Text>
-          <Text style={styles.textLight}>{work.position}</Text>
           <Text style={styles.textLight}>
             {startDate} - {endDate}
           </Text>
         </View>
+        {work.position ? (
+          <Text style={styles.textLight}>{work.position}</Text>
+        ) : null}
         {glued.map((highlight, index) => (
           <HighlightRow
             key={index}
@@ -331,15 +334,25 @@ const EducationSection = ({
   education: Education;
   styles: Styles;
 } & LeadingEntryProps) => {
+  const detail = [
+    education.studyType,
+    education.area,
+    formatScore(education.score),
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
   return (
     <KeepTogether>
       {leading}
-      <View style={{ ...styles.educationWrap, marginBottom: 14 }}>
-        <Text style={styles.workExperienceName}>{education.institution}</Text>
-        <Text style={styles.textLight}>{education.area}</Text>
-        <Text style={styles.textLight}>
-          {formatDate(education.startDate)} - {formatDate(education.endDate)}
-        </Text>
+      <View style={{ marginBottom: 14 }}>
+        <View style={styles.educationWrap}>
+          <Text style={styles.workExperienceName}>{education.institution}</Text>
+          <Text style={styles.textLight}>
+            {formatDate(education.startDate)} - {formatDate(education.endDate)}
+          </Text>
+        </View>
+        {detail ? <Text style={styles.textLight}>{detail}</Text> : null}
       </View>
     </KeepTogether>
   );
@@ -368,11 +381,13 @@ const ProjectSection = ({
         {leading}
         <View style={styles.projectHeading}>
           <Text style={styles.projectName}>{project.name}</Text>
-          <Text style={styles.textLight}>{project.type}</Text>
           <Text style={styles.textLight}>
             {startDate} - {endDate}
           </Text>
         </View>
+        {project.type ? (
+          <Text style={styles.textLight}>{project.type}</Text>
+        ) : null}
         {glued.map((highlight, index) => (
           <HighlightRow
             key={index}
@@ -418,9 +433,9 @@ const SimpleEntry = ({
       {leading}
       <View style={styles.workExperienceHeading}>
         <Text style={styles.workExperienceName}>{title}</Text>
-        {meta ? <Text style={styles.textLight}>{meta}</Text> : null}
         {dates ? <Text style={styles.textLight}>{dates}</Text> : null}
       </View>
+      {meta ? <Text style={styles.textLight}>{meta}</Text> : null}
     </KeepTogether>
     {summary ? (
       <Text style={styles.workExperienceSummary}>{summary}</Text>

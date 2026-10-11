@@ -26,6 +26,7 @@ import {
   Work,
 } from '../types/resume.model';
 import { formatDate } from '../utils/date-utilities';
+import { formatScore } from '../utils/education-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
 
 import { AccentPalette } from './accents';
@@ -352,7 +353,11 @@ const EducationSection = ({
   isLast: boolean;
   styles: Styles;
 } & LeadingEntryProps) => {
-  const detail = [education.studyType, education.area]
+  const detail = [
+    education.studyType,
+    education.area,
+    formatScore(education.score),
+  ]
     .filter(Boolean)
     .join(' · ');
 
