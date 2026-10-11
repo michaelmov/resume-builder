@@ -14,6 +14,7 @@ import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
 import { FieldGrid, FieldGridItem } from './FieldGrid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
+import { useSeedEntryOnSectionAdd } from './SectionActionsContext';
 
 interface EducationSectionProps {
   value: Education[];
@@ -66,6 +67,12 @@ export const EducationSection = ({
     append(newEducation);
     openAppendedEntry();
   };
+
+  useSeedEntryOnSectionAdd(
+    SectionTypes.Education,
+    fields.length === 0,
+    addEducation
+  );
 
   return (
     <EditorSection
