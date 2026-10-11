@@ -12,6 +12,7 @@ import {
 import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
+import { useSeedEntryOnSectionAdd } from './SectionActionsContext';
 import { KeywordInput } from './SkillsSection/KeywordInput';
 
 interface InterestsSectionProps {
@@ -50,6 +51,12 @@ export const InterestsSection = ({
     append({ name: '', keywords: [] } as Interest);
     openAppendedEntry();
   };
+
+  useSeedEntryOnSectionAdd(
+    SectionTypes.Interests,
+    fields.length === 0,
+    addInterest
+  );
 
   return (
     <EditorSection

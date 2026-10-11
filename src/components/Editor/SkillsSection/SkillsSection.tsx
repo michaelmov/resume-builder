@@ -11,6 +11,7 @@ import {
 import { EditorSection } from '../EditorSection';
 import { EditorSubsection } from '../EditorSubsection';
 import { useOpenAppendedSubsection } from '../OpenSubsectionContext';
+import { useSeedEntryOnSectionAdd } from '../SectionActionsContext';
 
 import { KeywordInput } from './KeywordInput';
 
@@ -57,6 +58,8 @@ export const SkillsSection = ({ value, onUpdate }: SkillsSectionProps) => {
     append(newSkill);
     openAppendedEntry();
   };
+
+  useSeedEntryOnSectionAdd(SectionTypes.Skills, fields.length === 0, addSkill);
 
   return (
     <EditorSection

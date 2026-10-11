@@ -30,6 +30,7 @@ import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
 import { FieldGrid, FieldGridItem } from './FieldGrid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
+import { useSeedEntryOnSectionAdd } from './SectionActionsContext';
 
 /** A single flat input within an entry. */
 export interface FieldConfig {
@@ -103,6 +104,13 @@ export function GenericListSection<T>({
     commit: (entries) => onUpdate(sectionType, entries),
   });
 
+  const addEntry = () => {
+    append(emptyEntry() as FormShape['entries'][number]);
+    openAppendedEntry();
+  };
+
+  useSeedEntryOnSectionAdd(sectionType, fields.length === 0, addEntry);
+
   return (
     <EditorSection
       id={sectionType}
@@ -171,10 +179,7 @@ export function GenericListSection<T>({
         ))}
         <Box>
           <Button
-            onClick={() => {
-              append(emptyEntry() as FormShape['entries'][number]);
-              openAppendedEntry();
-            }}
+            onClick={addEntry}
             width="100%"
             size="sm"
             variant="subtle"

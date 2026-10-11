@@ -35,6 +35,7 @@ import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
 import { FieldGrid, FieldGridItem } from './FieldGrid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
+import { useSeedEntryOnSectionAdd } from './SectionActionsContext';
 
 interface ProjectsSectionProps {
   value: Project[];
@@ -86,6 +87,12 @@ export const ProjectsSection = ({ value, onUpdate }: ProjectsSectionProps) => {
     append(newProject);
     openAppendedEntry();
   };
+
+  useSeedEntryOnSectionAdd(
+    SectionTypes.Projects,
+    fields.length === 0,
+    addProject
+  );
 
   return (
     <EditorSection

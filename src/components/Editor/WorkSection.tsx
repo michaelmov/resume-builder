@@ -33,6 +33,7 @@ import { EditorSection } from './EditorSection';
 import { EditorSubsection } from './EditorSubsection';
 import { FieldGrid, FieldGridItem } from './FieldGrid';
 import { useOpenAppendedSubsection } from './OpenSubsectionContext';
+import { useSeedEntryOnSectionAdd } from './SectionActionsContext';
 
 interface WorkSectionProps {
   value: Work[];
@@ -82,6 +83,8 @@ export const WorkSection = ({ value, onUpdate }: WorkSectionProps) => {
     append(newWork);
     openAppendedEntry();
   };
+
+  useSeedEntryOnSectionAdd(SectionTypes.Work, fields.length === 0, addWork);
 
   return (
     <EditorSection

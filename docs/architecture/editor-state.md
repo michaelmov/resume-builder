@@ -86,3 +86,14 @@ This is the most important pattern to understand before editing the Editor.
   rather than the `fields` snapshot, which only refreshes on
   append/remove/move/reset and would otherwise show a stale name on a collapsed
   entry.
+
+- **A section added from the picker starts with one empty entry, already
+  expanded.** `Editor.tsx` notes the added type in a ref, and the section claims
+  it on mount through **`useSeedEntryOnSectionAdd(type, isEmpty, addEntry)`**,
+  which runs the section's own "Add" handler — so the blank entry and the
+  expand-on-append behaviour are the same ones the button uses. The flag is
+  consumed on read, so it fires once per add; a section that mounts for any
+  other reason, or that already has entries, is left alone. Call the hook
+  _after_ `useAutoCommitSection`: effects run in hook order, and the append has
+  to land once the auto-save subscription is listening or the seeded entry
+  would never be committed. A new section editor has to call it too.

@@ -15,7 +15,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { ReactNode, useCallback, useMemo, useState } from 'react';
+import { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { HiOutlineUser, HiOutlineViewList } from 'react-icons/hi';
 
 import { SectionData } from '../../context/ResumeContext/ResumeReducer';
@@ -134,15 +134,29 @@ export const Editor = ({ onSectionDraggingChange }: EditorProps) => {
     [updateSectionTitles]
   );
 
+  // The section the picker just added, held until that section mounts and
+  // claims it to seed its first entry. A ref, not state: it is a one-shot
+  // message to a component that doesn't exist yet, and nothing renders from it.
+  const justAddedSectionRef = useRef<SectionTypes | null>(null);
+
   const handleAddSection = useCallback(
     (section: SectionTypes) => {
       if (order.includes(section)) {
         return;
       }
+      justAddedSectionRef.current = section;
       updateSectionOrder([...order, section]);
     },
     [order, updateSectionOrder]
   );
+
+  const consumeJustAdded = useCallback((section: SectionTypes) => {
+    if (justAddedSectionRef.current !== section) {
+      return false;
+    }
+    justAddedSectionRef.current = null;
+    return true;
+  }, []);
 
   const handleRemoveSection = useCallback(
     (section: SectionTypes) => {
@@ -256,6 +270,7 @@ export const Editor = ({ onSectionDraggingChange }: EditorProps) => {
             removeSection: handleRemoveSection,
             getSectionTitle: getTitle,
             renameSection: handleRenameSection,
+            consumeJustAdded,
           }}
         >
           <Box>
