@@ -30,6 +30,7 @@ import { formatScore } from '../utils/education-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
 
 import { AccentPalette } from './accents';
+import { EntryMeta } from './links';
 import {
   KeepTogether,
   LeadingEntryProps,
@@ -241,6 +242,12 @@ const makeStyles = (accent: AccentPalette, marginScale: number) =>
       color: colors.ink,
       marginTop: 1,
     },
+    // An entry's URL, printed after its role or type (see `EntryMeta`).
+    metaLink: {
+      color: accent.strong,
+      fontStyle: 'normal',
+      textDecoration: 'none',
+    },
     entrySummary: {
       fontSize: 10.5,
       lineHeight: 1.45,
@@ -365,7 +372,12 @@ const WorkExperience = ({
             {startDate} — {endDate}
           </Text>
         </View>
-        {work.position && <Text style={styles.entryRole}>{work.position}</Text>}
+        <EntryMeta
+          text={work.position}
+          url={work.url}
+          style={styles.entryRole}
+          linkStyle={styles.metaLink}
+        />
         {glued.map((highlight, index) => (
           <Highlight key={index} value={highlight.value} styles={styles} />
         ))}
@@ -401,7 +413,12 @@ const EducationSection = ({
             {formatDate(education.startDate)} — {formatDate(education.endDate)}
           </Text>
         </View>
-        {detail ? <Text style={styles.entryRole}>{detail}</Text> : null}
+        <EntryMeta
+          text={detail}
+          url={education.url}
+          style={styles.entryRole}
+          linkStyle={styles.metaLink}
+        />
       </View>
     </KeepTogether>
   );
@@ -429,7 +446,12 @@ const ProjectSection = ({
             {startDate} — {endDate}
           </Text>
         </View>
-        {project.type && <Text style={styles.entryRole}>{project.type}</Text>}
+        <EntryMeta
+          text={project.type}
+          url={project.url}
+          style={styles.entryRole}
+          linkStyle={styles.metaLink}
+        />
         {glued.map((highlight, index) => (
           <Highlight key={index} value={highlight} styles={styles} />
         ))}
@@ -448,6 +470,7 @@ const ProjectSection = ({
 // publications, references, and languages.
 const SimpleEntry = ({
   title,
+  url,
   dates,
   role,
   summary,
@@ -455,6 +478,7 @@ const SimpleEntry = ({
   leading,
 }: {
   title?: string;
+  url?: string;
   dates?: string;
   role?: string;
   summary?: string;
@@ -467,7 +491,12 @@ const SimpleEntry = ({
         <Text style={styles.entryTitle}>{title}</Text>
         {dates ? <Text style={styles.entryDates}>{dates}</Text> : null}
       </View>
-      {role ? <Text style={styles.entryRole}>{role}</Text> : null}
+      <EntryMeta
+        text={role}
+        url={url}
+        style={styles.entryRole}
+        linkStyle={styles.metaLink}
+      />
     </KeepTogether>
     {summary ? <Text style={styles.entrySummary}>{summary}</Text> : null}
   </View>
@@ -569,6 +598,7 @@ const FolioTemplate = ({
           title={item.name}
           dates={formatDate(item.date)}
           role={item.issuer}
+          url={item.url}
           styles={styles}
         />
       )
@@ -580,6 +610,7 @@ const FolioTemplate = ({
           title={item.name}
           dates={formatDate(item.releaseDate)}
           role={item.publisher}
+          url={item.url}
           summary={item.summary}
           styles={styles}
         />

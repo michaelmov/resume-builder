@@ -160,6 +160,16 @@ export const WorkSection = ({ value, onUpdate }: WorkSectionProps) => {
                   </Flex>
                 </FieldGridItem>
                 <FieldGridItem full>
+                  <Field.Root id={`url-${field.id}`}>
+                    <Field.Label>Company URL</Field.Label>
+                    <Input
+                      type="url"
+                      placeholder="https://example.com"
+                      {...register(`work.${index}.url`)}
+                    />
+                  </Field.Root>
+                </FieldGridItem>
+                <FieldGridItem full>
                   <Field.Root id={`summary-${field.id}`}>
                     <Field.Label>Summary</Field.Label>
                     <Textarea {...register(`work.${index}.summary`)} />
