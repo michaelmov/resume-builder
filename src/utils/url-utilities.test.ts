@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ensureProtocol } from './url-utilities';
+import { displayUrl, ensureProtocol } from './url-utilities';
 
 describe('ensureProtocol', () => {
   it('prepends https:// to a bare host', () => {
@@ -44,5 +44,24 @@ describe('ensureProtocol', () => {
     expect(ensureProtocol('mailto:me@example.com')).toBe(
       'https://mailto:me@example.com'
     );
+  });
+});
+
+describe('displayUrl', () => {
+  it('drops the scheme', () => {
+    expect(displayUrl('https://git-scm.com')).toBe('git-scm.com');
+    expect(displayUrl('HTTP://example.com/a/b')).toBe('example.com/a/b');
+  });
+
+  it('drops trailing slashes', () => {
+    expect(displayUrl('https://kernel.org/')).toBe('kernel.org');
+  });
+
+  it('leaves a bare host untouched', () => {
+    expect(displayUrl('michaelmov.dev')).toBe('michaelmov.dev');
+  });
+
+  it('trims surrounding whitespace', () => {
+    expect(displayUrl('  https://example.com  ')).toBe('example.com');
   });
 });

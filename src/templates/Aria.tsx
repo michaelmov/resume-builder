@@ -30,6 +30,7 @@ import { formatScore } from '../utils/education-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
 
 import { AccentPalette } from './accents';
+import { EntryMeta } from './links';
 import {
   KeepTogether,
   LeadingEntryProps,
@@ -212,6 +213,11 @@ const makeStyles = (accent: AccentPalette, marginScale: number) =>
       color: colors.body,
       marginTop: 2,
     },
+    // An entry's URL, printed after its role or type (see `EntryMeta`).
+    metaLink: {
+      color: accent.strong,
+      textDecoration: 'none',
+    },
     entrySummary: {
       fontSize: 9.5,
       lineHeight: 1.55,
@@ -330,7 +336,12 @@ const WorkExperience = ({
             {startDate} – {endDate}
           </Text>
         </View>
-        {work.position && <Text style={styles.entryMeta}>{work.position}</Text>}
+        <EntryMeta
+          text={work.position}
+          url={work.url}
+          style={styles.entryMeta}
+          linkStyle={styles.metaLink}
+        />
         {glued.map((highlight, index) => (
           <Highlight key={index} value={highlight.value} styles={styles} />
         ))}
@@ -371,7 +382,12 @@ const EducationSection = ({
             {formatDate(education.startDate)} – {formatDate(education.endDate)}
           </Text>
         </View>
-        {detail ? <Text style={styles.entryMeta}>{detail}</Text> : null}
+        <EntryMeta
+          text={detail}
+          url={education.url}
+          style={styles.entryMeta}
+          linkStyle={styles.metaLink}
+        />
       </View>
     </KeepTogether>
   );
@@ -404,7 +420,12 @@ const ProjectSection = ({
             {startDate} – {endDate}
           </Text>
         </View>
-        {project.type && <Text style={styles.entryMeta}>{project.type}</Text>}
+        <EntryMeta
+          text={project.type}
+          url={project.url}
+          style={styles.entryMeta}
+          linkStyle={styles.metaLink}
+        />
         {glued.map((highlight, index) => (
           <Highlight key={index} value={highlight} styles={styles} />
         ))}
@@ -423,6 +444,7 @@ const ProjectSection = ({
 // publications, and references — they all reduce to the same shape as work.
 const SimpleEntry = ({
   title,
+  url,
   dates,
   meta,
   summary,
@@ -431,6 +453,7 @@ const SimpleEntry = ({
   leading,
 }: {
   title?: string;
+  url?: string;
   dates?: string;
   meta?: string;
   summary?: string;
@@ -444,7 +467,12 @@ const SimpleEntry = ({
         <Text style={styles.entryTitle}>{title}</Text>
         {dates ? <Text style={styles.entryDates}>{dates}</Text> : null}
       </View>
-      {meta ? <Text style={styles.entryMeta}>{meta}</Text> : null}
+      <EntryMeta
+        text={meta}
+        url={url}
+        style={styles.entryMeta}
+        linkStyle={styles.metaLink}
+      />
     </KeepTogether>
     {summary ? <Text style={styles.entrySummary}>{summary}</Text> : null}
   </View>
@@ -571,6 +599,7 @@ const AriaTemplate = ({
           title={item.name}
           dates={formatDate(item.date)}
           meta={item.issuer}
+          url={item.url}
           isLast={last(index, certificates.length)}
           styles={styles}
         />
@@ -583,6 +612,7 @@ const AriaTemplate = ({
           title={item.name}
           dates={formatDate(item.releaseDate)}
           meta={item.publisher}
+          url={item.url}
           summary={item.summary}
           isLast={last(index, publications.length)}
           styles={styles}

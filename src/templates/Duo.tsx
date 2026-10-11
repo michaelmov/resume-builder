@@ -32,6 +32,7 @@ import { formatScore } from '../utils/education-utilities';
 import { ensureProtocol } from '../utils/url-utilities';
 
 import { AccentPalette } from './accents';
+import { EntryMeta } from './links';
 import {
   KeepTogether,
   LeadingEntryProps,
@@ -69,6 +70,11 @@ const makeStyles = (accent: AccentPalette, marginScale: number) =>
     },
     textLight: {
       color: colors.secondaryLight,
+    },
+    // An entry's URL, printed after its role or type (see `EntryMeta`).
+    metaLink: {
+      color: colors.secondaryLight,
+      textDecoration: 'none',
     },
     name: {
       fontFamily: 'Roboto Mono',
@@ -297,9 +303,12 @@ const WorkExperience = ({
             {startDate} - {endDate}
           </Text>
         </View>
-        {work.position ? (
-          <Text style={styles.textLight}>{work.position}</Text>
-        ) : null}
+        <EntryMeta
+          text={work.position}
+          url={work.url}
+          style={styles.textLight}
+          linkStyle={styles.metaLink}
+        />
         {glued.map((highlight, index) => (
           <HighlightRow
             key={index}
@@ -352,7 +361,12 @@ const EducationSection = ({
             {formatDate(education.startDate)} - {formatDate(education.endDate)}
           </Text>
         </View>
-        {detail ? <Text style={styles.textLight}>{detail}</Text> : null}
+        <EntryMeta
+          text={detail}
+          url={education.url}
+          style={styles.textLight}
+          linkStyle={styles.metaLink}
+        />
       </View>
     </KeepTogether>
   );
@@ -385,9 +399,12 @@ const ProjectSection = ({
             {startDate} - {endDate}
           </Text>
         </View>
-        {project.type ? (
-          <Text style={styles.textLight}>{project.type}</Text>
-        ) : null}
+        <EntryMeta
+          text={project.type}
+          url={project.url}
+          style={styles.textLight}
+          linkStyle={styles.metaLink}
+        />
         {glued.map((highlight, index) => (
           <HighlightRow
             key={index}
@@ -416,6 +433,7 @@ const ProjectSection = ({
 
 const SimpleEntry = ({
   title,
+  url,
   meta,
   dates,
   summary,
@@ -423,6 +441,7 @@ const SimpleEntry = ({
   leading,
 }: {
   title?: string;
+  url?: string;
   meta?: string;
   dates?: string;
   summary?: string;
@@ -435,7 +454,12 @@ const SimpleEntry = ({
         <Text style={styles.workExperienceName}>{title}</Text>
         {dates ? <Text style={styles.textLight}>{dates}</Text> : null}
       </View>
-      {meta ? <Text style={styles.textLight}>{meta}</Text> : null}
+      <EntryMeta
+        text={meta}
+        url={url}
+        style={styles.textLight}
+        linkStyle={styles.metaLink}
+      />
     </KeepTogether>
     {summary ? (
       <Text style={styles.workExperienceSummary}>{summary}</Text>
@@ -529,6 +553,7 @@ const DuoTemplate = ({
           key={`${item.name}-${index}`}
           title={item.name}
           meta={item.issuer}
+          url={item.url}
           dates={formatDate(item.date)}
           styles={styles}
         />
@@ -540,6 +565,7 @@ const DuoTemplate = ({
           key={`${item.name}-${index}`}
           title={item.name}
           meta={item.publisher}
+          url={item.url}
           dates={formatDate(item.releaseDate)}
           summary={item.summary}
           styles={styles}
