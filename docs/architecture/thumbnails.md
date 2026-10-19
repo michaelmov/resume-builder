@@ -21,9 +21,10 @@ repository's business.
   (`getThumbnail`/`putThumbnail`/`deleteThumbnail`/`copyThumbnail`) **fail
   soft**, unlike every other write there: a broken image cache must never break
   the list, and losing one only costs a re-render.
-- `PAGE_ASPECT_RATIO` is **A4** (595.28 × 841.89pt) because every template
-  renders `<Page size="A4">`. Getting it wrong letterboxes or crops the
-  thumbnail.
+- The card shows **only the top of page 1**, in a landscape frame
+  (`FRAME_ASPECT_RATIO`, 16:9). The PNG is still the whole page at its natural
+  proportions; the frame just clips it with `objectFit="cover"` anchored to the
+  top, so nothing here depends on the template's paper size.
 - pdf.js drives its render continuation with `requestAnimationFrame`, which
   Chrome pauses in a background tab — thumbnail renders stall there and resume
   when the tab is shown again. Expected, not a bug.

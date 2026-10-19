@@ -34,9 +34,9 @@ const slotHeight = {
 } as const;
 
 /**
- * Click-to-edit name, shared by the editor's title bar and the list card so a
- * resume is renamed the same way wherever you are. It owns its own edit mode —
- * clicking the name or its pencil is the only way in.
+ * Click-to-edit name for the editor's title bar. (The list renames through
+ * `RenameResumeDialog` instead, since its whole card is a click target.) It
+ * owns its own edit mode — clicking the name or its pencil is the only way in.
  *
  * Blank reverts rather than committing: a card or title bar with no name is
  * unrecoverable from the UI, and an empty field is far more often a

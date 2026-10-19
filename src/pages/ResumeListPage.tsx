@@ -22,6 +22,7 @@ import { Footer } from '../components/Footer';
 import { ImportDialog } from '../components/ImportDialog';
 import { Navbar } from '../components/Navbar';
 import { DeleteResumeDialog } from '../components/ResumeList/DeleteResumeDialog';
+import { RenameResumeDialog } from '../components/ResumeList/RenameResumeDialog';
 import { ResumeCard } from '../components/ResumeList/ResumeCard';
 import { SaveErrorBanner } from '../components/SaveErrorBanner';
 import { useIsMobile } from '../hooks/useIsMobile';
@@ -55,6 +56,9 @@ export const ResumeListPage = () => {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isDropTarget, setIsDropTarget] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<ResumeSummary | null>(
+    null
+  );
+  const [pendingRename, setPendingRename] = useState<ResumeSummary | null>(
     null
   );
   const [showMissingNotice, setShowMissingNotice] = useState(
@@ -116,6 +120,14 @@ export const ResumeListPage = () => {
     if (pendingDelete) void deleteResume(pendingDelete.id);
     setPendingDelete(null);
   }, [deleteResume, pendingDelete]);
+
+  const confirmRename = useCallback(
+    (name: string) => {
+      if (pendingRename) void renameResume(pendingRename.id, name);
+      setPendingRename(null);
+    },
+    [renameResume, pendingRename]
+  );
 
   return (
     // The rail runs down the left edge on a desktop and across the top on a
@@ -266,7 +278,7 @@ export const ResumeListPage = () => {
                 <ResumeCard
                   key={summary.id}
                   summary={summary}
-                  onRename={(name) => renameResume(summary.id, name)}
+                  onRename={() => setPendingRename(summary)}
                   onDuplicate={() => duplicateResume(summary.id)}
                   onDelete={() => setPendingDelete(summary)}
                 />
@@ -282,6 +294,11 @@ export const ResumeListPage = () => {
         open={isImportOpen}
         onOpenChange={setIsImportOpen}
         onImport={handleImport}
+      />
+      <RenameResumeDialog
+        resume={pendingRename}
+        onCancel={() => setPendingRename(null)}
+        onRename={confirmRename}
       />
       <DeleteResumeDialog
         resume={pendingDelete}
