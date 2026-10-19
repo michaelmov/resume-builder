@@ -14,6 +14,7 @@ import {
   HiOutlineDotsVertical,
   HiOutlineDownload,
   HiOutlineDuplicate,
+  HiOutlinePencil,
   HiOutlineTrash,
 } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
@@ -25,13 +26,13 @@ import { exportResumeAsJson } from '../../utils/json-export';
 import { renderResumePdf } from '../../utils/render-resume-pdf';
 import { readDocument } from '../../utils/resume-repository';
 import { exportResumeAsText } from '../../utils/text-export';
-import { EditableTitle } from '../ui/EditableTitle';
 
 import { ResumeThumbnail } from './ResumeThumbnail';
 
 interface ResumeCardProps {
   summary: ResumeSummary;
-  onRename: (name: string) => void;
+  /** Opens the rename dialog; the list page owns it, like the delete one. */
+  onRename: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
 }
@@ -78,46 +79,68 @@ export const ResumeCard = ({
   );
 
   return (
-    <Box>
-      {/*
-        The thumbnail is the click target rather than the whole card: the name
-        underneath is an editable field and the menu is a button, so making
-        their container navigate would fight both of them.
-      */}
-      <chakra.button
-        type="button"
-        onClick={open}
-        display="block"
-        width="100%"
-        textAlign="left"
-        rounded="md"
-        cursor="pointer"
-        transition="transform 0.15s ease, box-shadow 0.15s ease"
-        _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
-        _focusVisible={{
+    <Box
+      position="relative"
+      bg="bg.panel"
+      borderWidth="1px"
+      borderColor="border"
+      rounded="lg"
+      overflow="hidden"
+      transition="transform 0.15s ease, box-shadow 0.15s ease"
+      _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
+      // The ring goes on the card, not the stretched button, whose own box is
+      // only the name row. Keyed to that button alone so focusing the menu
+      // trigger doesn't light up the whole card.
+      css={{
+        '&:has([data-card-open]:focus-visible)': {
           outline: '2px solid',
           outlineColor: 'brand.solid',
           outlineOffset: '2px',
-        }}
-        aria-label={`Open ${summary.name}`}
-      >
-        <ResumeThumbnail summary={summary} />
-      </chakra.button>
+        },
+      }}
+    >
+      <ResumeThumbnail summary={summary} />
 
-      <Flex align="center" justify="space-between" mt={2} gap={1}>
-        <Box minWidth={0} flex={1}>
-          {/* Renaming is the title's own job — click it, or use its pencil.
-              A menu item would only be a second way into the same field. */}
-          <EditableTitle
-            value={summary.name}
-            onCommit={onRename}
-            label={`Rename ${summary.name}`}
-            maxWidth="100%"
-          />
-          <Text fontSize="xs" color="fg.muted" pl={2}>
+      <Flex
+        align="center"
+        justify="space-between"
+        gap={1}
+        px={3}
+        py={2}
+        borderTopWidth="1px"
+        borderColor="border"
+      >
+        {/*
+          The whole card opens the resume: this button's `::before` stretches
+          over the card, and the menu trigger sits above it on its own layer.
+          A button can't wrap the card instead — the menu trigger would be a
+          button nested inside a button.
+        */}
+        <chakra.button
+          type="button"
+          onClick={open}
+          flex={1}
+          minWidth={0}
+          textAlign="left"
+          cursor="pointer"
+          outline="none"
+          _before={{ content: '""', position: 'absolute', inset: 0 }}
+          data-card-open=""
+          aria-label={`Open ${summary.name}`}
+        >
+          <Text
+            as="span"
+            display="block"
+            fontSize="sm"
+            fontWeight="medium"
+            truncate
+          >
+            {summary.name}
+          </Text>
+          <Text as="span" display="block" fontSize="xs" color="fg.muted">
             Edited {formatRelativeTime(summary.updatedAt)}
           </Text>
-        </Box>
+        </chakra.button>
 
         <Menu.Root>
           <Menu.Trigger asChild>
@@ -126,6 +149,8 @@ export const ResumeCard = ({
               variant="ghost"
               colorPalette="gray"
               color="fg.muted"
+              position="relative"
+              zIndex={1}
               aria-label={`Actions for ${summary.name}`}
             >
               <HiOutlineDotsVertical />
@@ -134,6 +159,10 @@ export const ResumeCard = ({
           <Portal>
             <Menu.Positioner>
               <Menu.Content>
+                <Menu.Item value="rename" onClick={onRename}>
+                  <HiOutlinePencil />
+                  Rename
+                </Menu.Item>
                 <Menu.Item value="duplicate" onClick={onDuplicate}>
                   <HiOutlineDuplicate />
                   Duplicate

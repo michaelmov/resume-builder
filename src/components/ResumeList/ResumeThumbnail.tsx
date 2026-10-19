@@ -12,11 +12,12 @@ import {
 import { renderPdfThumbnail } from '../../utils/thumbnails';
 
 /**
- * A4 (595.28 × 841.89pt). Every template renders `<Page size="A4">`, so the
- * card can commit to that shape — get this wrong and the thumbnail is letter-
- * boxed or cropped inside its frame.
+ * The card's preview window is landscape and shows only the top of page 1 —
+ * the header and first section are what tell resumes apart. The image keeps
+ * its natural page proportions inside it and is simply clipped at the bottom,
+ * so no page size has to be assumed here.
  */
-export const PAGE_ASPECT_RATIO = 595.28 / 841.89;
+const FRAME_ASPECT_RATIO = 16 / 9;
 
 /**
  * Rendering a PDF is CPU-heavy and blocks the main thread in bursts, so cards
@@ -117,30 +118,38 @@ export const ResumeThumbnail = ({ summary }: { summary: ResumeSummary }) => {
   }, [inView, summary.id, summary.updatedAt]);
 
   return (
-    <AspectRatio ref={containerRef} ratio={PAGE_ASPECT_RATIO} width="100%">
-      <Box
-        bg="white"
-        borderWidth="1px"
-        borderColor="border"
-        rounded="md"
-        overflow="hidden"
-      >
-        {src ? (
-          <Image
-            src={src}
-            alt=""
-            width="100%"
-            height="100%"
-            objectFit="cover"
-            objectPosition="top"
-          />
-        ) : failed ? (
-          // Not an error state worth explaining — the card still opens, and the
-          // editor will re-capture a thumbnail the moment it renders.
-          <Icon as={HiOutlineDocumentText} boxSize={10} color="gray.400" />
-        ) : (
-          <Skeleton width="100%" height="100%" />
-        )}
+    <AspectRatio ref={containerRef} ratio={FRAME_ASPECT_RATIO} width="100%">
+      {/* The page sits inset on a muted backdrop, running off the bottom edge,
+          so the crop reads as "the top of a sheet" rather than a cut image. */}
+      <Box bg="bg.muted" overflow="hidden" px="12%" pt="6%">
+        <Box
+          width="100%"
+          height="100%"
+          bg="white"
+          roundedTop="sm"
+          shadow="sm"
+          overflow="hidden"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          {src ? (
+            <Image
+              src={src}
+              alt=""
+              width="100%"
+              height="100%"
+              objectFit="cover"
+              objectPosition="top"
+            />
+          ) : failed ? (
+            // Not an error state worth explaining — the card still opens, and
+            // the editor will re-capture a thumbnail the moment it renders.
+            <Icon as={HiOutlineDocumentText} boxSize={10} color="gray.400" />
+          ) : (
+            <Skeleton width="100%" height="100%" rounded="none" />
+          )}
+        </Box>
       </Box>
     </AspectRatio>
   );
