@@ -373,7 +373,7 @@ const purgeDeleted = async <T>(collection: RxCollection<T>): Promise<void> => {
 /**
  * `crypto.randomUUID` requires a secure context. Both localhost and the
  * deployed https site qualify, but the fallback keeps a plain-http preview
- * (`npm run dev:host` over a LAN address) from failing to create a resume.
+ * (`npm run dev` opened from another device) from failing to create a resume.
  */
 export const createResumeId = (): string => {
   if (

@@ -5,7 +5,7 @@ Guidance for Claude Code (claude.ai/code) when working in this repository.
 ## Commands
 
 ```bash
-npm run dev            # Vite dev server (auto-opens browser); dev:host exposes on LAN
+npm run dev            # Vite dev server (auto-opens browser), reachable from LAN/tailnet devices
 npm run build          # typecheck + production Vite build → dist/
 npm run preview        # Serve the production build locally
 npm run typecheck      # tsc --noEmit over src/ (no build output)
